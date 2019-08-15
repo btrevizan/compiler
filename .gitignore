@@ -1,0 +1,4 @@
+.idea*
+.DS_Store
+cmake-build-debug/CMakeFiles*
+cmake-build-debug/cmake_install.cmake
