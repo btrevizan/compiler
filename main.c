@@ -5,28 +5,25 @@ Este arquivo será posterioremente substituído, não acrescente nada.
 */
 #include <stdio.h>
 #include "tokens.h"
-
 extern int yylex(void);
 extern int yylex_destroy(void);
 
 extern FILE *yyin;
 extern char *yytext;
-
 extern int get_line_number (void);
-
 #define print_nome(TOKEN) \
     printf("%d " #TOKEN " [%s]\n", get_line_number(), yytext);
-
 #define print_nome2(TOKEN) \
     printf("%d TK_ESPECIAL [%c]\n", get_line_number(), TOKEN);
 
 int main (int argc, char **argv)
 {
-    int token = yylex();
-
-    while (token) {
-
-        switch (token) {
+    int token = 0;
+    while (token = yylex()) {
+        switch (token){
+            case '~':
+            case '@':
+            case '`':
             case ',':
             case ';':
             case ':':
@@ -77,6 +74,8 @@ int main (int argc, char **argv)
             case TK_PR_PRIVATE: print_nome (TK_PR_PRIVATE); break;
             case TK_PR_PUBLIC: print_nome (TK_PR_PUBLIC); break;
             case TK_PR_PROTECTED: print_nome (TK_PR_PROTECTED); break;
+            case TK_PR_END: print_nome (TK_PR_END); break;
+            case TK_PR_DEFAULT: print_nome (TK_PR_DEFAULT); break;
             case TK_OC_LE: print_nome (TK_OC_LE); break;
             case TK_OC_GE: print_nome (TK_OC_GE); break;
             case TK_OC_EQ: print_nome (TK_OC_EQ); break;
@@ -97,10 +96,7 @@ int main (int argc, char **argv)
             case TOKEN_ERRO:  print_nome (TOKEN_ERRO); break;
             default: printf ("<Invalid Token with code %d>\n", token); return 1; break;
         }
-
-        token = yylex();
     }
-
     yylex_destroy();
     return 0;
 }
