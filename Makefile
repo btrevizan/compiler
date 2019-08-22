@@ -3,10 +3,10 @@ all: scanner.l tokens.h main.c
     gcc -o etapa1 lex.yy.c main.c
 
 test: test.txt etapa1
-    cat test.txt | ./etapa1 > test-result.txt
-	diff test-result.txt test-answer.txt
+    cat test.txt | ./etapa1 > output.txt
+	diff output.txt right_output.txt
 
 clean:
     rm -f etapa1
     rm -f lex.yy.c
-    rm test-result.txt
+    rm output.txt
