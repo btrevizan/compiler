@@ -13,9 +13,9 @@ STRING              \"(.|\n)*\"
 
 %%
 
-/* Rules */
+    /* Rules */
 
-/* Reserved words */
+    /* Reserved words */
 int                 { return TK_PR_INT; }
 float               { return TK_PR_FLOAT; }
 bool                { return TK_PR_BOOL; }
@@ -37,15 +37,28 @@ return              { return TK_PR_RETURN; }
 const               { return TK_PR_CONST; }
 static              { return TK_PR_STATIC; }
 
-/* *********************************************** Tati, continuar a partir de foreach */
+foreach             { return TK_PR_FOREACH; }
+for                 { return TK_PR_FOR; }
 
-/* Special characters */
+switch              { return TK_PR_SWITCH; }
+case                { return TK_PR_CASE; }
+break               { return TK_PR_BREAK; }
+
+continue            { return TK_PR_CONTINUE; }
+
+class               { return TK_PR_CLASS; }
+private             { return TK_PR_PRIVATE; }
+public              { return TK_PR_PUBLIC; }
+protected           { return TK_PR_PROTECTED; }
+
+
+    /* Special characters */
 {SPECIAL_CHAR}      { return (int) yytext[0]; }
 
-/* Identifiers */
-/* *********************************************** Tati */
+    /* Identifiers */
+[a-zA-Z_][a-zA-Z_0-9]*      { return TK_IDENTIFICADOR; }
 
-/* Two-or-more-char operatores */
+    /* Two-or-more-char operatores */
 "<="                { return TK_OC_LE;  }
 ">="                { return TK_OC_GE;  }
 "=="                { return TK_OC_EQ;  }
@@ -57,25 +70,25 @@ static              { return TK_PR_STATIC; }
 "%>%"               { return TK_OC_FORWARD_PIPE; }
 "%|%"               { return TK_OC_BASH_PIPE; }
 
-/* Literals */
+    /* Literals */
 {INT}   			{ return TK_LIT_INT; }
-{FLOAT} 			{ return TK_LIT_FLOAT; }
+{FLOAT}				{ return TK_LIT_FLOAT; }
 false   			{ return TK_LIT_FALSE; }
 true    			{ return TK_LIT_TRUE; }
 {CHAR}  			{ return TK_LIT_CHAR; }
 {STRING}			{ return TK_LIT_STRING; }
 
-/* Comments */
+    /* Comments */
 "//".*                  { ; }
 
-/** code from http://dinosaur.compilertools.net/flex/manpage.html **/
+    /* code from http://dinosaur.compilertools.net/flex/manpage.html */
 "/*"		            { BEGIN(comment); }
 <comment>[^*\n]*	    { ; }                       /* eat anything that's not a '*' */
 <comment>"*"+[^*/\n]*   { ; }                       /* eat up '*'s not followed by '/'s */
 <comment>\n		        { ; }                       /* eat new lines */
 <comment>"*"+"/"	    { BEGIN(INITIAL); }
 
-/* To ignore */
+    /* To ignore */
 [ ]                 { ; }  /* whitespaces */
 ^[ \t]*\n           { ; }  /* line with nothing but whitespaces and tabs */
 
