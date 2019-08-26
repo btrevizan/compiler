@@ -4,6 +4,7 @@
 %}
 
 %option yylineno
+%option noyywrap
 
 %x comment
 
@@ -96,8 +97,9 @@ false   			{ return TK_LIT_FALSE; }
 <comment>"*"+"/"	    { BEGIN(INITIAL); }
 
     /* To ignore */
+[\n]                { ; }  /* new line */
 [ ]                 { ; }  /* whitespaces */
-^[ \t]*\n           { ; }  /* line with nothing but whitespaces and tabs */
+[\t]+               { ; }  /* tabs */
 
 .                   { return TOKEN_ERRO; }
 
