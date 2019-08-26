@@ -1,0 +1,44 @@
+int a = 22;
+int b = 33;
+int c;
+
+/* para c nao ser negativo */
+if(a > b){
+    c = a - b;
+} else {
+    c = b - a;
+}
+
+// flag
+bool is_zero = c == 0;
+
+while (is_zero) {
+    c = c - 1;
+    is_zero = c == 0;
+}
+
+/* comentario
+ de varias
+ linhas
+*/
+
+public class Veiculo {
+    private string cor = "Branco\"Azul";
+    private float potencia = 3.0;
+    protected char tipo_direcao = 'E';
+}
+
+switch(cor) {
+    case "Azul":
+        c = 1;
+        break;
+
+    case "Branco":
+        break;
+
+    default:
+        return 0;
+}
+
+
+return c;
