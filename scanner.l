@@ -10,7 +10,7 @@
 SPECIAL_CHAR        [\,\;\:\(\)\[\]\{\}\+\-\|\?\@\*\/\<\>\=\!\&\%\#\^\.\$\~\`]
 
 DIGIT               [0-9]
-INT                 (+|-)?{DIGIT}+
+INT                 (\+|\-)?{DIGIT}+
 FLOAT               {INT}\.{DIGIT}+((E|e){INT})?
 CHAR                \'(.|\n)\'
 STRING              \"(.|\n)*\"
@@ -58,6 +58,8 @@ protected           { return TK_PR_PROTECTED; }
 end                 { return TK_PR_END; }
 default             { return TK_PR_DEFAULT; }
 
+true    			{ return TK_LIT_TRUE; }
+false   			{ return TK_LIT_FALSE; }
 
     /* Special characters */
 {SPECIAL_CHAR}              { return (int) yytext[0]; }
@@ -80,8 +82,6 @@ default             { return TK_PR_DEFAULT; }
     /* Literals */
 {INT}   			{ return TK_LIT_INT; }
 {FLOAT}				{ return TK_LIT_FLOAT; }
-false   			{ return TK_LIT_FALSE; }
-true    			{ return TK_LIT_TRUE; }
 {CHAR}  			{ return TK_LIT_CHAR; }
 {STRING}			{ return TK_LIT_STRING; }
 
