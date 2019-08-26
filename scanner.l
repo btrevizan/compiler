@@ -1,4 +1,8 @@
 /* Definitions */
+%{
+    #include "tokens.h"
+%}
+
 %option yylineno
 
 %x comment
