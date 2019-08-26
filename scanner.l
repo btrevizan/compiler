@@ -51,9 +51,12 @@ private             { return TK_PR_PRIVATE; }
 public              { return TK_PR_PUBLIC; }
 protected           { return TK_PR_PROTECTED; }
 
+end                 { return TK_PR_END; }
+default             { return TK_PR_DEFAULT; }
+
 
     /* Special characters */
-{SPECIAL_CHAR}      { return (int) yytext[0]; }
+{SPECIAL_CHAR}              { return (int) yytext[0]; }
 
     /* Identifiers */
 [a-zA-Z_][a-zA-Z_0-9]*      { return TK_IDENTIFICADOR; }
