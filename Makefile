@@ -1,6 +1,6 @@
 all: scanner.l tokens.h main.c
 	flex scanner.l
-	gcc -o etapa1 lex.yy.c main.c
+	gcc -o etapa1 lex.yy.c main.c -lfl
 
 test: test.txt etapa1
 	cat test.txt | ./etapa1 > output.txt
