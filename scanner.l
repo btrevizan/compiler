@@ -4,7 +4,6 @@
 %}
 
 %option yylineno
-%option noyywrap
 
 %x comment
 
@@ -13,8 +12,8 @@ SPECIAL_CHAR        [\,\;\:\(\)\[\]\{\}\+\-\|\?\@\*\/\<\>\=\!\&\%\#\^\.\$\~\`]
 DIGIT               [0-9]
 INT                 (\+|\-)?{DIGIT}+
 FLOAT               {INT}\.{DIGIT}+((E|e){INT})?
-CHAR                \'(.|\n)\'
-STRING              \"(.|\n)*\"
+CHAR                \'[^']\'
+STRING              \"([^"]|\\\")*\"
 
 %%
 
