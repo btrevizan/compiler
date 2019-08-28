@@ -1,18 +1,18 @@
-int a = 22;
-int b = 33;
+int abc = 22;
+int b2 = 33;
 int c;
 
 /* para c nao ser negativo */
-if(a > b){
+if (a > b) {
     c = a - b;
-} else {
+}    else      {
     c = b - a;
 }
 
 // flag
 bool is_zero = c == 0;
 
-while (is_zero) {
+while      (is_zero)      {
     c = c - 1;
     is_zero = c == 0;
 }
@@ -42,3 +42,17 @@ switch(cor) {
 
 
 return c;
+
+/* comentario de varias linhas com comandos
+int n_rows = 100;
+char char123 = '\n';
+if (n_rows < 10000) {
+    n_rows = 10000;
+} else {
+    n_rows = 10000;
+}
+*/
+
+// erro
+int 1a = 3;
+nit 2b = 5;
