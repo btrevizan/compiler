@@ -1,5 +1,5 @@
-int abc = 22;
-int b2 = 33;
+int abc = +22;
+int b2 = -33;
 int c;
 
 /* para c nao ser negativo */
@@ -56,3 +56,4 @@ if (n_rows < 10000) {
 // erro
 int 1a = 3;
 nit 2b = 5;
+float expr = -5 + 6.5;
