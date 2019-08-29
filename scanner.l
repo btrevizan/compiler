@@ -66,6 +66,7 @@ false   			{ return TK_LIT_FALSE; }
 
     /* Identifiers */
 [a-zA-Z_][a-zA-Z_0-9]*      { return TK_IDENTIFICADOR; }
+({INT}|{FLOAT})+[a-zA-Z_]+  { return TOKEN_ERRO; }          /* ID begins with a number */
 
     /* Two-or-more-char operatores */
 "<="                { return TK_OC_LE;  }
