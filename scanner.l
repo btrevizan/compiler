@@ -1,6 +1,6 @@
 /* Definitions */
 %{
-    #include "tokens.h"
+    #include "parser.tab.h"
 %}
 
 %option yylineno

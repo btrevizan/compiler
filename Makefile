@@ -1,12 +1,14 @@
-all: scanner.l tokens.h main.c
+all: parser.y scanner.l main.c
+	bison -d parser.y --report-file=report
 	flex scanner.l
-	gcc -o etapa1 lex.yy.c main.c -lfl
+	gcc -c lex.yy.c parser.tab.c
+	gcc -o etapa2 lex.yy.o parser.tab.o main.c -lfl
 
-test: test.txt etapa1
-	cat test.txt | ./etapa1 > output.txt
-	diff output.txt right_output.txt
+test: test.txt etapa2
+	cat test.txt | ./etapa2
 
 clean:
-	rm -f etapa1
-	rm -f lex.yy.c
-	rm output.txt
+	rm -f etapa2
+	rm -f lex.yy.*
+	rm -f parser.tab.*
+	rm -f report
