@@ -60,7 +60,7 @@
 
 %%
 
-prog: expr | localVar
+prog: expr | localVar | assignment
 
 /****** SIMPLE COMMANDS ******/
 /*simpleCommand: localVar | ; /* TODO: add the rest simple commands defined */
@@ -77,6 +77,9 @@ staticness: TK_PR_STATIC | ;
 constantness: TK_PR_CONST | ;
 initialization: TK_OC_LE directTerm | ;
 localVar: staticness constantness type TK_IDENTIFICADOR initialization;
+
+/** Assignment **/
+assignment: id '=' expr;
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT
