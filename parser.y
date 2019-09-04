@@ -79,6 +79,9 @@ initialization: TK_OC_LE directTerm | ;
 localVar: staticness constantness type TK_IDENTIFICADOR initialization;
 
 /** Assignment **/
+indexer: '[' expr ']' | ;
+id: TK_IDENTIFICADOR indexer;
+
 assignment: id '=' expr;
 
 /** Input and output **/
@@ -87,6 +90,10 @@ exprList: expr | expr ',' exprList;
 input: TK_PR_INPUT expr;
 output: TK_PR_OUTPUT exprList;
 
+/** Function call **/
+args: expr | expr ',' args | ;
+call: TK_IDENTIFICADOR '(' args ')';
+
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT
 | 	 TK_LIT_FLOAT
@@ -94,12 +101,6 @@ literal: TK_LIT_INT
 |	 TK_LIT_TRUE
 |	 TK_LIT_CHAR
 |	 TK_LIT_STRING;
-
-args: expr | expr ',' args | ;
-call: TK_IDENTIFICADOR '(' args ')';
-
-indexer: '[' expr ']' | ;
-id: TK_IDENTIFICADOR indexer;
 
 directTerm: id | literal;
 term: directTerm | call;
