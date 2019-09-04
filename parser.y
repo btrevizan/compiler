@@ -54,9 +54,54 @@
 %token TK_IDENTIFICADOR
 %token TOKEN_ERRO
 
+%left '+' '-' '*' '/' '%' '|' '&' '^' '>' '<' '?' '!' '#' ':' TK_OC_LE TK_OC_GE TK_OC_EQ TK_OC_NE TK_OC_AND TK_OC_OR
+
 %%
 
-programa:
+programa: expr
+
+/* TODO: function call */
+/* func_call: to be defined */
+
+literal: TK_LIT_INT
+| 	 TK_LIT_FLOAT
+|	 TK_LIT_FALSE
+|	 TK_LIT_TRUE
+|	 TK_LIT_CHAR
+|	 TK_LIT_STRING;
+
+args: expr | expr ',' args | ;
+indexer: '[' expr ']' | '(' args ')' | ;
+id: TK_IDENTIFICADOR indexer;
+
+term: id | literal;
+
+expr: term
+|     '+' expr
+|     '-' expr
+|     '!' expr
+|     '&' expr
+|     '*' expr
+|     '?' expr
+|     '#' expr
+|     expr '+' expr
+|     expr '-' expr
+|     expr '*' expr
+|     expr '/' expr
+|     expr '%' expr
+|     expr '|' expr
+|     expr '&' expr
+|     expr '^' expr
+|     expr '>' expr
+|     expr '<' expr
+|     expr TK_OC_LE expr
+|     expr TK_OC_GE expr
+|     expr TK_OC_EQ expr
+|     expr TK_OC_NE expr
+|     expr TK_OC_AND expr
+|     expr TK_OC_OR expr
+|     expr '?' expr ':' expr
+|     '(' expr ')';
 
 %%
 
