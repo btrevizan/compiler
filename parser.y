@@ -60,12 +60,23 @@
 
 %%
 
-prog: expr | local_var | assignment | input | output | shift | return | if_else | for | while;
+prog: expr | block;
 
 /****** SIMPLE COMMANDS ******/
-block: '{' expr '}'; /* TODO: change block's definition */
-/*simpleCommand: local_var | TK_PR_BREAK | TK_PR_CONTINUE; /* TODO: add the rest simple commands defined */
-/*command: simpleCommand ';';*/
+simple_command: local_var
+|		assignment
+|		input
+|		output
+|		shift
+|		return
+|		if_else
+|		for
+|		while
+|		TK_PR_BREAK
+|		TK_PR_CONTINUE;
+
+command_list: simple_command | simple_command ';' command_list | ;
+block: '{' command_list '}';
 
 /** Local variable declaration **/
 type: TK_PR_INT
