@@ -60,7 +60,7 @@
 
 %%
 
-prog: expr | local_var | assignment | input | output | shift | return | if_else;
+prog: expr | local_var | assignment | input | output | shift | return | if_else | for | while;
 
 /****** SIMPLE COMMANDS ******/
 block: '{' expr '}'; /* TODO: change block's definition */
@@ -106,6 +106,13 @@ return: TK_PR_RETURN expr;
 if: TK_PR_IF '(' expr ')' block;
 else: TK_PR_ELSE block | ;
 if_else: if else;
+
+/** Iterative commands **/
+for_list_element: local_var | assignment;
+for_list: for_list_element | for_list_element ',' for_list;
+for: TK_PR_FOR '(' for_list ':' expr ':' for_list ')' block;
+
+while: TK_PR_WHILE '(' expr ')' TK_PR_DO block;
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT
