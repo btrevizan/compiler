@@ -60,7 +60,7 @@
 
 %%
 
-prog: expr | localVar | assignment | input | output
+prog: expr | local_var | assignment | input | output | shift
 
 /****** SIMPLE COMMANDS ******/
 /*simpleCommand: localVar | ; /* TODO: add the rest simple commands defined */
@@ -76,7 +76,7 @@ type: TK_PR_INT
 staticness: TK_PR_STATIC | ;
 constantness: TK_PR_CONST | ;
 initialization: TK_OC_LE directTerm | ;
-localVar: staticness constantness type TK_IDENTIFICADOR initialization;
+local_var: staticness constantness type TK_IDENTIFICADOR initialization;
 
 /** Assignment **/
 indexer: '[' expr ']' | ;
@@ -85,14 +85,18 @@ id: TK_IDENTIFICADOR indexer;
 assignment: id '=' expr;
 
 /** Input and output **/
-exprList: expr | expr ',' exprList;
+expr_list: expr | expr ',' expr_list;
 
 input: TK_PR_INPUT expr;
-output: TK_PR_OUTPUT exprList;
+output: TK_PR_OUTPUT expr_list;
 
 /** Function call **/
 args: expr | expr ',' args | ;
 call: TK_IDENTIFICADOR '(' args ')';
+
+/** Shift command **/
+shift_op: TK_OC_SL | TK_OC_SR;
+shift: id shift_op expr;
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT
