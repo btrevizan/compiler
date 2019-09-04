@@ -60,10 +60,10 @@
 
 %%
 
-prog: expr | local_var | assignment | input | output | shift
+prog: expr | local_var | assignment | input | output | shift | return;
 
 /****** SIMPLE COMMANDS ******/
-/*simpleCommand: localVar | ; /* TODO: add the rest simple commands defined */
+/*simpleCommand: local_var | TK_PR_BREAK | TK_PR_CONTINUE; /* TODO: add the rest simple commands defined */
 /*command: simpleCommand ';';*/
 
 /** Local variable declaration **/
@@ -97,6 +97,9 @@ call: TK_IDENTIFICADOR '(' args ')';
 /** Shift command **/
 shift_op: TK_OC_SL | TK_OC_SR;
 shift: id shift_op expr;
+
+/** Flow change commands **/
+return: TK_PR_RETURN expr;
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT
