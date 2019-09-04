@@ -60,11 +60,23 @@
 
 %%
 
-prog: expr
+prog: expr | localVar
 
 /****** SIMPLE COMMANDS ******/
-/** Local variable declaration **/
+/*simpleCommand: localVar | ; /* TODO: add the rest simple commands defined */
+/*command: simpleCommand ';';*/
 
+/** Local variable declaration **/
+type: TK_PR_INT
+|     TK_PR_FLOAT
+|     TK_PR_BOOL
+|     TK_PR_CHAR
+|     TK_PR_STRING;
+
+staticness: TK_PR_STATIC | ;
+constantness: TK_PR_CONST | ;
+initialization: TK_OC_LE directTerm | ;
+localVar: staticness constantness type TK_IDENTIFICADOR initialization;
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT
