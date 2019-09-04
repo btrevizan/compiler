@@ -62,6 +62,11 @@
 
 prog: expr
 
+/****** SIMPLE COMMANDS ******/
+/** Local variable declaration **/
+
+
+/****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT
 | 	 TK_LIT_FLOAT
 |	 TK_LIT_FALSE
@@ -70,10 +75,13 @@ literal: TK_LIT_INT
 |	 TK_LIT_STRING;
 
 args: expr | expr ',' args | ;
-indexer: '[' expr ']' | '(' args ')' | ;
+call: TK_IDENTIFICADOR '(' args ')';
+
+indexer: '[' expr ']' | ;
 id: TK_IDENTIFICADOR indexer;
 
-term: id | literal;
+directTerm: id | literal;
+term: directTerm | call;
 
 expr: term
 |     '+' expr
