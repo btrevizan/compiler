@@ -54,11 +54,13 @@
 %token TK_IDENTIFICADOR
 %token TOKEN_ERRO
 
+%start prog
+
 %left '+' '-' '*' '/' '%' '|' '&' '^' '>' '<' '?' '!' '#' ':' TK_OC_LE TK_OC_GE TK_OC_EQ TK_OC_NE TK_OC_AND TK_OC_OR
 
 %%
 
-programa: expr
+prog: expr
 
 literal: TK_LIT_INT
 | 	 TK_LIT_FLOAT
@@ -99,6 +101,8 @@ expr: term
 |     expr TK_OC_OR expr
 |     expr '?' expr ':' expr
 |     '(' expr ')';
+
+
 
 %%
 
