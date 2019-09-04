@@ -60,9 +60,6 @@
 
 programa: expr
 
-/* TODO: function call */
-/* func_call: to be defined */
-
 literal: TK_LIT_INT
 | 	 TK_LIT_FLOAT
 |	 TK_LIT_FALSE
