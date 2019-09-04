@@ -60,9 +60,10 @@
 
 %%
 
-prog: expr | local_var | assignment | input | output | shift | return;
+prog: expr | local_var | assignment | input | output | shift | return | if_else;
 
 /****** SIMPLE COMMANDS ******/
+block: '{' expr '}'; /* TODO: change block's definition */
 /*simpleCommand: local_var | TK_PR_BREAK | TK_PR_CONTINUE; /* TODO: add the rest simple commands defined */
 /*command: simpleCommand ';';*/
 
@@ -100,6 +101,11 @@ shift: id shift_op expr;
 
 /** Flow change commands **/
 return: TK_PR_RETURN expr;
+
+/** If-then-else statement **/
+if: TK_PR_IF '(' expr ')' block;
+else: TK_PR_ELSE block | ;
+if_else: if else;
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT
