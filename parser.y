@@ -8,6 +8,8 @@
 	void yyerror (char const *s);
 %}
 
+%define parse.error verbose
+
 %token TK_PR_INT
 %token TK_PR_FLOAT
 %token TK_PR_BOOL
@@ -60,7 +62,7 @@
 
 %%
 
-prog: expr | block;
+prog: expr | block | ;
 
 /****** SIMPLE COMMANDS ******/
 simple_command: local_var
@@ -75,8 +77,8 @@ simple_command: local_var
 |		TK_PR_BREAK
 |		TK_PR_CONTINUE;
 
-command_list: simple_command | simple_command ';' command_list | ;
-block: '{' command_list '}';
+command_list: simple_command | simple_command ';' command_list;
+block: '{' command_list '}' | '{' '}';
 
 /** Local variable declaration **/
 type: TK_PR_INT
@@ -85,14 +87,19 @@ type: TK_PR_INT
 |     TK_PR_CHAR
 |     TK_PR_STRING;
 
-staticness: TK_PR_STATIC | ;
-constantness: TK_PR_CONST | ;
-initialization: TK_OC_LE directTerm | ;
-local_var: staticness constantness type TK_IDENTIFICADOR initialization;
+initialization: TK_OC_LE directTerm;
+local_var: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization
+| TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR
+| TK_PR_STATIC type TK_IDENTIFICADOR initialization
+| TK_PR_STATIC type TK_IDENTIFICADOR
+| TK_PR_CONST type TK_IDENTIFICADOR initialization
+| TK_PR_CONST type TK_IDENTIFICADOR
+| type TK_IDENTIFICADOR initialization
+| type TK_IDENTIFICADOR;
 
 /** Assignment **/
-indexer: '[' expr ']' | ;
-id: TK_IDENTIFICADOR indexer;
+indexer: '[' expr ']' ;
+id: TK_IDENTIFICADOR indexer | TK_IDENTIFICADOR;
 
 assignment: id '=' expr;
 
@@ -103,8 +110,8 @@ input: TK_PR_INPUT expr;
 output: TK_PR_OUTPUT expr_list;
 
 /** Function call **/
-args: expr | expr ',' args | ;
-call: TK_IDENTIFICADOR '(' args ')';
+args: expr | expr ',' args;
+call: TK_IDENTIFICADOR '(' args ')' | TK_IDENTIFICADOR '(' ')';
 
 /** Shift command **/
 shift_op: TK_OC_SL | TK_OC_SR;
@@ -115,8 +122,8 @@ return: TK_PR_RETURN expr;
 
 /** If-then-else statement **/
 if: TK_PR_IF '(' expr ')' block;
-else: TK_PR_ELSE block | ;
-if_else: if else;
+else: TK_PR_ELSE block;
+if_else: if else | if;
 
 /** Iterative commands **/
 for_list_element: local_var | assignment;
