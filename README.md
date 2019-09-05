@@ -16,3 +16,6 @@ $ make test
 
 ## Part \#1
 This part should implement a lexical analysis using regular expressions defined on `scanner.l` and compiled by `flex`.
+
+## Part \#2
+This part should implement a syntax analysis using grammar definitions written on `parser.y` and compiled by `bison`.
