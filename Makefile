@@ -5,7 +5,8 @@ all: parser.y scanner.l main.c
 	gcc -o etapa2 lex.yy.o parser.tab.o main.c -lfl
 
 test: test.txt etapa2
-	cat test.txt | ./etapa2
+	cat test_without_errors.txt | ./etapa2
+	cat test_with_errors.txt | ./etapa2
 
 clean:
 	rm -f etapa2
