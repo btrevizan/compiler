@@ -62,7 +62,18 @@
 
 %%
 
-prog: expr | block | ;
+prog: function | global_var | function prog | global_var prog;
+
+/** Global variable declaration **/
+global_var: TK_PR_STATIC type id ';' | type id ';' ;
+
+/** Function **/
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' block
+| type TK_IDENTIFICADOR '(' ')' block
+| TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block
+| type TK_IDENTIFICADOR '(' list_of_params ')' block;
+params: TK_PR_CONST type TK_IDENTIFICADOR | type TK_IDENTIFICADOR;
+list_of_params: params | params ',' list_of_params; 
 
 /****** SIMPLE COMMANDS ******/
 simple_command: local_var
@@ -77,7 +88,7 @@ simple_command: local_var
 |		TK_PR_BREAK
 |		TK_PR_CONTINUE;
 
-command_list: simple_command | simple_command ';' command_list;
+command_list: simple_command ';' | simple_command ';' command_list;
 block: '{' command_list '}' | '{' '}';
 
 /** Local variable declaration **/
