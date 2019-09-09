@@ -62,16 +62,17 @@
 
 %%
 
-prog: function | global_var | function prog | global_var prog;
+prog: function prog | global_var prog | ;
 
-/** Global variable declaration **/
+/** GLOBAL VAR DECLARATION **/
 global_var: TK_PR_STATIC type id ';' | type id ';' ;
 
-/** Function **/
+/** FUNCTION **/
 function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' block
-| type TK_IDENTIFICADOR '(' ')' block
-| TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block
-| type TK_IDENTIFICADOR '(' list_of_params ')' block;
+| 	  type TK_IDENTIFICADOR '(' ')' block
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block
+| 	  type TK_IDENTIFICADOR '(' list_of_params ')' block;
+
 params: TK_PR_CONST type TK_IDENTIFICADOR | type TK_IDENTIFICADOR;
 list_of_params: params | params ',' list_of_params; 
 
@@ -99,14 +100,15 @@ type: TK_PR_INT
 |     TK_PR_STRING;
 
 initialization: TK_OC_LE directTerm;
+
 local_var: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization
-| TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR
-| TK_PR_STATIC type TK_IDENTIFICADOR initialization
-| TK_PR_STATIC type TK_IDENTIFICADOR
-| TK_PR_CONST type TK_IDENTIFICADOR initialization
-| TK_PR_CONST type TK_IDENTIFICADOR
-| type TK_IDENTIFICADOR initialization
-| type TK_IDENTIFICADOR;
+| 	   TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR
+| 	   TK_PR_STATIC type TK_IDENTIFICADOR initialization
+| 	   TK_PR_STATIC type TK_IDENTIFICADOR
+|	   TK_PR_CONST type TK_IDENTIFICADOR initialization
+|	   TK_PR_CONST type TK_IDENTIFICADOR
+|	   type TK_IDENTIFICADOR initialization
+|	   type TK_IDENTIFICADOR;
 
 /** Assignment **/
 indexer: '[' expr ']' ;
@@ -115,13 +117,12 @@ id: TK_IDENTIFICADOR indexer | TK_IDENTIFICADOR;
 assignment: id '=' expr;
 
 /** Input and output **/
-expr_list: expr | expr ',' expr_list;
+args: expr | expr ',' args;
 
 input: TK_PR_INPUT expr;
-output: TK_PR_OUTPUT expr_list;
+output: TK_PR_OUTPUT args;
 
 /** Function call **/
-args: expr | expr ',' args;
 call: TK_IDENTIFICADOR '(' args ')' | TK_IDENTIFICADOR '(' ')';
 
 /** Shift command **/
@@ -180,8 +181,6 @@ expr: term
 |     expr TK_OC_OR expr
 |     expr '?' expr ':' expr
 |     '(' expr ')';
-
-
 
 %%
 
