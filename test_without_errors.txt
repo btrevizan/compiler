@@ -11,36 +11,46 @@ int fibonacci(int n) {
         }
     }
 
-    return fibonacci(n-1) + fibonacci(n-2);
+    return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
 
 int main() {
     int a;
-    const bool d = false;
-    const string s = "Ola";
-    static float b = 10 + 8.5;
-    float e = b;
-    static const char c = '\n';
+    const bool d <= false;
+    const string s <= "Ola";
+    static float b <= 10;
+    float e <= b;
+    static const char c <= 'a';
 
     a = b + e;
     a = 10 - 8;
     a = a / 2;
     a = a + 4 / (3 * 9);
 
-    bool f = true && false || true;
+    bool f <= true;
+    f = true && f || true && d;
 
     a = f ? 178 * 90 : 5 ^ 234;
 
     a = fibonacci(5);
-    int g = 0;
+    int g <= 0;
 
-    while(a >= 0) {
+    while(a >= 0) do {
         a = a - 2;
         g = g + 1;
     }
 
-    // Test switch
+    for(int h <= 10: h >= 0: h = h + 1) {
+        output h;
+    }
+
+    for(int i <= 0, j = 0: i < 10 && j < 10: i = i + 1, j = j + 1) {
+            output "Ola varias vezes";
+    }
+
+    a << fibonacci(2);
+    b >> 10;
 
     return 0;
 }

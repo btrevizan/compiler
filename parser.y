@@ -83,13 +83,14 @@ simple_command: local_var
 |		output
 |		shift
 |		return
-|		if_else
-|		for
-|		while
 |		TK_PR_BREAK
 |		TK_PR_CONTINUE;
 
-command_list: simple_command ';' | simple_command ';' command_list;
+flow_command: if_else
+|	      for
+|	      while;
+
+command_list: flow_command | simple_command ';' | flow_command command_list | simple_command ';' command_list;
 block: '{' command_list '}' | '{' '}';
 
 /** Local variable declaration **/
