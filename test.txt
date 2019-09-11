@@ -46,7 +46,7 @@ int main() {
     }
 
     for(int i <= 0, j = 0: i < 10 && j < 10: i = i + 1, j = j + 1) {
-            output "Ola varias vezes";
+            output "Ola varias vezes", "outro argumento", a, b;
     }
 
     a << fibonacci(2);
