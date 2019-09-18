@@ -1,0 +1,9 @@
+//Para os identificadores cujo tipo é aquele declarado pelo usuário
+//pode ter seus campos acessados diretamente através do operador $,
+//assim:
+class ASL_t [ public int a ];
+int f()
+{
+  AST_t xis;
+  xis$a = 2;
+}

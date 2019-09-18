@@ -1,0 +1,2 @@
+//Novos tipos podem ser declarados apenas no escopo global através da palavra reservada class, seguida de um nome e enfim uma lista de campos não vazia fornecida entre colchetes
+class ASL_t [ public int a ];

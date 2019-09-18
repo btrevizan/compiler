@@ -1,0 +1,5 @@
+//ERROR: esqueceu de fechar os parênteses
+int f()
+{
+  while (a != 4 do { v[a+1] = f(2) };
+}

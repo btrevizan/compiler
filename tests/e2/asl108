@@ -1,0 +1,2 @@
+//ERROR: falta de tipo no campo da classe
+class Teste [ marcador ];

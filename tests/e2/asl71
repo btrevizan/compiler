@@ -1,0 +1,10 @@
+//Em todas as construções de controle de fluxo, o termo bloco indica
+//um bloco de comandos (veja Seção \ref{sec.bloco}). Este não tem
+//ponto-e-vírgula.
+//ERROR: o bloco do comando de controle de fluxo tem ponto-e-vírgula
+int f()
+{
+  int x;
+  x = 2;
+  do { } while (x)
+}

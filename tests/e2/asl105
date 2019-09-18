@@ -1,0 +1,5 @@
+//ERROR: função não pode ser do tipo vetor
+int func1[5]()
+{
+    
+}

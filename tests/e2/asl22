@@ -1,0 +1,3 @@
+//Declarações de novos tipos são terminadas por ponto-e-vírgula.
+//ERROR: falta do ponto-e-vírgula
+class AST_t [ public int a ]

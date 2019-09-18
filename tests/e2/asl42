@@ -1,0 +1,7 @@
+// As declarações locais [...] podem permitir o uso da palavra
+// reservada const antes do tipo (após a palavra reservada static caso
+// esta aparecer).
+int f ()
+{
+  static const int a;
+}

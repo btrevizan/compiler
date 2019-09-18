@@ -1,0 +1,3 @@
+//Existem três encapsulamentos possíveis, identificados pelas palavras reservadas: protected, private, e public. 
+//ERROR: especificador de encapsulamento errado
+class AST_t [ inconsequente int a ];

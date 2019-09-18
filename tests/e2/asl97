@@ -1,0 +1,10 @@
+//Ver asl57
+//Shift com tipos de usuário e expressão
+class ASL_t [ public int a ];
+int f()
+{
+  int b;
+  b = 3;
+  AST_t xis;
+  xis$a >> b+2;
+}

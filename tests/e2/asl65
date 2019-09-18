@@ -1,0 +1,9 @@
+//As construções iterativas são as seguintes no formato:
+int f()
+{
+  int x;
+  int i;
+  int j;
+  for(i = 0, j = 0 : i : i = 2, j = 3) {
+  };
+}

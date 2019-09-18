@@ -1,0 +1,6 @@
+//Novos tipos podem ser declarados apenas no escopo global
+//ERROR: novo tipo declarado no escopo local
+int f ()
+{
+  class ASL_t [ public int a ];
+}

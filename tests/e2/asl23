@@ -1,0 +1,6 @@
+//O tipo de um campo que faz parte de uma declaração de novo tipo pode
+//ser de qualquer tipo, salvo um tipo de usuário, ou seja, um tipo
+//declarado com class.
+//ERROR: tipo de campo é de usuário
+class FIRST_t [ public int a ];
+class ASL_t [ public FIRST_t b ];

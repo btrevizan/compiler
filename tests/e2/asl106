@@ -1,0 +1,2 @@
+//ERROR: um campo não contém declaração de classe
+class Teste [ class Marcador teste ];

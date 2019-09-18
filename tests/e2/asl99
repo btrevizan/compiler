@@ -1,0 +1,2 @@
+//ERROR: tamanho da dimensão deve estar do lado direito do nome
+int [5]aux_murilo_n;

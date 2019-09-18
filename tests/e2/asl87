@@ -1,0 +1,8 @@
+//ERROR: fechamento prematuro do escopo
+int f()
+{
+  int a;
+}
+a = 10;
+}
+char c;

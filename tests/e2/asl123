@@ -1,0 +1,7 @@
+//ERROR: expressão não pode ser vazia
+int main()
+{
+  while ( ) do {
+    int x;
+  };
+}

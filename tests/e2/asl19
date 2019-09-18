@@ -1,0 +1,2 @@
+//Existem três encapsulamentos possíveis, identificados pelas palavras reservadas: protected, private, e public. 
+class AST_t [ private int a ];

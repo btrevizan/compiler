@@ -1,0 +1,7 @@
+//Somente tipos primitivos podem ser inicializados.
+//ERROR: inicialização de tipo de usuário
+class ASL_t [ public int a ];
+int f()
+{
+  ASL_t b <= 10;
+}

@@ -1,0 +1,11 @@
+//ERROR
+//A única construção de seleção é o switch-case, seguindo o seguinte
+//padrão:
+int f()
+{
+  int x;
+  x = 3;
+  switch (x) {
+  };
+}
+

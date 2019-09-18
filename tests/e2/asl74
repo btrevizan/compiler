@@ -1,0 +1,7 @@
+//ERROR
+//Os comandos com pipes podem ter encadeamento de múltiplas funções:
+int f()
+{
+  int a;
+  f() %>% g(., a) %>% z(.);
+}

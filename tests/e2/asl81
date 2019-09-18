@@ -1,0 +1,8 @@
+//função no meio de declarações de variáveis globais
+v1 int;
+int f1 (float k, int l) 
+{
+  int a;
+}
+int v2[ 100 ];
+char v3;

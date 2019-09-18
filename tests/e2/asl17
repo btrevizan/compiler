@@ -1,0 +1,3 @@
+//onde os campos são separados por dois pontos (através do caractere especial ‘:’).
+//ERROR: separador de campos errado
+class ASL_t [ public int a ; public int b ];

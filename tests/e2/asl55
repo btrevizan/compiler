@@ -1,0 +1,8 @@
+//ERROR
+//Um argumento pode ser uma expressão, ou um simples marcador de lugar
+//através do token . (ponto).
+int f(int a, int b)
+{
+  int x;
+  f(x, .);
+}

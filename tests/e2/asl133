@@ -1,0 +1,6 @@
+//ERROR: parâmetros do for não podem ser vazios
+int main() {
+  for (::) {
+    int x;
+  };
+}

@@ -1,0 +1,7 @@
+//ERROR: if sem else
+int main()
+{
+  if (true) {
+    int x;
+  };
+}

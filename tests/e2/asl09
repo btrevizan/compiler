@@ -1,0 +1,4 @@
+//; e também podem ser dos tipos declarados pelo usuário.
+//o nome do tipo é aquele utilizado depois da palavra reservada class quando este foi declarado.
+class ASL_t [ public int x ];
+v ASL_t;

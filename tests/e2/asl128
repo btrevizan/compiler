@@ -1,0 +1,7 @@
+//ERROR: comando if necessita que a expressão seja entre parênteses
+int main()
+{
+  if true then {
+    int x;
+  };
+}

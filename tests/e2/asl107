@@ -1,0 +1,2 @@
+//ERROR: falta de ponto-e-vírgula no final da declaração da classe
+class Teste [ char marcador ]

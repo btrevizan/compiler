@@ -1,0 +1,2 @@
+//ERROR: nome esquecido
+int;

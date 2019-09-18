@@ -1,0 +1,7 @@
+//Nas duas listas dentro do for, não podem aparecer comandos simples
+//que contenham vírgulas, como o output e o input, nem comando case.
+//ERROR: case não permitido ali
+int f()
+{
+  for (case 123: : x : x = x+1) { };
+}

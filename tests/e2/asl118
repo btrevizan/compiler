@@ -1,0 +1,5 @@
+//ERROR: um tipo não pode ter subtipos dentro
+int func1(char param1) {
+    MinhaClasse a;
+    a$pessoa$nome = "Francis";
+}

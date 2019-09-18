@@ -1,0 +1,6 @@
+//ERROR: foreach não existe
+int main() {
+  foreach( ) {
+
+  };
+}

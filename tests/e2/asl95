@@ -1,0 +1,11 @@
+//Ver asl49
+//Para os identificadores cujo tipo é aquele declarado pelo usuário
+//pode ter seus campos acessados diretamente através do operador $,
+//assim:
+//ERROR: operador . usado no lugar do $
+class ASL_t [ public int a ];
+int f()
+{
+  AST_t xis;
+  xis.a = 2;
+}

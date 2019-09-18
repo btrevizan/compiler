@@ -1,0 +1,9 @@
+//O tipo de um campo que faz parte de uma declaração de novo tipo pode 
+//ser de qualquer tipo, salvo um tipo de usuário, ou seja, um tipo
+//declarado com class.
+//ERROR: nada é dito a respeito do tipo do campo poder ser vetor
+//portanto não é aceito
+int func1(char param1) {
+    MinhaClasse a;
+    a$nome[0] = 3.5;
+}

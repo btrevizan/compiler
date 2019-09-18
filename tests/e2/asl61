@@ -1,0 +1,8 @@
+//ERROR
+//O comando case é o único que não termina por ponto-e-vírgula, por
+//ser considerado um marcador de lugar. Ele é seguido de um literal
+//inteiro, seguido enfim por dois-pontos.
+int f()
+{
+  case 245:
+}

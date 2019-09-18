@@ -1,0 +1,14 @@
+//ERROR
+//A linguagem possui dois tokens (%>% e %|%) que servem como
+//pipes. Eles podem ser utilizados em chamadas de função encadeadas
+//com o estilo de programação com pipes, sendo que a sequência deve
+//ser obrigatoriamente terminada por uma chamada de função seguida de
+//um ponto-e-vírgula (que termina o comando com pipe). Sendo assim, o
+//uso de um pipe implica no uso obrigatório de duas chamadas de
+//função, uma antes e outra depois dele. O exemplo mínimo abaixo
+//ilustra este caso.
+int f()
+{
+  int a;
+  f() %>% g(., a);
+}

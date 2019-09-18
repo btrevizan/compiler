@@ -1,0 +1,5 @@
+//ERROR: cada membro da lista do output não pode ser vazia
+int func1()
+{
+  output 1 + 2, ;
+}

@@ -1,0 +1,7 @@
+//ERROR
+//As construções iterativas são as seguintes no formato:
+int f()
+{
+  int x;
+  do { } while (i);
+}

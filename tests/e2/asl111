@@ -1,0 +1,5 @@
+//ERROR: um campo de classe não pode ser static
+class
+minhaClasse [
+    public static int idade
+];

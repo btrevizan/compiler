@@ -1,0 +1,6 @@
+//Os nomes de novos tipos podem ser utilizados em qualquer lugar onde
+//um tipo normal aparece, salvo quando é explícita a proibição.
+class ASL_t [ public int a ];
+ASL_t f (ASL_t xis)
+{
+}

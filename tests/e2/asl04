@@ -1,0 +1,8 @@
+//DECL
+//A linguagem inclui também a declaração de vetores, feita pela
+//definição de seu tamanho inteiro positivo entre colchetes, colocada
+//à direita do nome
+//vetores globais
+static int v1[2];
+
+
