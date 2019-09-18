@@ -54,10 +54,27 @@
 %token TK_IDENTIFICADOR
 %token TOKEN_ERRO
 
+/*
+Precedence and associativity defined according to
+https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operadores
+*/
+%right '='
+%right '?' ':'
+%left TK_OC_OR
+%left TK_OC_AND
+%left '|'
+%left TK_OC_EQ TK_OC_NE
+%left '>' '<' TK_OC_LE TK_OC_GE
+%left TK_OC_SL TK_OC_SR
+%left '+' '-'
+%left '*' '/' '%'
+%left '^'
+
+%right '&'
+%right '#'
+%right '!'
+
 %start prog
-
-%left '+' '-' '*' '/' '%' '|' '&' '^' '>' '<' '?' '!' '#' ':' TK_OC_LE TK_OC_GE TK_OC_EQ TK_OC_NE TK_OC_AND TK_OC_OR
-
 %%
 
 prog: function prog | global_var prog | ;
