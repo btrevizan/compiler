@@ -7,9 +7,9 @@ int fibonacci(int n) {
         } else {
             if (n == 0) {
                 return 0;
-            }
-        }
-    }
+            };
+        };
+    };
 
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
@@ -39,15 +39,15 @@ int main() {
     while(a >= 0) do {
         a = a - 2;
         g = g + 1;
-    }
+    };
 
     for(int h <= 10: h >= 0: h = h + 1) {
         output h;
-    }
+    };
 
     for(int i <= 0, j = 0: i < 10 && j < 10: i = i + 1, j = j + 1) {
             output "Ola varias vezes", "outro argumento", a, b;
-    }
+    };
 
     a << fibonacci(2);
     b >> 10;
