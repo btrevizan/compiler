@@ -103,7 +103,8 @@ simple_command: local_var
 |		if_else
 |	        for
 |	        while
-|		block;
+|		block
+|		call;
 
 command_list: simple_command ';' | simple_command ';' command_list;
 block: '{' command_list '}' | '{' '}';
