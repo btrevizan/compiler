@@ -102,7 +102,8 @@ simple_command: local_var
 |		TK_PR_CONTINUE
 |		if_else
 |	        for
-|	        while;
+|	        while
+|		block;
 
 command_list: simple_command ';' | simple_command ';' command_list;
 block: '{' command_list '}' | '{' '}';
