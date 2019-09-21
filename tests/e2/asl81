@@ -1,5 +1,5 @@
 //função no meio de declarações de variáveis globais
-v1 int;
+int v1;
 int f1 (float k, int l) 
 {
   int a;
