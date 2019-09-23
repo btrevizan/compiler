@@ -1,12 +1,18 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include "lexical.h"
+	#include "tree.h"
 
 	extern int yylineno;
 
 	int yylex(void);
 	void yyerror (char const *s);
 %}
+
+%union {
+    struct Lexeme* lexical_value;
+}
 
 %token TK_PR_INT
 %token TK_PR_FLOAT

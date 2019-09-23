@@ -8,7 +8,7 @@ test: test.txt etapa3
 	cat test.txt | ./etapa3
 
 clean:
-	rm -f etapa3
-	rm -f lex.yy.*
 	rm -f parser.tab.*
 	rm -f report.out
+	rm -f lex.yy.*
+	rm -f etapa3
