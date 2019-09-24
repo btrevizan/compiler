@@ -122,7 +122,7 @@ int get_line_number (void) {
 }
 
 void init_lexeme() {
-    yylval.lexical_value = (struct Lexeme*) malloc(sizeof(struct Lexeme));
+    yylval.lexical_value = (Lexeme*) malloc(sizeof(Lexeme));
     yylval.lexical_value->line_number = get_line_number();
 }
 
@@ -196,4 +196,8 @@ void set_as_string() {
 
     yytext[strlen(yytext) - 1] = '\0';
     yylval.lexical_value->token_value.string = strdup(yytext + 1);
+}
+
+void destroy_lexeme(Lexeme* lexeme) {
+
 }

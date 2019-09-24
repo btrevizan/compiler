@@ -11,7 +11,8 @@
 %}
 
 %union {
-    struct Lexeme* lexical_value;
+    struct lexeme* lexical_value;
+    struct node* node;
 }
 
 %token TK_PR_INT

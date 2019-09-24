@@ -23,12 +23,12 @@ union Value {
     char* string;
 };
 
-struct Lexeme {
+typedef struct lexeme {
     int line_number;
     int token_type;
     union Value token_value;
     int literal_type;
-};
+} Lexeme;
 
 void init_lexeme();
 void set_as_pr();
