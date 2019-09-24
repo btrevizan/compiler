@@ -197,7 +197,3 @@ void set_as_string() {
     yytext[strlen(yytext) - 1] = '\0';
     yylval.lexical_value->token_value.string = strdup(yytext + 1);
 }
-
-void destroy_lexeme(Lexeme* lexeme) {
-
-}
