@@ -24,6 +24,8 @@ void add_node(Node* parent, Node* child) {
 
     child->index = index;
     child->parent = parent;
+
+    arvore = child;
 }
 
 void add_lexeme(Node* parent, Lexeme* value) {  // alias for add_node(parent, create_node(lexeme));
