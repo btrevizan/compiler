@@ -1,6 +1,7 @@
 #include "tree.h"
 #include "lexical.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 Node* create_node(Lexeme* value) {
     Node* node = (Node*) malloc(sizeof(Node));
@@ -88,4 +89,15 @@ void libera(void *arvore) {
     destroy_node((Node*) arvore);
 }
 
-//void exporta(void *arvore);
+void export_node(Node* node, FILE* file) {
+    for(int i = 0; i < node->n_children; i++) {
+        fprintf(file, "%p, %p\n", node, node->children[i]);
+        export_node(node->children[i], file);
+    }
+}
+
+void exporta(void *arvore) {
+    FILE* file = fopen("e3.csv", "w");
+    export_node((Node*) arvore, file);
+    fclose(file);
+}
