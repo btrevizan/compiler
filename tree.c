@@ -15,6 +15,8 @@ Node* create_node(Lexeme* value) {
 }
 
 void add_node(Node* parent, Node* child) {
+    if(child == NULL) return;
+
     parent->n_children = parent->n_children + 1;
 
     if(parent->n_children == 1) parent->children = (Node**) malloc(sizeof(Node*));
@@ -25,8 +27,6 @@ void add_node(Node* parent, Node* child) {
 
     child->index = index;
     child->parent = parent;
-
-    arvore = parent;
 }
 
 void add_lexeme(Node* parent, Lexeme* value) {  // alias for add_node(parent, create_node(lexeme));
@@ -36,17 +36,20 @@ void add_lexeme(Node* parent, Lexeme* value) {  // alias for add_node(parent, cr
 
 void unlink_child(Node* parent, const int index) {
     for(int i = index; i < parent->n_children - 1; i++)
-        parent->children[index] = parent->children[index + 1];
+        parent->children[i] = parent->children[i + 1];
 
     parent->n_children = parent->n_children - 1;
     parent->children = (Node**) realloc(parent->children, sizeof(Node*) * parent->n_children);
 }
 
 void unlink_node(Node* node) {
+    if(node->parent == NULL) return;
     unlink_child(node->parent, node->index);
 }
 
 void destroy_value(Lexeme* lexeme) {
+    if(lexeme == NULL) return;
+
     switch (lexeme->token_type) {
         case TK_PR:
         case TK_OC:
@@ -86,6 +89,7 @@ void update_node(Node* node, Node* new_node) {
 }
 
 void libera(void *arvore) {
+    if(arvore == NULL) return;
     destroy_node((Node*) arvore);
 }
 

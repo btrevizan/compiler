@@ -71,7 +71,9 @@
 %type <node> command_list
 %type <node> block
 %type <node> type
-%type <node> local_var
+%type <node> initialization
+%type <node> local_var_with_init
+%type <node> local_var_without_init
 %type <node> indexer
 %type <node> id
 %type <node> assignment
@@ -117,32 +119,32 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 %start prog
 %%
 
-prog: function prog 		{ $$ = $2; }    // TODO: é preciso definir o main como funçao principal? Se sim, como?
-|     global_var prog 		{ $$ = $2; }
-|     simple_command prog	{ $$ = $1; add_node($$, $2); }
-| 				{};
+prog: function prog 		{ $$ = $1; arvore = $$; add_node($$, $2); }    // TODO: é preciso definir o main como funçao principal? Se sim, como?
+|     global_var prog 		{ $$ = NULL; }
+| 				{ $$ = NULL; };
 
 /** GLOBAL VAR DECLARATION **/
-global_var: TK_PR_STATIC type id ';'	{}
-| 	    type id ';'			{};
+global_var: TK_PR_STATIC type id ';'	{ $$ = NULL; }
+| 	    type id ';'			{ $$ = NULL; };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' block			{}
-| 	  type TK_IDENTIFICADOR '(' ')' block					{}
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block	{}
-| 	  type TK_IDENTIFICADOR '(' list_of_params ')' block			{};
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' block			{ $$ = create_node($3); add_node($$, create_node(NULL)); add_node($$, $6); }
+| 	  type TK_IDENTIFICADOR '(' ')' block					{ $$ = create_node($2); add_node($$, create_node(NULL)); add_node($$, $5); }
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block	{ $$ = create_node($3); add_node($$, $5); add_node($$, $7); }
+| 	  type TK_IDENTIFICADOR '(' list_of_params ')' block			{ $$ = create_node($2); add_node($$, $4); add_node($$, $6); };
 
-params: TK_PR_CONST type TK_IDENTIFICADOR 	{}
-| 	type TK_IDENTIFICADOR			{};
+params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_node($3); }
+| 	type TK_IDENTIFICADOR			{ $$ = create_node($2); };
 
-list_of_params: params				{}
-| 		params ',' list_of_params	{};
+list_of_params: params				{ $$ = $1; }
+| 		params ',' list_of_params	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
 
 /****** SIMPLE COMMANDS ******/
-simple_command: local_var		{ $$ = $1; }
+simple_command: local_var_with_init	{ $$ = $1; }
+|		local_var_without_init  { $$ = NULL; }
 |		assignment		{ $$ = $1; }
-|		input			{}
-|		output			{}
+|		input			{ $$ = NULL; }
+|		output			{ $$ = NULL; }
 |		shift			{ $$ = $1; }
 |		return			{ $$ = $1; }
 |		TK_PR_BREAK		{ $$ = create_node($1); }
@@ -153,27 +155,30 @@ simple_command: local_var		{ $$ = $1; }
 |		block			{ $$ = $1; }
 |		call			{ $$ = $1; };
 
-command_list: simple_command ';'		{ $$ = $1; }
-| 	      simple_command ';' command_list	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
+command_list: simple_command ';'			{ $$ = $1; }
+| 	      simple_command ';' command_list		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
 
 block: '{' command_list '}' 	{ $$ = $2; }
-|      '{' '}'			{};
+|      '{' '}'			{ $$ = NULL; };
 
 /** Local variable declaration **/
-type: TK_PR_INT		{}
-|     TK_PR_FLOAT	{}
-|     TK_PR_BOOL	{}
-|     TK_PR_CHAR	{}
-|     TK_PR_STRING	{};
+type: TK_PR_INT		{ $$ = NULL; }
+|     TK_PR_FLOAT	{ $$ = NULL; }
+|     TK_PR_BOOL	{ $$ = NULL; }
+|     TK_PR_CHAR	{ $$ = NULL; }
+|     TK_PR_STRING	{ $$ = NULL; };
 
-local_var: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR TK_OC_LE directTerm	{ $$ = create_node($5); add_lexeme($$, $4); add_node($$, $6); }
-| 	   TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{}
-| 	   TK_PR_STATIC type TK_IDENTIFICADOR TK_OC_LE directTerm		{ $$ = create_node($4); add_lexeme($$, $3); add_node($$, $5); }
-| 	   TK_PR_STATIC type TK_IDENTIFICADOR					{}
-|	   TK_PR_CONST type TK_IDENTIFICADOR TK_OC_LE directTerm		{ $$ = create_node($4); add_lexeme($$, $3); add_node($$, $5); }
-|	   TK_PR_CONST type TK_IDENTIFICADOR					{}
-|	   type TK_IDENTIFICADOR TK_OC_LE directTerm				{ $$ = create_node($3); add_lexeme($$, $2); add_node($$, $4); }
-|	   type TK_IDENTIFICADOR						{};
+initialization: TK_OC_LE directTerm							{ $$ = create_node($1); add_node($$, $2); };
+
+local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; add_lexeme($$, $4); }
+|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); }
+|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); }
+|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; add_lexeme($$, $2); };
+
+local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ $$ = NULL; }
+| 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ $$ = NULL; }
+|	   	        TK_PR_CONST type TK_IDENTIFICADOR				{ $$ = NULL; }
+|	   	        type TK_IDENTIFICADOR						{ $$ = NULL; };
 
 /** Assignment **/
 indexer: '[' expr ']' 			{ $$ = $2; };
@@ -186,8 +191,8 @@ assignment: id '=' expr			{$$ = create_node($2); add_node($$, $1); add_node($$, 
 args: expr 				{ $$ = $1; }
 |     expr ',' args			{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
 
-input: TK_PR_INPUT expr			{};
-output: TK_PR_OUTPUT args		{};
+input: TK_PR_INPUT expr			{ $$ = NULL; };
+output: TK_PR_OUTPUT args		{ $$ = NULL; };
 
 /** Function call **/
 call: TK_IDENTIFICADOR '(' args ')'	{ $$ = create_node($1); add_node($$, $3); }
@@ -209,7 +214,8 @@ if_else: if else 			{ $$ = $1; add_node($$, $2); }
 | 	 if				{ $$ = $1; };
 
 /** Iterative commands **/
-for_list_element: local_var					{ $$ = $1; }
+for_list_element: local_var_with_init				{ $$ = $1; }
+|		  local_var_without_init			{ $$ = NULL; }
 | 		  assignment					{ $$ = $1; };
 
 for_list: for_list_element 					{ $$= $1; }
