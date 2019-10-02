@@ -119,7 +119,7 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 %start prog
 %%
 
-prog: function prog 		{ $$ = $1; arvore = $$; add_node($$, $2); }    // TODO: é preciso definir o main como funçao principal? Se sim, como?
+prog: function prog 		{ $$ = $1; arvore = $$; add_node($$, $2); }
 |     global_var prog 		{ $$ = NULL; }
 | 				{ $$ = NULL; };
 

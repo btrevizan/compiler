@@ -47,44 +47,29 @@ void unlink_node(Node* node) {
     unlink_child(node->parent, node->index);
 }
 
-void destroy_value(Lexeme* lexeme) {
-    if(lexeme == NULL) return;
-
-    if(lexeme->literal_type == LT_STRING || lexeme->literal_type == LT_NAL) {
-        free(lexeme->token_value.string);
-        lexeme->token_value.string = NULL;
-    }
-
-    free(lexeme);
-    lexeme = NULL;
-}
-
-void destroy_node(Node* node) {
-    unlink_node(node);
-
-    for(int i = 0; i < node->n_children; i++)
-        destroy_node(node->children[i]);
-
-    free(node->children);
-    node->children = NULL;
-
-    destroy_value(node->value);
-    node->value = NULL;
-
-    free(node);
-    node = NULL;
-}
-
 void update_node(Node* node, Node* new_node) {
     if(new_node->parent != NULL) return;
 
     add_node(node->parent, new_node);
-    destroy_node(node);
+    libera(node);
 }
 
 void libera(void *arvore) {
     if(arvore == NULL) return;
-    destroy_node((Node*) arvore);
+
+    Node* node = (Node*) arvore;
+
+    for(int i = node->n_children - 1; i >= 0; i--)
+        libera(node->children[i]);
+
+    if(node->value->token_type != TK_SC)
+        if(node->value->literal_type == LT_STRING || node->value->literal_type == LT_NAL) {
+            free(node->value->token_value.string);
+        }
+
+    free(node->children);
+    free(node->value);
+    free(node);
 }
 
 void export_node(Node* node, FILE* file) {
