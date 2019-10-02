@@ -8,7 +8,7 @@ test_analysis: etapa3 tests/e2/asl150
 	./etapa3 < tests/e2/asl150
 
 test_leakage: etapa3 tests/e2/asl150
-    valgrind --leak-check=full --show-leak-kinds=all -v ./etapa3 < tests/e2/asl150
+	valgrind --leak-check=full --show-leak-kinds=all -v ./etapa3 < tests/e2/asl150
 
 clean:
 	rm -f *.o
