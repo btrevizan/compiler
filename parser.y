@@ -128,16 +128,16 @@ global_var: TK_PR_STATIC type id ';'	{ $$ = NULL; }
 | 	    type id ';'			{ $$ = NULL; };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' block			{ $$ = create_node($3); add_node($$, create_node(NULL)); add_node($$, $6); }
-| 	  type TK_IDENTIFICADOR '(' ')' block					{ $$ = create_node($2); add_node($$, create_node(NULL)); add_node($$, $5); }
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block	{ $$ = create_node($3); add_node($$, $5); add_node($$, $7); }
-| 	  type TK_IDENTIFICADOR '(' list_of_params ')' block			{ $$ = create_node($2); add_node($$, $4); add_node($$, $6); };
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' block			{ $$ = create_node($3); add_node($$, $6); }
+| 	  type TK_IDENTIFICADOR '(' ')' block					{ $$ = create_node($2); add_node($$, $5); }
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block	{ $$ = create_node($3); add_node($$, $7); }
+| 	  type TK_IDENTIFICADOR '(' list_of_params ')' block			{ $$ = create_node($2); add_node($$, $6); };
 
 params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_node($3); }
 | 	type TK_IDENTIFICADOR			{ $$ = create_node($2); };
 
 list_of_params: params				{ $$ = $1; }
-| 		params ',' list_of_params	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
+| 		params ',' list_of_params	{ $$ = $1; add_node($$, $3); };
 
 /****** SIMPLE COMMANDS ******/
 simple_command: local_var_with_init	{ $$ = $1; }
@@ -156,7 +156,7 @@ simple_command: local_var_with_init	{ $$ = $1; }
 |		call			{ $$ = $1; };
 
 command_list: simple_command ';'			{ $$ = $1; }
-| 	      simple_command ';' command_list		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
+| 	      simple_command ';' command_list		{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
 block: '{' command_list '}' 	{ $$ = $2; }
 |      '{' '}'			{ $$ = NULL; };
@@ -185,11 +185,11 @@ indexer: '[' expr ']' 			{ $$ = $2; };
 id: TK_IDENTIFICADOR indexer		{ $$ = create_node($1); add_node($$, $2); }
 |   TK_IDENTIFICADOR			{ $$ = create_node($1); };
 
-assignment: id '=' expr			{$$ = create_node($2); add_node($$, $1); add_node($$, $3); };
+assignment: id '=' expr			{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
 
 /** Input and output **/
 args: expr 				{ $$ = $1; }
-|     expr ',' args			{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
+|     expr ',' args			{ $$ = $1; add_node($$, $3); };
 
 input: TK_PR_INPUT expr			{ $$ = NULL; };
 output: TK_PR_OUTPUT args		{ $$ = NULL; };
@@ -207,8 +207,8 @@ shift: id shift_op expr		{ $$ = $2; add_node($$, $1); add_node($$, $3); };
 /** Flow change commands **/
 return: TK_PR_RETURN expr		{ $$ = create_node($1); add_node($$, $2); };
 
-/** If-then-else statement **/ // TODO: somo nós que definimos a estrutura do if e de outros comandos na AST? Se sim, como será feita a correção do exporta?
-if: TK_PR_IF '(' expr ')' block		{$$ = create_node($1); add_node($$, $3); add_node($$, $5); };
+/** If-then-else statement **/
+if: TK_PR_IF '(' expr ')' block		{ $$ = create_node($1); add_node($$, $3); add_node($$, $5); };
 else: TK_PR_ELSE block			{ $$ = $2; };
 if_else: if else 			{ $$ = $1; add_node($$, $2); }
 | 	 if				{ $$ = $1; };
@@ -219,7 +219,7 @@ for_list_element: local_var_with_init				{ $$ = $1; }
 | 		  assignment					{ $$ = $1; };
 
 for_list: for_list_element 					{ $$= $1; }
-| 	  for_list_element ',' for_list				{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
+| 	  for_list_element ',' for_list				{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
 for: TK_PR_FOR '(' for_list ':' expr ':' for_list ')' block	{ $$ = create_node($1); add_node($$, $3); add_node($$, $5); add_node($$, $7); add_node($$, $9); };
 while: TK_PR_WHILE '(' expr ')' TK_PR_DO block			{ $$ = create_node($1); add_node($$, $3); add_node($$, $6); };
@@ -263,7 +263,7 @@ expr: term			{ $$ = $1; }
 |     expr TK_OC_AND expr	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
 |     expr TK_OC_OR expr	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
 |     expr '?' expr ':' expr	{ $$ = create_node($4); add_node($$, $1); add_node($$, $3); add_node($$, $5); }
-|     '(' expr ')'		{ $$ = $2; };  // TODO: é preciso colocar os parênteses na AST?
+|     '(' expr ')'		{ $$ = $2; };
 
 %%
 
