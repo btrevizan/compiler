@@ -50,15 +50,9 @@ void unlink_node(Node* node) {
 void destroy_value(Lexeme* lexeme) {
     if(lexeme == NULL) return;
 
-    switch (lexeme->token_type) {
-        case TK_PR:
-        case TK_OC:
-        case TK_ID:
-        case TK_LT:
-            if(lexeme->literal_type == LT_STRING || lexeme->literal_type == LT_NAL) {
-                free(lexeme->token_value.string);
-                lexeme->token_value.string = NULL;
-            }
+    if(lexeme->literal_type == LT_STRING || lexeme->literal_type == LT_NAL) {
+        free(lexeme->token_value.string);
+        lexeme->token_value.string = NULL;
     }
 
     free(lexeme);
