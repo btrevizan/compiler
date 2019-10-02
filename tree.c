@@ -105,3 +105,33 @@ void exporta(void *arvore) {
     export_node((Node*) arvore, file);
     fclose(file);
 }
+
+//void print_node_value(Lexeme* value) {
+//    if(value == NULL) {
+//        printf("node is null\n");
+//        return;
+//    }
+//
+//    switch (value->literal_type) {
+//        case LT_NAL:
+//        case LT_STRING:
+//            printf("token value: %s\n", value->token_value);
+//            break;
+//
+//        case LT_BOOL:
+//            printf("token value (bool): %d\n", value->token_value);
+//            break;
+//
+//        case LT_CHAR:
+//            printf("token value: %c\n", value->token_value);
+//            break;
+//
+//        case LT_FLOAT:
+//            printf("token value: %f\n", value->token_value);
+//            break;
+//
+//        case LT_INT:
+//            printf("token value: %d\n", value->token_value);
+//            break;
+//    }
+//}

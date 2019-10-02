@@ -23,4 +23,6 @@ void update_node(Node* node, Node* new_node);
 void libera(void *arvore);
 void exporta(void *arvore);
 
+void print_node_value(Lexeme* value);
+
 #endif //COMPILER_TREE_H
