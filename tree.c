@@ -2,6 +2,7 @@
 #include "lexical.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 Node* create_node(Lexeme* value) {
     Node* node = (Node*) malloc(sizeof(Node));
@@ -57,13 +58,13 @@ void update_node(Node* node, Node* new_node) {
 void libera(void *arvore) {
     if(arvore == NULL) return;
 
-    Node* node = (Node*) arvore;
+    Node* node = arvore;
 
     for(int i = node->n_children - 1; i >= 0; i--)
         libera(node->children[i]);
 
     if(node->value->token_type != TK_SC)
-        if(node->value->literal_type == LT_STRING || node->value->literal_type == LT_NAL) {
+        if(node->value->literal_type == LT_NAL || node->value->literal_type == LT_STRING) {
             free(node->value->token_value.string);
         }
 
