@@ -74,6 +74,8 @@ void libera(void *arvore) {
 }
 
 void export_node(Node* node, FILE* file) {
+    if(node == NULL) return;
+    
     for(int i = 0; i < node->n_children; i++) {
         fprintf(file, "%p, %p\n", node, node->children[i]);
         export_node(node->children[i], file);
