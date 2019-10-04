@@ -64,7 +64,8 @@ true    			{ set_as_true(); return TK_LIT_TRUE; }
 false   			{ set_as_false(); return TK_LIT_FALSE; }
 
     /* Special characters */
-{SPECIAL_CHAR}              { set_as_sc(); return (int) yytext[0]; }
+[\,\;\(\)\[\]\{\}\@\.\$\~\`]  { return (int) yytext[0]; }
+[\:\+\-\|\?\*\/\<\>\=\!\&\%\#\^]  { set_as_sc(); return (int) yytext[0]; }
 
     /* Identifiers */
 [a-zA-Z_][a-zA-Z_0-9]*      { set_as_id(); return TK_IDENTIFICADOR; }
