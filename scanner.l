@@ -22,43 +22,43 @@ STRING              \"([^"]|\\\")*\"
     /* Rules */
 
     /* Reserved words */
-int                 { set_as_pr(); return TK_PR_INT; }
-float               { set_as_pr(); return TK_PR_FLOAT; }
-bool                { set_as_pr(); return TK_PR_BOOL; }
-char                { set_as_pr(); return TK_PR_CHAR; }
-string              { set_as_pr(); return TK_PR_STRING; }
+int                 { return TK_PR_INT; }
+float               { return TK_PR_FLOAT; }
+bool                { return TK_PR_BOOL; }
+char                { return TK_PR_CHAR; }
+string              { return TK_PR_STRING; }
 
 if                  { set_as_pr(); return TK_PR_IF; }
-then                { set_as_pr(); return TK_PR_THEN; }
-else                { set_as_pr(); return TK_PR_ELSE; }
+then                { return TK_PR_THEN; }
+else                { return TK_PR_ELSE; }
 
 while               { set_as_pr(); return TK_PR_WHILE; }
-do                  { set_as_pr(); return TK_PR_DO; }
+do                  { return TK_PR_DO; }
 
-input               { set_as_pr(); return TK_PR_INPUT; }
-output              { set_as_pr(); return TK_PR_OUTPUT; }
+input               { return TK_PR_INPUT; }
+output              { return TK_PR_OUTPUT; }
 
 return              { set_as_pr(); return TK_PR_RETURN; }
 
-const               { set_as_pr(); return TK_PR_CONST; }
-static              { set_as_pr(); return TK_PR_STATIC; }
+const               { return TK_PR_CONST; }
+static              { return TK_PR_STATIC; }
 
-foreach             { set_as_pr(); return TK_PR_FOREACH; }
+foreach             { return TK_PR_FOREACH; }
 for                 { set_as_pr(); return TK_PR_FOR; }
 
-switch              { set_as_pr(); return TK_PR_SWITCH; }
-case                { set_as_pr(); return TK_PR_CASE; }
+switch              { return TK_PR_SWITCH; }
+case                { return TK_PR_CASE; }
 break               { set_as_pr(); return TK_PR_BREAK; }
 
 continue            { set_as_pr(); return TK_PR_CONTINUE; }
 
-class               { set_as_pr(); return TK_PR_CLASS; }
-private             { set_as_pr(); return TK_PR_PRIVATE; }
-public              { set_as_pr(); return TK_PR_PUBLIC; }
-protected           { set_as_pr(); return TK_PR_PROTECTED; }
+class               { return TK_PR_CLASS; }
+private             { return TK_PR_PRIVATE; }
+public              { return TK_PR_PUBLIC; }
+protected           { return TK_PR_PROTECTED; }
 
-end                 { set_as_pr(); return TK_PR_END; }
-default             { set_as_pr(); return TK_PR_DEFAULT; }
+end                 { return TK_PR_END; }
+default             { return TK_PR_DEFAULT; }
 
 true    			{ set_as_true(); return TK_LIT_TRUE; }
 false   			{ set_as_false(); return TK_LIT_FALSE; }
