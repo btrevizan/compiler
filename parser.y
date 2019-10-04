@@ -133,8 +133,8 @@ function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' block			{ $$ = create_node(
 | 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block	{ $$ = create_node($3); add_node($$, $7); }
 | 	  type TK_IDENTIFICADOR '(' list_of_params ')' block			{ $$ = create_node($2); add_node($$, $6); };
 
-params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_node($3); }
-| 	type TK_IDENTIFICADOR			{ $$ = create_node($2); };
+params: TK_PR_CONST type TK_IDENTIFICADOR 	{ libera(create_node($3)); $$ = create_node($3); }
+| 	type TK_IDENTIFICADOR			{ libera(create_node($2)); $$ = create_node($2); };
 
 list_of_params: params				{ $$ = $1; }
 | 		params ',' list_of_params	{ $$ = $1; add_node($$, $3); };
