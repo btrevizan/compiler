@@ -35,26 +35,6 @@ void add_lexeme(Node* parent, Lexeme* value) {  // alias for add_node(parent, cr
     add_node(parent, child);
 }
 
-void unlink_child(Node* parent, const int index) {
-    for(int i = index; i < parent->n_children - 1; i++)
-        parent->children[i] = parent->children[i + 1];
-
-    parent->n_children = parent->n_children - 1;
-    parent->children = (Node**) realloc(parent->children, sizeof(Node*) * parent->n_children);
-}
-
-void unlink_node(Node* node) {
-    if(node->parent == NULL) return;
-    unlink_child(node->parent, node->index);
-}
-
-void update_node(Node* node, Node* new_node) {
-    if(new_node->parent != NULL) return;
-
-    add_node(node->parent, new_node);
-    libera(node);
-}
-
 void libera(void *arvore) {
     if(arvore == NULL) return;
 
@@ -63,13 +43,16 @@ void libera(void *arvore) {
     for(int i = node->n_children - 1; i >= 0; i--)
         libera(node->children[i]);
 
-    if(node->value->token_type != TK_SC)
-        if(node->value->literal_type == LT_NAL || node->value->literal_type == LT_STRING) {
-            free(node->value->token_value.string);
-        }
+    if(node->value != NULL) {
+        if(node->value->token_type != TK_SC)
+            if(node->value->literal_type == LT_NAL || node->value->literal_type == LT_STRING) {
+                free(node->value->token_value.string);
+            }
+
+        free(node->value);
+    }
 
     free(node->children);
-    free(node->value);
     free(node);
 }
 
@@ -83,8 +66,16 @@ void export_node(Node* node, FILE* file) {
 }
 
 void exporta(void *arvore) {
+    Node* node = (Node*) arvore;
+
     FILE* file = fopen("e3.csv", "w");
-    export_node((Node*) arvore, file);
+
+    if(node->n_children == 0) {
+        fprintf(file, "%p,\n", node);
+    } else {
+        export_node(node, file);
+    }
+
     fclose(file);
 }
 

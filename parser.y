@@ -74,7 +74,6 @@
 %type <node> initialization
 %type <node> local_var_with_init
 %type <node> local_var_without_init
-%type <node> indexer
 %type <node> id
 %type <node> assignment
 %type <node> args
@@ -95,6 +94,7 @@
 %type <node> directTerm
 %type <node> term
 %type <node> expr
+%type <node> body
 
 /*
 Precedence and associativity defined according to
@@ -128,10 +128,13 @@ global_var: TK_PR_STATIC type id ';'	{ libera($3); $$ = NULL; }
 | 	    type id ';'			{ libera($2); $$ = NULL; };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' block			{ $$ = create_node($3); add_node($$, $6); }
-| 	  type TK_IDENTIFICADOR '(' ')' block					{ $$ = create_node($2); add_node($$, $5); }
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' block	{ $$ = create_node($3); add_node($$, $7); }
-| 	  type TK_IDENTIFICADOR '(' list_of_params ')' block			{ $$ = create_node($2); add_node($$, $6); };
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{ $$ = create_node($3); add_node($$, $6); }
+| 	  type TK_IDENTIFICADOR '(' ')' body					{ $$ = create_node($2); add_node($$, $5); }
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' body	{ $$ = create_node($3); add_node($$, $7); }
+| 	  type TK_IDENTIFICADOR '(' list_of_params ')' body			{ $$ = create_node($2); add_node($$, $6); };
+
+body: '{' command_list '}' 	{ $$ = $2; }
+|     '{' '}'			{ $$ = NULL; };
 
 params: TK_PR_CONST type TK_IDENTIFICADOR 	{ libera(create_node($3)); $$ = NULL; }
 | 	type TK_IDENTIFICADOR			{ libera(create_node($2)); $$ = NULL; };
@@ -158,8 +161,8 @@ simple_command: local_var_with_init	{ $$ = $1; }
 command_list: simple_command ';'			{ $$ = $1; }
 | 	      simple_command ';' command_list		{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
-block: '{' command_list '}' 	{ $$ = $2; }
-|      '{' '}'			{ $$ = NULL; };
+block: '{' command_list '}' 	{ $$ = create_node(NULL); add_node($$, $2); }
+|      '{' '}'			{ $$ = create_node(NULL); };
 
 /** Local variable declaration **/
 type: TK_PR_INT		{ $$ = NULL; }
@@ -181,8 +184,7 @@ local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ liber
 |	   	        type TK_IDENTIFICADOR						{ libera(create_node($2)); $$ = NULL; };
 
 /** Assignment **/
-indexer: '[' expr ']' 			{ $$ = $2; };
-id: TK_IDENTIFICADOR indexer		{ $$ = create_node($1); add_node($$, $2); }
+id: TK_IDENTIFICADOR '[' expr ']'	{ $$ = create_node(NULL); add_lexeme($$, $1); add_node($$, $3); }
 |   TK_IDENTIFICADOR			{ $$ = create_node($1); };
 
 assignment: id '=' expr			{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
