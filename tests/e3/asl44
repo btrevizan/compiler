@@ -1,0 +1,8 @@
+//Uma variável local pode ser opcionalmente inicializada com um valor
+//válido caso sua declaração seja seguida do operador composto
+//\texttt{<=} e de um identificador ou literal.
+int f()
+{
+  int b <= 10;
+  int a <= b;
+}

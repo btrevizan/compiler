@@ -1,0 +1,4 @@
+int k(int x,int y, int z){}
+int f(){
+        k(10,20,30);
+}

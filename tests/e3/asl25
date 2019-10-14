@@ -1,0 +1,8 @@
+//Cada função é definida por um cabeçalho e um corpo [...]. O
+//cabeçalho consiste no tipo do valor de retorno [...] seguido pelo
+//nome da função e terminado por uma lista. A lista é dada entre
+//parênteses e é composta por zero ou mais parâmetros de entrada,
+//separados por vírgula. O corpo da função é um bloco de comandos.
+int f ()
+{
+}

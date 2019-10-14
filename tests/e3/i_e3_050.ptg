@@ -1,0 +1,6 @@
+/* shifts */
+int main()
+{
+   identificador << 3;
+   identificador >> 4;
+}

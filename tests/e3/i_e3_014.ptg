@@ -1,0 +1,11 @@
+int f() {
+  int iks;
+  int zede;
+  int ka;
+  int erre;
+  int caps;
+  int _tres;
+  iks = zede;
+  ka = erre;
+  caps = _tres;
+}
