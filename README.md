@@ -23,7 +23,11 @@ This part should implement a syntax analysis using grammar definitions written o
 ### Part \#3
 This part implements an Abstract Syntax Tree (AST) using `bison`. 
 
+### Part \#4
+This part uses the AST created to check for semantic errors.
+
 # Warning!!!
 If you're using **Mac OS**, the `flex` library flag is **-ll**.
 
-If you're using **Linux**, the `flex` library flag is **-lfl**.
+If you're using **Linux**, the `flex` library flag is **-lfl**. 
+In some distributions, however, **-ll** works fine.
