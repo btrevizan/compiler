@@ -43,15 +43,7 @@ void libera(void *arvore) {
     for(int i = node->n_children - 1; i >= 0; i--)
         libera(node->children[i]);
 
-    if(node->value != NULL) {
-        if(node->value->token_type != TK_SC)
-            if(node->value->literal_type == LT_NAL || node->value->literal_type == LT_STRING) {
-                free(node->value->token_value.string);
-            }
-
-        free(node->value);
-    }
-
+    delete_lexeme(node->value);
     free(node->children);
     free(node);
 }

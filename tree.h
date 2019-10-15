@@ -17,8 +17,6 @@ Node* create_node(Lexeme* value);
 void add_node(Node* parent, Node* child);
 void add_lexeme(Node* parent, Lexeme* value);  // alias for add_node(parent, create_node(lexeme));
 
-void update_node(Node* node, Node* new_node);
-
 void libera(void *arvore);
 void exporta(void *arvore);
 
