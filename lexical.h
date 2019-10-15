@@ -42,4 +42,6 @@ void set_as_false();
 void set_as_char();
 void set_as_string();
 
+void delete_lexeme(Lexeme* lexeme);
+
 #endif
