@@ -4,17 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-Node* create_node(Lexeme* value) {
-    Node* node = (Node*) malloc(sizeof(Node));
-    node->index = -1;
-    node->parent = NULL;
-    node->value = value;
-    node->n_children = 0;
-    node->children = NULL;
-
-    return node;
-}
-
 void add_node(Node* parent, Node* child) {
     if(child == NULL) return;
 
@@ -33,6 +22,57 @@ void add_node(Node* parent, Node* child) {
 void add_lexeme(Node* parent, Lexeme* value) {  // alias for add_node(parent, create_node(lexeme));
     Node* child = create_node(value);
     add_node(parent, child);
+}
+
+Node* create_node(Lexeme* value) {
+    Node* node = (Node*) malloc(sizeof(Node));
+    node->index = -1;
+    node->parent = NULL;
+    node->value = value;
+    node->n_children = 0;
+    node->children = NULL;
+
+    return node;
+}
+
+Node* unary_node(Lexeme* value, Node* node) {
+    Node* parent = create_node(value);
+    add_node(parent, node);
+    return parent;
+}
+
+Node* binary_node(Lexeme* value, Node* node, Node* node2) {
+    Node* parent = create_node(value);
+    add_node(parent, node);
+    add_node(parent, node2);
+    return parent;
+}
+
+Node* ternary_node(Lexeme* value, Node* node, Node* node2, Node* node3) {
+    Node* parent = create_node(value);
+    add_node(parent, node);
+    add_node(parent, node2);
+    add_node(parent, node3);
+    return parent;
+}
+
+Node* quaternary_node(Lexeme* value, Node* node, Node* node2, Node* node3, Node* node4) {
+    Node* parent = create_node(value);
+    add_node(parent, node);
+    add_node(parent, node2);
+    add_node(parent, node3);
+    add_node(parent, node4);
+    return parent;
+}
+
+Node* quinary_node(Lexeme* value, Node* node, Node* node2, Node* node3, Node* node4, Node* node5) {
+    Node* parent = create_node(value);
+    add_node(parent, node);
+    add_node(parent, node2);
+    add_node(parent, node3);
+    add_node(parent, node4);
+    add_node(parent, node5);
+    return parent;
 }
 
 void libera(void *arvore) {

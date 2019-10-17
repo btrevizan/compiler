@@ -13,9 +13,15 @@ typedef struct node {
     int n_children;
 } Node;
 
-Node* create_node(Lexeme* value);
 void add_node(Node* parent, Node* child);
 void add_lexeme(Node* parent, Lexeme* value);  // alias for add_node(parent, create_node(lexeme));
+
+Node* create_node(Lexeme* value);
+Node* unary_node(Lexeme* value, Node* node);
+Node* binary_node(Lexeme* value, Node* node, Node* node2);
+Node* ternary_node(Lexeme* value, Node* node, Node* node2, Node* node3);
+Node* quaternary_node(Lexeme* value, Node* node, Node* node2, Node* node3, Node* node4);
+Node* quinary_node(Lexeme* value, Node* node, Node* node2, Node* node3, Node* node4, Node* node5);
 
 void libera(void *arvore);
 void exporta(void *arvore);

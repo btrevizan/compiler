@@ -108,13 +108,22 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 %left TK_OC_EQ TK_OC_NE
 %left '>' '<' TK_OC_LE TK_OC_GE
 %left TK_OC_SL TK_OC_SR
+%right '!'
 %left '+' '-'
 %left '*' '/' '%'
+%left '(' ')'
+%left '[' ']'
 %left '^'
-
-%right '&'
 %right '#'
-%right '!'
+
+/* Different associativity based in whether it's a binary or unary op */
+%right UMINUS
+%right UPLUS
+%right UADDRESS
+%right UPOINTER
+
+/* Detailed error message */
+%define parse.error verbose
 
 %start prog
 %%
@@ -128,10 +137,10 @@ global_var: TK_PR_STATIC type id ';'	{ libera($3); $$ = NULL; }
 | 	    type id ';'			{ libera($2); $$ = NULL; };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{ $$ = create_node($3); add_node($$, $6); }
-| 	  type TK_IDENTIFICADOR '(' ')' body					{ $$ = create_node($2); add_node($$, $5); }
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' body	{ $$ = create_node($3); add_node($$, $7); }
-| 	  type TK_IDENTIFICADOR '(' list_of_params ')' body			{ $$ = create_node($2); add_node($$, $6); };
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{ $$ = unary_node($3, $6); }
+| 	  type TK_IDENTIFICADOR '(' ')' body					{ $$ = unary_node($2, $5); }
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' body	{ $$ = unary_node($3, $7); }
+| 	  type TK_IDENTIFICADOR '(' list_of_params ')' body			{ $$ = unary_node($2, $6); };
 
 body: '{' command_list '}' 	{ $$ = $2; }
 |     '{' '}'			{ $$ = NULL; };
@@ -161,7 +170,7 @@ simple_command: local_var_with_init	{ $$ = $1; }
 command_list: simple_command ';'			{ $$ = $1; }
 | 	      simple_command ';' command_list		{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
-block: '{' command_list '}' 	{ $$ = create_node(NULL); add_node($$, $2); }
+block: '{' command_list '}' 	{ $$ = unary_node(NULL, $2); }
 |      '{' '}'			{ $$ = create_node(NULL); };
 
 /** Local variable declaration **/
@@ -171,7 +180,7 @@ type: TK_PR_INT		{ $$ = NULL; }
 |     TK_PR_CHAR	{ $$ = NULL; }
 |     TK_PR_STRING	{ $$ = NULL; };
 
-initialization: TK_OC_LE directTerm							{ $$ = create_node($1); add_node($$, $2); };
+initialization: TK_OC_LE directTerm							{ $$ = unary_node($1, $2); };
 
 local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; add_lexeme($$, $4); }
 |	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); }
@@ -187,7 +196,7 @@ local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ liber
 id: TK_IDENTIFICADOR '[' expr ']'	{ $$ = create_node(NULL); add_lexeme($$, $1); add_node($$, $3); }
 |   TK_IDENTIFICADOR			{ $$ = create_node($1); };
 
-assignment: id '=' expr			{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); };
+assignment: id '=' expr			{ $$ = binary_node($2, $1, $3); };
 
 /** Input and output **/
 args: expr 				{ $$ = $1; }
@@ -197,7 +206,7 @@ input: TK_PR_INPUT expr			{ libera($2); $$ = NULL; };
 output: TK_PR_OUTPUT args		{ libera($2); $$ = NULL; };
 
 /** Function call **/
-call: TK_IDENTIFICADOR '(' args ')'	{ $$ = create_node($1); add_node($$, $3); }
+call: TK_IDENTIFICADOR '(' args ')'	{ $$ = unary_node($1, $3); }
 |     TK_IDENTIFICADOR '(' ')'		{ $$ = create_node($1); };
 
 /** Shift command **/
@@ -207,10 +216,10 @@ shift_op: TK_OC_SL		{ $$ = create_node($1); }
 shift: id shift_op expr		{ $$ = $2; add_node($$, $1); add_node($$, $3); };
 
 /** Flow change commands **/
-return: TK_PR_RETURN expr		{ $$ = create_node($1); add_node($$, $2); };
+return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); };
 
 /** If-then-else statement **/
-if: TK_PR_IF '(' expr ')' block		{ $$ = create_node($1); add_node($$, $3); add_node($$, $5); };
+if: TK_PR_IF '(' expr ')' block		{ $$ = binary_node($1, $3, $5); };
 else: TK_PR_ELSE block			{ $$ = $2; };
 if_else: if else 			{ $$ = $1; add_node($$, $2); }
 | 	 if				{ $$ = $1; };
@@ -223,8 +232,8 @@ for_list_element: local_var_with_init				{ $$ = $1; }
 for_list: for_list_element 					{ $$= $1; }
 | 	  for_list_element ',' for_list				{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
-for: TK_PR_FOR '(' for_list ':' expr ':' for_list ')' block	{ $$ = create_node($1); add_node($$, $3); add_node($$, $5); add_node($$, $7); add_node($$, $9); libera(create_node($4)); libera(create_node($6)); };
-while: TK_PR_WHILE '(' expr ')' TK_PR_DO block			{ $$ = create_node($1); add_node($$, $3); add_node($$, $6); };
+for: TK_PR_FOR '(' for_list ':' expr ':' for_list ')' block	{ $$ = quaternary_node($1, $3, $5, $7, $9); libera(create_node($4)); libera(create_node($6)); };
+while: TK_PR_WHILE '(' expr ')' TK_PR_DO block			{ $$ = binary_node($1, $3, $6); };
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT		{ $$ = create_node($1); }
@@ -241,34 +250,34 @@ term: directTerm		{ $$ = $1; }
 |     call			{ $$ = $1; };
 
 expr: term			{ $$ = $1; }
-|     '+' expr			{ $$ = create_node($1); add_node($$, $2); }
-|     '-' expr			{ $$ = create_node($1); add_node($$, $2); }
-|     '!' expr			{ $$ = create_node($1); add_node($$, $2); }
-|     '&' expr			{ $$ = create_node($1); add_node($$, $2); }
-|     '*' expr			{ $$ = create_node($1); add_node($$, $2); }
-|     '?' expr			{ $$ = create_node($1); add_node($$, $2); }
-|     '#' expr			{ $$ = create_node($1); add_node($$, $2); }
-|     expr '+' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '-' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '*' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '/' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '%' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '|' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '&' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '^' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '>' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '<' expr		{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr TK_OC_LE expr	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr TK_OC_GE expr	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr TK_OC_EQ expr	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr TK_OC_NE expr	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr TK_OC_AND expr	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr TK_OC_OR expr	{ $$ = create_node($2); add_node($$, $1); add_node($$, $3); }
-|     expr '?' expr ':' expr	{ $$ = create_node($4); add_node($$, $1); add_node($$, $3); add_node($$, $5); libera(create_node($2)); }
+|     '+' expr			{ $$ = unary_node($1, $2); } %prec UPLUS
+|     '-' expr			{ $$ = unary_node($1, $2); } %prec UMINUS
+|     '!' expr			{ $$ = unary_node($1, $2); }
+|     '&' expr			{ $$ = unary_node($1, $2); } %prec UADDRESS
+|     '*' expr			{ $$ = unary_node($1, $2); } %prec UPOINTER
+|     '?' expr			{ $$ = unary_node($1, $2); }
+|     '#' expr			{ $$ = unary_node($1, $2); }
+|     expr '+' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '-' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '*' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '/' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '%' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '|' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '&' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '^' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '>' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr '<' expr		{ $$ = binary_node($2, $1, $3); }
+|     expr TK_OC_LE expr	{ $$ = binary_node($2, $1, $3); }
+|     expr TK_OC_GE expr	{ $$ = binary_node($2, $1, $3); }
+|     expr TK_OC_EQ expr	{ $$ = binary_node($2, $1, $3); }
+|     expr TK_OC_NE expr	{ $$ = binary_node($2, $1, $3); }
+|     expr TK_OC_AND expr	{ $$ = binary_node($2, $1, $3); }
+|     expr TK_OC_OR expr	{ $$ = binary_node($2, $1, $3); }
+|     expr '?' expr ':' expr	{ $$ = ternary_node($4, $1, $3, $5); libera(create_node($2)); }
 |     '(' expr ')'		{ $$ = $2; };
 
 %%
 
-void yyerror (char const *s) {
-	printf("Error on line %d. %s\n", yylineno, s);
+void yyerror (char const *str){
+    fprintf(stderr, "%s on line %d\n", str, yylineno);
 }
