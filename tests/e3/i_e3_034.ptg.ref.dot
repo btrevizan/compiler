@@ -1,0 +1,8 @@
+digraph G {
+n2 [label="root"];
+n2 -> n3;
+n3 -> n0x55ce58594380;
+n3 -> n4;
+n4 -> n0x55ce58594350;
+n4 -> n5;
+}

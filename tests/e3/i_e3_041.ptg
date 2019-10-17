@@ -15,8 +15,8 @@ int f(){
    int j;
    int k;
    int l;
-   x = a || b && c;
-   y = d && e || f;
-   z = (g || h) && i;
-   w = j && (k || l);
+   x = a - b * c;
+   y = d / e + f;
+   z = (g - h) / i;
+   w = j * (k + l);
 }

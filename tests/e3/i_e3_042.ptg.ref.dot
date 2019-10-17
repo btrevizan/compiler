@@ -1,0 +1,36 @@
+digraph G {
+n2 [label="root"];
+n2 -> nop1;
+nop1 -> nop2;
+nop2 -> nop3;
+nop1 -> nx;
+nop1 -> nsub1;
+nsub1 -> ne;
+nsub1 -> nsub2;
+nsub2 -> nd;
+nsub2 -> nsoma1;
+nsoma1 -> nc;
+nsoma1 -> nsoma2;
+nsoma2 -> na;
+nsoma2 -> nb;
+nop2 -> ny;
+nop2 -> ndiv21;
+ndiv21 -> nj;
+ndiv21 -> ndiv22;
+ndiv22 -> ni;
+ndiv22 -> nmult21;
+nmult21 -> nh;
+nmult21 -> nmult22;
+nmult22 -> ng;
+nmult22 -> nf;
+nop3 -> nz;
+nop3 -> nsoma31;
+nsoma31 -> no;
+nsoma31 -> nsoma32;
+nsoma32 -> nn;
+nsoma32 -> nmult31;
+nmult31 -> nm;
+nmult31 -> nmult32;
+nmult32 -> nl;
+nmult32 -> nk;
+}
