@@ -102,18 +102,16 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 */
 %right '='
 %right '?' ':'
-%left TK_OC_OR
-%left TK_OC_AND
-%left '|'
-%left TK_OC_EQ TK_OC_NE
-%left '>' '<' TK_OC_LE TK_OC_GE
-%left TK_OC_SL TK_OC_SR
+%left TK_OC_AND TK_OC_OR
+%left TK_OC_LE TK_OC_GE '>' '<'TK_OC_EQ TK_OC_NE
+%left '&' '|'
+%left TK_OC_SR TK_OC_SL
 %right '!'
 %left '+' '-'
 %left '*' '/' '%'
 %left '(' ')'
 %left '[' ']'
-%left '^'
+%right '^'
 %right '#'
 
 /* Different associativity based in whether it's a binary or unary op */
@@ -250,11 +248,11 @@ term: directTerm		{ $$ = $1; }
 |     call			{ $$ = $1; };
 
 expr: term			{ $$ = $1; }
-|     '+' expr			{ $$ = unary_node($1, $2); } %prec UPLUS
-|     '-' expr			{ $$ = unary_node($1, $2); } %prec UMINUS
+|     '+' expr			%prec UPLUS  { $$ = unary_node($1, $2); }
+|     '-' expr			%prec UMINUS { $$ = unary_node($1, $2); }
 |     '!' expr			{ $$ = unary_node($1, $2); }
-|     '&' expr			{ $$ = unary_node($1, $2); } %prec UADDRESS
-|     '*' expr			{ $$ = unary_node($1, $2); } %prec UPOINTER
+|     '&' expr			%prec UADDRESS { $$ = unary_node($1, $2); }
+|     '*' expr			%prec UPOINTER { $$ = unary_node($1, $2); }
 |     '?' expr			{ $$ = unary_node($1, $2); }
 |     '#' expr			{ $$ = unary_node($1, $2); }
 |     expr '+' expr		{ $$ = binary_node($2, $1, $3); }
