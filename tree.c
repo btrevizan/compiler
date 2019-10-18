@@ -98,6 +98,7 @@ void export_node(Node* node, FILE* file) {
 }
 
 void exporta(void *arvore) {
+    if(arvore == NULL) return;
     Node* node = (Node*) arvore;
 
     FILE* file = fopen("e3.csv", "w");
