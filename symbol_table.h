@@ -38,7 +38,7 @@ typedef struct table {
     Entry** entries;
 } Table;
 
-Entry DELETED_ENTRY = {NULL, NULL};
+static Entry DELETED_ENTRY = {NULL, NULL};
 
 Table* create_table();
 Table* create_sized_table(int size);
