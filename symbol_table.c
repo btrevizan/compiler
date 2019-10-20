@@ -23,25 +23,19 @@ int get_hash(const char* key, const int length, const int attempt) {
     return (hash_a + (attempt * (hash_b + 1))) % length;
 }
 
-int get_nature_size(int nature) {
-    switch (nature) {
-        case NATUREZA_LITERAL_INT:
-            return sizeof(int);
+int get_type_size(int type) {
+    switch (type) {
+        case TYPE_INT:
+            return SIZE_INT;
 
-        case NATUREZA_LITERAL_FLOAT:
-            return sizeof(float);
+        case TYPE_FLOAT:
+            return SIZE_FLOAT;
 
-        case NATUREZA_LITERAL_CHAR:
-            return sizeof(char);
+        case TYPE_CHAR:
+            return SIZE_CHAR;
 
-        case NATUREZA_LITERAL_STRING:
-            return sizeof(char*);
-
-        case NATUREZA_LITERAL_BOOL:
-            return sizeof(int);
-
-        case NATUREZA_IDENTIFICADOR:
-            return sizeof(char*);
+        case TYPE_BOOL:
+            return SIZE_BOOL;
 
         default:
             return -1;
@@ -98,12 +92,13 @@ Entry* create_entry(const char* key, Symbol* value) {
     return entry;
 }
 
-Symbol* create_symbol(int line_number, int nature, int args_number, Symbol** args, Lexeme* lexeme) {
+Symbol* create_symbol(int line_number, int nature, int type, int args_number, Symbol** args, Lexeme* lexeme) {
     Symbol* symbol = malloc(sizeof(Symbol));
 
     symbol->line_number = line_number;
     symbol->nature = nature;
-    symbol->size = get_nature_size(symbol->nature);
+    symbol->type = type;
+    symbol->size = get_type_size(symbol->type);
     symbol->args_number = args_number;
     symbol->args = args;
     symbol->lexeme = lexeme;

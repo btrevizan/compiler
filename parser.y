@@ -3,23 +3,28 @@
 	#include <stdlib.h>
 	#include "lexical.h"
 	#include "tree.h"
+	#include "stack.h"
 
 	extern int yylineno;
 
 	int yylex(void);
 	void yyerror (char const *s);
+
+	Stack *scope, *saved;
 %}
 
 %union {
     struct lexeme* lexical_value;
     struct node* node;
+    int integer;
 }
 
-%token <lexical_value> TK_PR_INT
-%token <lexical_value> TK_PR_FLOAT
-%token <lexical_value> TK_PR_BOOL
-%token <lexical_value> TK_PR_CHAR
-%token <lexical_value> TK_PR_STRING
+%token <integer> TK_PR_INT
+%token <integer> TK_PR_FLOAT
+%token <integer> TK_PR_BOOL
+%token <integer> TK_PR_CHAR
+%token <integer> TK_PR_STRING
+
 %token <lexical_value> TK_PR_IF
 %token <lexical_value> TK_PR_THEN
 %token <lexical_value> TK_PR_ELSE
@@ -70,7 +75,7 @@
 %type <node> simple_command
 %type <node> command_list
 %type <node> block
-%type <node> type
+%type <integer> type
 %type <node> initialization
 %type <node> local_var_with_init
 %type <node> local_var_without_init
@@ -126,12 +131,20 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 %start prog
 %%
 
-prog: function prog 		{ $$ = $1; arvore = $$; add_node($$, $2); }
-|     global_var prog 		{ $$ = NULL; }
+prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); }
+|     init_env global_var prog 		{ $$ = NULL; }
 | 				{ $$ = NULL; };
 
+/** SYMBOL TABLE STACK INITIALIZATION **/
+init_env: /* Empty */ { scope = init_stack(); push(scope, create_table()); };
+
 /** GLOBAL VAR DECLARATION **/
-global_var: TK_PR_STATIC type id ';'	{ libera($3); $$ = NULL; }
+global_var: TK_PR_STATIC type id ';'	{
+	Symbol *symbol = create_symbol($3->value->line_number, NATUREZA_IDENTIFICADOR, $2, 0, NULL, $3->value);
+	add_symbol(peek(scope), $3->value->token_value.string, symbol); 
+	free($3);	/* Not libera($3) because that would delete the Lexeme in the table */
+	$$ = NULL; 
+}
 | 	    type id ';'			{ libera($2); $$ = NULL; };
 
 /** FUNCTION **/
@@ -172,11 +185,11 @@ block: '{' command_list '}' 	{ $$ = unary_node(NULL, $2); }
 |      '{' '}'			{ $$ = create_node(NULL); };
 
 /** Local variable declaration **/
-type: TK_PR_INT		{ $$ = NULL; }
-|     TK_PR_FLOAT	{ $$ = NULL; }
-|     TK_PR_BOOL	{ $$ = NULL; }
-|     TK_PR_CHAR	{ $$ = NULL; }
-|     TK_PR_STRING	{ $$ = NULL; };
+type: TK_PR_INT		{ $$ = TYPE_INT; }
+|     TK_PR_FLOAT	{ $$ = TYPE_FLOAT; }
+|     TK_PR_BOOL	{ $$ = TYPE_BOOL; }
+|     TK_PR_CHAR	{ $$ = TYPE_CHAR; }
+|     TK_PR_STRING	{ $$ = TYPE_STRING; };
 
 initialization: TK_OC_LE directTerm							{ $$ = unary_node($1, $2); };
 

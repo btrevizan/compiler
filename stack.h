@@ -15,6 +15,7 @@ typedef struct stack {
 } Stack;
 
 Stack* init_stack();
+Table* peek(Stack* stack);
 void push(Stack* stack, Table* value);
 Table* pop(Stack* stack);
 void destroy_stack(Stack* stack);

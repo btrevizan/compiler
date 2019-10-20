@@ -16,10 +16,23 @@
 #define NATUREZA_LITERAL_STRING     4
 #define NATUREZA_LITERAL_BOOL       5
 #define NATUREZA_IDENTIFICADOR      6
+#define NATUREZA_FUNCAO             7
+
+#define TYPE_INT                    1
+#define TYPE_FLOAT                  2
+#define TYPE_CHAR                   3
+#define TYPE_STRING                 4
+#define TYPE_BOOL                   5
+
+#define SIZE_INT                    4
+#define SIZE_CHAR                   1
+#define SIZE_FLOAT                  8
+#define SIZE_BOOL                   1
 
 typedef struct symbol {
     int line_number;
     int nature;
+    int type;
     int size;
     int args_number;
     struct symbol** args;
@@ -43,7 +56,7 @@ static Entry DELETED_ENTRY = {NULL, NULL};
 Table* create_table();
 Table* create_sized_table(int size);
 Entry* create_entry(const char* key, Symbol* value);
-Symbol* create_symbol(int line_number, int nature, int args_number, Symbol** args, Lexeme* lexeme);
+Symbol* create_symbol(int line_number, int nature, int type, int args_number, Symbol** args, Lexeme* lexeme);
 
 void add_entry(Table* table, Entry* entry);
 void add_symbol(Table* table, const char* key, Symbol* value);

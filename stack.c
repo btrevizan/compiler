@@ -9,6 +9,13 @@ Stack* init_stack() {
     return stack;
 }
 
+Table* peek(Stack* stack) {
+    if(stack == NULL) return NULL;
+    if(stack->top == NULL) return NULL;
+    
+    return stack->top->value;
+}
+
 void push(Stack* stack, Table* value) {
     if(stack == NULL) return;
 
