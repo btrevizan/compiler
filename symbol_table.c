@@ -1,5 +1,6 @@
 #include "symbol_table.h"
 #include "lexical.h"
+#include "error.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -110,6 +111,11 @@ void add_entry(Table* table, Entry* entry) {
     if((float) table->count / table->size > 0.7)
         resize(table, table->base_size * 2);
 
+    if(get_entry(table, entry->key) != NULL) {
+        printf("ERR_DECLARED: '%s' was already declared.\n", entry->value->lexeme->token_value.string);
+        exit(ERR_DECLARED);
+    }
+
     int i = get_hash(entry->key, table->size, 0);
     Entry* current_entry = table->entries[i];
 
@@ -169,7 +175,7 @@ void remove_entry(Table* table, const char* key) {
 void add_identifier(Table* table, int type, Lexeme* identifier){
     Symbol *symbol = create_symbol(identifier->line_number, 
         NATUREZA_IDENTIFICADOR, type, 0, NULL, identifier);
-    add_symbol(table, identifier->token_value.string, symbol); 
+    add_symbol(table, identifier->token_value.string, symbol);
 }
 
 void add_function(Table* table, int type, Lexeme* function, ParamList** params){
@@ -181,7 +187,7 @@ void add_function(Table* table, int type, Lexeme* function, ParamList** params){
 
     symbol = create_symbol(function->line_number, 
         NATUREZA_FUNCAO, type, nb_params, params, function);
-    add_symbol(table, function->token_value.string, symbol); 
+    add_symbol(table, function->token_value.string, symbol);
 }
 
 int find_args(ParamList **params, int* nb_params) {

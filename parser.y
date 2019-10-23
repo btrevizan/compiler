@@ -5,6 +5,7 @@
 	#include "tree.h"
 	#include "stack.h"
 	#include "symbol_table.h"
+	#include "checks.h"
 
 	extern int yylineno;
 
@@ -81,6 +82,8 @@
 %type <node> initialization
 %type <node> local_var_with_init
 %type <node> local_var_without_init
+%type <node> declared_id
+%type <node> indexer
 %type <node> id
 %type <node> assignment
 %type <node> args
@@ -135,7 +138,7 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 
 prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); }
 |     init_env global_var prog 		{ $$ = NULL; }
-| 				{ $$ = NULL; };
+| 					{ $$ = NULL; };
 
 /** SYMBOL TABLE STACK INITIALIZATION **/
 init_env: /* Empty */ { scope = init_stack(); push(scope, create_table()); };
@@ -147,8 +150,10 @@ enter_scope: /* Empty */ { push(scope, create_table()); };
 leave_scope: /* Empty */ { pop(scope); };
 
 /** GLOBAL VAR DECLARATION **/
-global_var: TK_PR_STATIC type id ';'	{ add_identifier(peek(scope), $2, $3->value); free($3); $$ = NULL; }
-| 	    type id ';'			{ add_identifier(peek(scope), $1, $2->value); free($2); $$ = NULL; };
+global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        { add_identifier(peek(scope), $2, $3); $$ = NULL; }
+|	    TK_PR_STATIC type TK_IDENTIFICADOR indexer ';'	{ add_identifier(peek(scope), $2, $3); $$ = NULL; }
+| 	    type TK_IDENTIFICADOR ';'				{ add_identifier(peek(scope), $1, $2); $$ = NULL; }
+| 	    type TK_IDENTIFICADOR indexer ';'			{ add_identifier(peek(scope), $1, $2); $$ = NULL; };
 
 /** FUNCTION **/
 function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{ 
@@ -158,7 +163,7 @@ function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{
 }
 | 	  type TK_IDENTIFICADOR '(' ')' body					{ 
 	$$ = unary_node($2, $5);
-	add_function(peek(scope), $1, $2, NULL); 
+	add_function(peek(scope), $1, $2, NULL);
 	$$ = NULL; 
 }
 | 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' body	{ 
@@ -173,7 +178,7 @@ function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{
 };
 
 body: '{' enter_scope command_list leave_scope '}' 	{ $$ = $3; }
-|     '{' '}'			{ $$ = NULL; };
+|     '{' '}'						{ $$ = NULL; };
 
 params: TK_PR_CONST type TK_IDENTIFICADOR 	{ add_param($2, $3); $$ = NULL; }
 | 	type TK_IDENTIFICADOR			{ add_param($1, $2); $$ = NULL; };
@@ -201,7 +206,7 @@ command_list: simple_command ';'			{ $$ = $1; }
 | 	      simple_command ';' command_list		{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
 block: '{' enter_scope command_list leave_scope '}' 	{ $$ = unary_node(NULL, $3);}
-|      '{' '}'			{ $$ = create_node(NULL); };
+|      '{' '}'						{ $$ = create_node(NULL); };
 
 /** Local variable declaration **/
 type: TK_PR_INT		{ $$ = TYPE_INT; }
@@ -217,14 +222,17 @@ local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initializati
 |	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); add_identifier(peek(scope), $2, $3); }
 |	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; add_lexeme($$, $2); add_identifier(peek(scope), $1, $2); };
 
-local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4);}
+local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4); }
 | 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); }
 |	   	        TK_PR_CONST type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); }
 |	   	        type TK_IDENTIFICADOR						{ add_identifier(peek(scope), $1, $2); };
 
 /** Assignment **/
-id: TK_IDENTIFICADOR '[' expr ']'	{ $$ = create_node(NULL); add_lexeme($$, $1); add_node($$, $3); }
-|   TK_IDENTIFICADOR			{ $$ = create_node($1); };
+declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };
+indexer: '[' expr ']'			{ $$ = $2; };
+
+id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); }
+|   declared_id				{ $$ = $1; };
 
 assignment: id '=' expr			{ $$ = binary_node($2, $1, $3); };
 
@@ -236,8 +244,8 @@ input: TK_PR_INPUT expr			{ libera($2); $$ = NULL; };
 output: TK_PR_OUTPUT args		{ libera($2); $$ = NULL; };
 
 /** Function call **/
-call: TK_IDENTIFICADOR '(' args ')'	{ $$ = unary_node($1, $3); }
-|     TK_IDENTIFICADOR '(' ')'		{ $$ = create_node($1); };
+call: declared_id '(' args ')'		{ $$ = $1; add_node($$, $3); }
+|     declared_id '(' ')'		{ $$ = $1; };
 
 /** Shift command **/
 shift_op: TK_OC_SL		{ $$ = create_node($1); }

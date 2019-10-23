@@ -1,8 +1,8 @@
-all: parser.y scanner.l main.c tree.c symbol_table.c stack.c
+all: parser.y scanner.l main.c tree.c symbol_table.c stack.c checks.c
 	bison -d parser.y --report-file=report.out -r all
 	flex scanner.l
-	gcc -c lex.yy.c parser.tab.c lexical.c tree.c symbol_table.c stack.c -g
-	gcc -o etapa3 lex.yy.o parser.tab.o lexical.o tree.o symbol_table.o stack.o main.c -ll -lm
+	gcc -c lex.yy.c parser.tab.c lexical.c tree.c symbol_table.c stack.c checks.c -g
+	gcc -o etapa4 lex.yy.o parser.tab.o lexical.o tree.o symbol_table.o stack.o checks.o main.c -ll -lm
 
 # test_analysis: etapa3 tests/e2/asl150
 # 	./etapa3 < tests/e2/asl150
@@ -15,6 +15,6 @@ clean:
 	rm -f parser.tab.*
 	rm -f report.out
 	rm -f lex.yy.*
-	rm -f etapa3
+	rm -f etapa4
 	rm -f e3.csv
 	rm -f leaks

@@ -66,8 +66,6 @@ Table* create_sized_table(int size);
 Entry* create_entry(const char* key, Symbol* value);
 Symbol* create_symbol(int line_number, int nature, int type, int args_number, ParamList** args, Lexeme* lexeme);
 
-void add_entry(Table* table, Entry* entry);
-void add_symbol(Table* table, const char* key, Symbol* value);
 Symbol* get_entry(Table* table, const char* key);
 void remove_entry(Table* table, const char* key);
 void add_identifier(Table* table, int type, Lexeme* identifier);
