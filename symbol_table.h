@@ -20,11 +20,11 @@
 #define NATUREZA_FUNCAO             7
 #define NATUREZA_VETOR              8
 
-#define TYPE_INT                    1
-#define TYPE_FLOAT                  2
-#define TYPE_CHAR                   3
-#define TYPE_STRING                 4
-#define TYPE_BOOL                   5
+#define TYPE_INT                    10
+#define TYPE_FLOAT                  11
+#define TYPE_CHAR                   12
+#define TYPE_STRING                 13
+#define TYPE_BOOL                   14
 
 #define SIZE_INT                    4
 #define SIZE_CHAR                   1

@@ -136,6 +136,8 @@ void add_symbol(Table* table, const char* key, Symbol* value) {
 }
 
 Symbol* get_entry(Table* table, const char* key) {
+    if(table == NULL) return NULL;
+
     int i = get_hash(key, table->size, 0);
     Entry* current_entry = table->entries[i];
 
