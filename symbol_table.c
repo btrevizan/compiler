@@ -93,21 +93,30 @@ Entry* create_entry(const char* key, Symbol* value) {
     return entry;
 }
 
-Symbol* create_symbol(int line_number, int nature, int type, int args_number, ParamList** args, Lexeme* lexeme) {
+Symbol* create_symbol(int nature, int type, Lexeme* lexeme) {
     Symbol* symbol = malloc(sizeof(Symbol));
 
-    symbol->line_number = line_number;
     symbol->nature = nature;
     symbol->type = type;
     symbol->size = get_type_size(symbol->type);
-    symbol->args_number = args_number;
-    symbol->args = args;
+    symbol->args = NULL;
     symbol->lexeme = lexeme;
 
     return symbol;
 }
 
+Param* create_param(int type, Lexeme* identifier) {
+    Param* param = malloc(sizeof(Param));
+
+    param->symbol = create_symbol(NATUREZA_IDENTIFICADOR, type, identifier);
+    param->next = NULL;
+
+    return param;
+}
+
 void add_entry(Table* table, Entry* entry) {
+    if(table == NULL) return;
+
     if((float) table->count / table->size > 0.7)
         resize(table, table->base_size * 2);
 
@@ -130,8 +139,8 @@ void add_entry(Table* table, Entry* entry) {
     table->count++;
 }
 
-void add_symbol(Table* table, const char* key, Symbol* value) {
-    Entry* entry = create_entry(key, value);
+void add_symbol(Table* table, Symbol* value) {
+    Entry* entry = create_entry(value->lexeme->token_value.string, value);
     add_entry(table, entry);
 }
 
@@ -155,6 +164,8 @@ Symbol* get_entry(Table* table, const char* key) {
 }
 
 void remove_entry(Table* table, const char* key) {
+    if(table == NULL) return;
+
     int i = get_hash(key, table->size, 0);
     Entry* current_entry = table->entries[i];
 
@@ -175,68 +186,33 @@ void remove_entry(Table* table, const char* key) {
 }
 
 void add_identifier(Table* table, int type, Lexeme* identifier){
-    Symbol *symbol = create_symbol(identifier->line_number, 
-        NATUREZA_IDENTIFICADOR, type, 0, NULL, identifier);
-    add_symbol(table, identifier->token_value.string, symbol);
+    Symbol *symbol = create_symbol(NATUREZA_IDENTIFICADOR, type, identifier);
+    add_symbol(table, symbol);
 }
 
-void add_function(Table* table, int type, Lexeme* function, ParamList** params){
-    int nb_params;
-    Symbol *symbol;
+void add_function(Table* table, int type, Lexeme* function, Param* params){
+    Table* args = create_table();
+    Param* aux;
 
-    //TODO: implement this function that counts nb of args in ParamList
-    find_args(params, &nb_params);
-
-    symbol = create_symbol(function->line_number, 
-        NATUREZA_FUNCAO, type, nb_params, params, function);
-    add_symbol(table, function->token_value.string, symbol);
-}
-
-int find_args(ParamList **params, int* nb_params) {
-    int count = 0;
-    ParamList* current;
-
-    if(params == NULL) return count;
-
-    current = *params;
-
-    while(current != NULL){
-        count++;
-        current = current->next;
+    while(params != NULL) {
+        add_symbol(args, params->symbol);
+        aux = params;
+        params = params->next;
+        free(aux);
     }
-    return count;
-}
 
-void add_param(int type, Lexeme* identifier) {
-    ParamList *new = malloc(sizeof(ParamList));
-    new->type = type;
-    new->lexeme = identifier;
-    new->next = NULL;
-}
+    Symbol* symbol = create_symbol(NATUREZA_FUNCAO, type, function);
+    symbol->args = args;
 
-ParamList* add_param_to_list(ParamList* head, ParamList* next) {
-    if(head != NULL) head->next = next;
-    return head;
+    add_symbol(table, symbol);
 }
 
 void delete_symbol(Symbol* symbol) {
-    for(int i = 0; i < symbol->args_number; i++) {
-        ParamList* param = symbol->args[i];
-        if(param != NULL) delete_param(param);
-    }
-
+    delete_table(symbol->args);
     delete_lexeme(symbol->lexeme);
 
-    free(symbol->args);
     free(symbol);
-
     symbol = NULL;
-}
-
-void delete_param(ParamList *param){
-    delete_lexeme(param->lexeme);
-    free(param);
-    param = NULL;
 }
 
 void delete_entry(Entry* entry) {
@@ -249,6 +225,8 @@ void delete_entry(Entry* entry) {
 }
 
 void delete_table(Table* table) {
+    if(table == NULL) return;
+
     for(int i = 0; i < table->size; i++) {
         Entry* entry = table->entries[i];
         if(entry != NULL) delete_entry(entry);
@@ -258,4 +236,26 @@ void delete_table(Table* table) {
     free(table);
 
     table = NULL;
+}
+
+void print_table(Table* table) {
+    printf("Key/ID | Line Number | Nature\n");
+
+    if(table == NULL) {
+        printf("Table is null.\n");
+        return;
+    }
+
+    if(table->count == 0) {
+        printf("Table is empty.\n");
+        return;
+    }
+
+    for(int i = 0; i < table->size; i++) {
+        if(table->entries[i] != NULL) {
+            printf("%s | ", table->entries[i]->key);
+            printf("%d | ", table->entries[i]->value->lexeme->line_number);
+            printf("%d\n", table->entries[i]->value->nature);
+        }
+    }
 }

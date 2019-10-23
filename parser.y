@@ -156,35 +156,35 @@ global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        { add_identifier(peek
 | 	    type TK_IDENTIFICADOR indexer ';'			{ add_identifier(peek(scope), $1, $2); $$ = NULL; };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{ 
-	$$ = unary_node($3, $6);
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' enter_scope body leave_scope {
+	$$ = unary_node($3, $7);
 	add_function(peek(scope), $2, $3, NULL);
 	$$ = NULL;
 }
-| 	  type TK_IDENTIFICADOR '(' ')' body					{ 
-	$$ = unary_node($2, $5);
+| 	  type TK_IDENTIFICADOR '(' ')' enter_scope body leave_scope {
+	$$ = unary_node($2, $6);
 	add_function(peek(scope), $1, $2, NULL);
-	$$ = NULL; 
-}
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' body	{ 
-	$$ = unary_node($3, $7);
-	add_function(peek(scope), $2, $3, &$5);
 	$$ = NULL;
 }
-| 	  type TK_IDENTIFICADOR '(' list_of_params ')' body			{ 
-	$$ = unary_node($2, $6); 
-	add_function(peek(scope), $1, $2, &$4);
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params ')' body leave_scope {
+	$$ = unary_node($3, $8);
+	add_function(peek(scope), $2, $3, $6);
+	$$ = NULL;
+}
+| 	  type TK_IDENTIFICADOR '(' enter_scope list_of_params ')' body	leave_scope {
+	$$ = unary_node($2, $7);
+	add_function(peek(scope), $1, $2, $5);
 	$$ = NULL;
 };
 
-body: '{' enter_scope command_list leave_scope '}' 	{ $$ = $3; }
-|     '{' '}'						{ $$ = NULL; };
+body: '{' command_list '}' 	{ $$ = $2; }
+|     '{' '}'			{ $$ = NULL; };
 
-params: TK_PR_CONST type TK_IDENTIFICADOR 	{ add_param($2, $3); $$ = NULL; }
-| 	type TK_IDENTIFICADOR			{ add_param($1, $2); $$ = NULL; };
+params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_param($2, $3); add_symbol(peek(scope), $$->symbol); }
+| 	type TK_IDENTIFICADOR			{ $$ = create_param($1, $2); add_symbol(peek(scope), $$->symbol); };
 
 list_of_params: params				{ $$ = $1; }
-| 		params ',' list_of_params	{ $$ = add_param_to_list($1, $3); };
+| 		params ',' list_of_params	{ $$ = $1; $$->next = $3; };
 
 /****** SIMPLE COMMANDS ******/
 simple_command: local_var_with_init	{ $$ = $1; }

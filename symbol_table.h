@@ -31,19 +31,13 @@
 #define SIZE_FLOAT                  8
 #define SIZE_BOOL                   1
 
-typedef struct param {
-    int type;
-    Lexeme* lexeme;
-    struct param *next;
-} ParamList;
-
 typedef struct symbol {
-    int line_number;
+    // line number is in lexeme->line_number
     int nature;
     int type;
     int size;
-    int args_number;
-    ParamList** args;
+    // args_number is in args->count
+    struct table* args;
     Lexeme* lexeme;
 } Symbol;
 
@@ -59,25 +53,30 @@ typedef struct table {
     Entry** entries;
 } Table;
 
+typedef struct param {
+    Symbol* symbol;
+    struct param* next;
+} Param;
+
 static Entry DELETED_ENTRY = {NULL, NULL};
 
 Table* create_table();
 Table* create_sized_table(int size);
 Entry* create_entry(const char* key, Symbol* value);
-Symbol* create_symbol(int line_number, int nature, int type, int args_number, ParamList** args, Lexeme* lexeme);
+Symbol* create_symbol(int nature, int type, Lexeme* lexeme);
+Param* create_param(int type, Lexeme* identifier);
 
 Symbol* get_entry(Table* table, const char* key);
-void remove_entry(Table* table, const char* key);
-void add_identifier(Table* table, int type, Lexeme* identifier);
-void add_function(Table* table, int type, Lexeme* function, ParamList** params);
 
-void add_param(int type, Lexeme* identifier);
-ParamList* add_param_to_list(ParamList* head, ParamList* next);
-int find_args(ParamList **params, int* nb_params);
+void remove_entry(Table* table, const char* key);
+void add_symbol(Table* table, Symbol* value);
+void add_identifier(Table* table, int type, Lexeme* identifier);
+void add_function(Table* table, int type, Lexeme* function, Param* params);
 
 void delete_symbol(Symbol* symbol);
 void delete_entry(Entry* entry);
-void delete_param(ParamList *param);
 void delete_table(Table* table);
+
+void print_table(Table* table);
 
 #endif
