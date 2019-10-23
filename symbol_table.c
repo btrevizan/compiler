@@ -92,7 +92,7 @@ Entry* create_entry(const char* key, Symbol* value) {
     return entry;
 }
 
-Symbol* create_symbol(int line_number, int nature, int type, int args_number, Symbol** args, Lexeme* lexeme) {
+Symbol* create_symbol(int line_number, int nature, int type, int args_number, ParamList** args, Lexeme* lexeme) {
     Symbol* symbol = malloc(sizeof(Symbol));
 
     symbol->line_number = line_number;
@@ -166,10 +166,55 @@ void remove_entry(Table* table, const char* key) {
     table->count--;
 }
 
+void add_identifier(Table* table, int type, Lexeme* identifier){
+    Symbol *symbol = create_symbol(identifier->line_number, 
+        NATUREZA_IDENTIFICADOR, type, 0, NULL, identifier);
+    add_symbol(table, identifier->token_value.string, symbol); 
+}
+
+void add_function(Table* table, int type, Lexeme* function, ParamList** params){
+    int nb_params;
+    Symbol *symbol;
+
+    //TODO: implement this function that counts nb of args in ParamList
+    find_args(params, &nb_params);
+
+    symbol = create_symbol(function->line_number, 
+        NATUREZA_FUNCAO, type, nb_params, params, function);
+    add_symbol(table, function->token_value.string, symbol); 
+}
+
+int find_args(ParamList **params, int* nb_params) {
+    int count = 0;
+    ParamList* current;
+
+    if(params == NULL) return count;
+
+    current = *params;
+
+    while(current != NULL){
+        count++;
+        current = current->next;
+    }
+    return count;
+}
+
+void add_param(int type, Lexeme* identifier) {
+    ParamList *new = malloc(sizeof(ParamList));
+    new->type = type;
+    new->lexeme = identifier;
+    new->next = NULL;
+}
+
+ParamList* add_param_to_list(ParamList* head, ParamList* next) {
+    if(head != NULL) head->next = next;
+    return head;
+}
+
 void delete_symbol(Symbol* symbol) {
     for(int i = 0; i < symbol->args_number; i++) {
-        Symbol* symbol = symbol->args[i];
-        if(symbol != NULL) delete_symbol(symbol);
+        ParamList* param = symbol->args[i];
+        if(param != NULL) delete_param(param);
     }
 
     delete_lexeme(symbol->lexeme);
@@ -178,6 +223,12 @@ void delete_symbol(Symbol* symbol) {
     free(symbol);
 
     symbol = NULL;
+}
+
+void delete_param(ParamList *param){
+    delete_lexeme(param->lexeme);
+    free(param);
+    param = NULL;
 }
 
 void delete_entry(Entry* entry) {

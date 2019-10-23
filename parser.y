@@ -4,19 +4,21 @@
 	#include "lexical.h"
 	#include "tree.h"
 	#include "stack.h"
+	#include "symbol_table.h"
 
 	extern int yylineno;
 
 	int yylex(void);
 	void yyerror (char const *s);
 
-	Stack *scope, *saved;
+	Stack *scope;
 %}
 
 %union {
     struct lexeme* lexical_value;
     struct node* node;
     int integer;
+    struct param* parameter;
 }
 
 %token <integer> TK_PR_INT
@@ -67,11 +69,11 @@
 %token <lexical_value> TOKEN_ERRO
 %token <lexical_value> ';' ':' ',' '(' ')' '[' ']' '{' '}' '+' '-' '|' '?' '@' '*' '/' '<' '>' '=' '!' '&' '%' '#' '^' '.' '$'
 
+%type <parameter> params
+%type <parameter> list_of_params
 %type <node> prog
 %type <node> global_var
 %type <node> function
-%type <node> params
-%type <node> list_of_params
 %type <node> simple_command
 %type <node> command_list
 %type <node> block
@@ -138,29 +140,46 @@ prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); }
 /** SYMBOL TABLE STACK INITIALIZATION **/
 init_env: /* Empty */ { scope = init_stack(); push(scope, create_table()); };
 
+/** ENTER NEW SCOPE **/
+enter_scope: /* Empty */ { push(scope, create_table()); };
+
+/** LEAVE SCOPE **/
+leave_scope: /* Empty */ { pop(scope); };
+
 /** GLOBAL VAR DECLARATION **/
-global_var: TK_PR_STATIC type id ';'	{
-	Symbol *symbol = create_symbol($3->value->line_number, NATUREZA_IDENTIFICADOR, $2, 0, NULL, $3->value);
-	add_symbol(peek(scope), $3->value->token_value.string, symbol); 
-	free($3);	/* Not libera($3) because that would delete the Lexeme in the table */
-	$$ = NULL; 
-}
-| 	    type id ';'			{ libera($2); $$ = NULL; };
+global_var: TK_PR_STATIC type id ';'	{ add_identifier(peek(scope), $2, $3->value); free($3); $$ = NULL; }
+| 	    type id ';'			{ add_identifier(peek(scope), $1, $2->value); free($2); $$ = NULL; };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{ $$ = unary_node($3, $6); }
-| 	  type TK_IDENTIFICADOR '(' ')' body					{ $$ = unary_node($2, $5); }
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' body	{ $$ = unary_node($3, $7); }
-| 	  type TK_IDENTIFICADOR '(' list_of_params ')' body			{ $$ = unary_node($2, $6); };
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' body			{ 
+	$$ = unary_node($3, $6);
+	add_function(peek(scope), $2, $3, NULL);
+	$$ = NULL;
+}
+| 	  type TK_IDENTIFICADOR '(' ')' body					{ 
+	$$ = unary_node($2, $5);
+	add_function(peek(scope), $1, $2, NULL); 
+	$$ = NULL; 
+}
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' list_of_params ')' body	{ 
+	$$ = unary_node($3, $7);
+	add_function(peek(scope), $2, $3, &$5);
+	$$ = NULL;
+}
+| 	  type TK_IDENTIFICADOR '(' list_of_params ')' body			{ 
+	$$ = unary_node($2, $6); 
+	add_function(peek(scope), $1, $2, &$4);
+	$$ = NULL;
+};
 
-body: '{' command_list '}' 	{ $$ = $2; }
+body: '{' enter_scope command_list leave_scope '}' 	{ $$ = $3; }
 |     '{' '}'			{ $$ = NULL; };
 
-params: TK_PR_CONST type TK_IDENTIFICADOR 	{ libera(create_node($3)); $$ = NULL; }
-| 	type TK_IDENTIFICADOR			{ libera(create_node($2)); $$ = NULL; };
+params: TK_PR_CONST type TK_IDENTIFICADOR 	{ add_param($2, $3); $$ = NULL; }
+| 	type TK_IDENTIFICADOR			{ add_param($1, $2); $$ = NULL; };
 
-list_of_params: params				{ $$ = NULL; }
-| 		params ',' list_of_params	{ $$ = NULL; };
+list_of_params: params				{ $$ = $1; }
+| 		params ',' list_of_params	{ $$ = add_param_to_list($1, $3); };
 
 /****** SIMPLE COMMANDS ******/
 simple_command: local_var_with_init	{ $$ = $1; }
@@ -181,7 +200,7 @@ simple_command: local_var_with_init	{ $$ = $1; }
 command_list: simple_command ';'			{ $$ = $1; }
 | 	      simple_command ';' command_list		{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
-block: '{' command_list '}' 	{ $$ = unary_node(NULL, $2); }
+block: '{' enter_scope command_list leave_scope '}' 	{ $$ = unary_node(NULL, $3);}
 |      '{' '}'			{ $$ = create_node(NULL); };
 
 /** Local variable declaration **/
@@ -193,15 +212,15 @@ type: TK_PR_INT		{ $$ = TYPE_INT; }
 
 initialization: TK_OC_LE directTerm							{ $$ = unary_node($1, $2); };
 
-local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; add_lexeme($$, $4); }
-|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); }
-|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); }
-|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; add_lexeme($$, $2); };
+local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; add_lexeme($$, $4); add_identifier(peek(scope), $3, $4); }
+|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); add_identifier(peek(scope), $2, $3); }
+|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); add_identifier(peek(scope), $2, $3); }
+|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; add_lexeme($$, $2); add_identifier(peek(scope), $1, $2); };
 
-local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ libera(create_node($4)); $$ = NULL; }
-| 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ libera(create_node($3)); $$ = NULL; }
-|	   	        TK_PR_CONST type TK_IDENTIFICADOR				{ libera(create_node($3)); $$ = NULL; }
-|	   	        type TK_IDENTIFICADOR						{ libera(create_node($2)); $$ = NULL; };
+local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4);}
+| 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); }
+|	   	        TK_PR_CONST type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); }
+|	   	        type TK_IDENTIFICADOR						{ add_identifier(peek(scope), $1, $2); };
 
 /** Assignment **/
 id: TK_IDENTIFICADOR '[' expr ']'	{ $$ = create_node(NULL); add_lexeme($$, $1); add_node($$, $3); }
