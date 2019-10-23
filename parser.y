@@ -231,8 +231,8 @@ local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_i
 declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };
 indexer: '[' expr ']'			{ $$ = $2; };
 
-id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); }
-|   declared_id				{ $$ = $1; };
+id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; check_usage(scope, $1); }
+|   declared_id				{ $$ = $1; check_usage(scope, $$); };
 
 assignment: id '=' expr			{ $$ = binary_node($2, $1, $3); };
 
@@ -244,8 +244,8 @@ input: TK_PR_INPUT expr			{ libera($2); $$ = NULL; };
 output: TK_PR_OUTPUT args		{ libera($2); $$ = NULL; };
 
 /** Function call **/
-call: declared_id '(' args ')'		{ $$ = $1; add_node($$, $3); }
-|     declared_id '(' ')'		{ $$ = $1; };
+call: declared_id '(' args ')'		{ $$ = $1; $$->value->token_type = TK_FN; add_node($$, $3); check_usage(scope, $1); }
+|     declared_id '(' ')'		{ $$ = $1; $$->value->token_type = TK_FN; check_usage(scope, $1); };
 
 /** Shift command **/
 shift_op: TK_OC_SL		{ $$ = create_node($1); }

@@ -5,7 +5,9 @@
 #define TK_PR       0  // keyword
 #define TK_SC       1  // special char
 #define TK_OC       2  // compound(?) operator
-#define TK_ID       3  // identifier
+#define TK_ID       3  // variable id
+#define TK_FN       5  // function id
+#define TK_VC       6  // vector id
 #define TK_LT       4  // literal
 
 // Literal type

@@ -57,3 +57,19 @@ void destroy_stack(Stack* stack) {
 
     free(stack);
 }
+
+Symbol* search(Stack* stack, const char* key) {
+    if(stack == NULL) return NULL;
+
+    Symbol* symbol;
+    Item* item = stack->top;
+
+    while(item != NULL) {
+        symbol = get_entry(item->value, key);
+        if(symbol != NULL) return symbol;  // found declaration
+
+        item = item->next;
+    }
+
+    return NULL;
+}

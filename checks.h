@@ -9,7 +9,7 @@
 void check_declaration(Stack* stack, Node* id);
 
 // Throws ERR_VARIABLE, ERR_VECTOR and ERR_FUNCTION
-void check_usage(Node* id);
+void check_usage(Stack* stack, Node* id);
 
 // Throws ERR_MISSING_ARGS, ERR_EXCESS_ARGS and ERR_WRONG_TYPE_ARGS
 void check_args(Node* id);
