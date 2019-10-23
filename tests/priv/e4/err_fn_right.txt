@@ -1,0 +1,8 @@
+int f(int a) {
+	if(a > 0) { return 0; };
+}
+
+int main() {
+	int a <= 10;
+	f(a);
+}
