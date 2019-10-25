@@ -141,7 +141,7 @@ prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); }
 | 					{ $$ = NULL; };
 
 /** SYMBOL TABLE STACK INITIALIZATION **/
-init_env: /* Empty */ { scope = init_stack(); push(scope, create_table()); };
+init_env: /* Empty */ { if(scope == NULL) { scope = init_stack(); push(scope, create_table()); } };
 
 /** ENTER NEW SCOPE **/
 enter_scope: /* Empty */ { push(scope, create_table()); };
@@ -156,25 +156,18 @@ global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(pee
 | 	    type TK_IDENTIFICADOR '[' literal ']' ';'			{ implicit_conversion(TYPE_INT, $4); add_vector(peek(scope), $1, $2, $4); $$ = NULL; };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' enter_scope body leave_scope {
-	$$ = unary_node($3, $7);
-	add_function(peek(scope), $2, $3, NULL);
-	$$ = NULL;
-}
-| 	  type TK_IDENTIFICADOR '(' ')' enter_scope body leave_scope {
-	$$ = unary_node($2, $6);
-	add_function(peek(scope), $1, $2, NULL);
-	$$ = NULL;
-}
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params ')' body leave_scope {
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); } ')' enter_scope body leave_scope {
 	$$ = unary_node($3, $8);
-	add_function(peek(scope), $2, $3, $6);
-	$$ = NULL;
 }
-| 	  type TK_IDENTIFICADOR '(' enter_scope list_of_params ')' body	leave_scope {
+| 	  type TK_IDENTIFICADOR '(' { add_function(peek(scope), $1, $2, NULL); } ')' enter_scope body leave_scope {
 	$$ = unary_node($2, $7);
-	add_function(peek(scope), $1, $2, $5);
-	$$ = NULL;
+
+}
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $2, $3, $6); } ')' body leave_scope {
+	$$ = unary_node($3, $9);
+}
+| 	  type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $1, $2, $5); } ')' body leave_scope {
+	$$ = unary_node($2, $8); 
 };
 
 body: '{' command_list '}' 	{ $$ = $2; }

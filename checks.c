@@ -127,5 +127,5 @@ void check_return_type(Stack* scope, Node* expr_node) {
     if(function->type != expr_node->type) {
         printf("ERR_WRONG_PAR_RETURN. Expecting type %d, but %d was given.\n", function->type, expr_node->type);
         exit(ERR_WRONG_PAR_RETURN);
-    }
+    }   
 }

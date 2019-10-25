@@ -36,7 +36,7 @@ Node* create_node(Lexeme* value) {
     node->n_children = 0;
     node->children = NULL;
 
-    if(value->token_type == TK_ID)
+    if(value != NULL && value->token_type == TK_ID)
         node->type = search(scope, value->token_value.string)->type;
 
     return node;
