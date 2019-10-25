@@ -45,23 +45,41 @@ void check_usage(Stack* stack, Node* id) {
 void implicit_conversion(int expected, Node* given) {
     if(expected == given->type) return;
 
-    if(given->type == TYPE_STRING && expected != TYPE_STRING) {
+    if(given->type == TYPE_STRING) {
         printf("ERR_STRING_TO_X. Cannot convert %d to string.\n", given->type);
         exit(ERR_STRING_TO_X);
     }
 
-    if(given->type == TYPE_CHAR && expected != TYPE_CHAR) {
+    if(given->type == TYPE_CHAR) {
         printf("ERR_CHAR_TO_X. Cannot convert %d to char.\n", given->type);
         exit(ERR_STRING_TO_X);
     }
 
-    if(expected == TYPE_INT && (given->type == TYPE_FLOAT || given->type == TYPE_BOOL))
+    if(expected == TYPE_INT) {
+
         given->type = TYPE_INT;
-    else if(expected == TYPE_FLOAT && (given->type == TYPE_INT || given->type == TYPE_BOOL))
+        given->value->literal_type = LT_INT;
+
+        if(given->type == TYPE_FLOAT)
+            given->value->token_value.integer = (int) given->value->token_value.real;
+
+    } else if(expected == TYPE_FLOAT) {
+
         given->type = TYPE_FLOAT;
-    else if(expected == TYPE_BOOL && (given->type == TYPE_INT || given->type == TYPE_FLOAT))
+        given->value->literal_type = LT_FLOAT;
+        given->value->token_value.real = (float) given->value->token_value.integer;
+
+    } else if(expected == TYPE_BOOL) {
+
         given->type = TYPE_BOOL;
-    else {
+        given->value->literal_type = LT_BOOL;
+
+        if(given->type == TYPE_INT)
+            given->value->token_value.integer = given->value->token_value.integer > 0 ? 1 : 0;
+        else  // float
+            given->value->token_value.integer = given->value->token_value.real > 0 ? 1 : 0;
+
+    } else {
         printf("ERR_WRONG_TYPE. Expecting type %d, but %d was given.\n", expected, given->type);
         exit(ERR_WRONG_TYPE);
     }

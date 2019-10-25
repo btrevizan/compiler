@@ -190,6 +190,12 @@ void add_identifier(Table* table, int type, Lexeme* identifier){
     add_symbol(table, symbol);
 }
 
+void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer) {
+    Symbol *symbol = create_symbol(NATUREZA_VETOR, type, identifier);
+    symbol->size = symbol->size * indexer->value->token_value.integer;
+    add_symbol(table, symbol);
+}
+
 void add_function(Table* table, int type, Lexeme* function, Param* params){
     Table* args = create_table();
     Param* aux;

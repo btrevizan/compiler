@@ -150,10 +150,10 @@ enter_scope: /* Empty */ { push(scope, create_table()); };
 leave_scope: /* Empty */ { pop(scope); };
 
 /** GLOBAL VAR DECLARATION **/
-global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        { add_identifier(peek(scope), $2, $3); $$ = NULL; }
-|	    TK_PR_STATIC type TK_IDENTIFICADOR indexer ';'	{ add_identifier(peek(scope), $2, $3); $$ = NULL; }
-| 	    type TK_IDENTIFICADOR ';'				{ add_identifier(peek(scope), $1, $2); $$ = NULL; }
-| 	    type TK_IDENTIFICADOR indexer ';'			{ add_identifier(peek(scope), $1, $2); $$ = NULL; };
+global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(peek(scope), $2, $3); $$ = NULL; }
+|	    TK_PR_STATIC type TK_IDENTIFICADOR '[' literal ']' ';'	{ implicit_conversion(TYPE_INT, $5); add_vector(peek(scope), $2, $3, $5); $$ = NULL; }
+| 	    type TK_IDENTIFICADOR ';'					{ add_identifier(peek(scope), $1, $2); $$ = NULL; }
+| 	    type TK_IDENTIFICADOR '[' literal ']' ';'			{ implicit_conversion(TYPE_INT, $4); add_vector(peek(scope), $1, $2, $4); $$ = NULL; };
 
 /** FUNCTION **/
 function: TK_PR_STATIC type TK_IDENTIFICADOR '(' ')' enter_scope body leave_scope {
@@ -217,10 +217,10 @@ type: TK_PR_INT		{ $$ = TYPE_INT; }
 
 initialization: TK_OC_LE directTerm							{ $$ = unary_node($1, $2); };
 
-local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; add_identifier(peek(scope), $3, $4); add_lexeme($$, $4); implicit_conversion($3, $$->children[0]); }
-|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); implicit_conversion($2, $$->children[0]); }
-|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); implicit_conversion($2, $$->children[0]); }
-|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; add_identifier(peek(scope), $1, $2); add_lexeme($$, $2); implicit_conversion($1, $$->children[0]); };
+local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; implicit_conversion($3, $$->children[0]); add_identifier(peek(scope), $3, $4); add_lexeme($$, $4); }
+|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); }
+|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); }
+|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; implicit_conversion($1, $$->children[0]); add_identifier(peek(scope), $1, $2); add_lexeme($$, $2); };
 
 local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4); }
 | 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); }
@@ -234,7 +234,7 @@ indexer: '[' expr ']'			{ $$ = $2; implicit_conversion(TYPE_INT, $2); };
 id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; check_usage(scope, $1); }
 |   declared_id				{ $$ = $1; check_usage(scope, $$); };
 
-assignment: id '=' expr			{ $$ = binary_node($2, $1, $3); implicit_conversion($1->type, $3); $$->type = $1->type; };
+assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; };
 
 /** Input and output **/
 args: expr 				{ $$ = $1; }
@@ -251,13 +251,13 @@ call: declared_id '(' args ')'		{ $$ = $1; $$->value->token_type = TK_FN; add_no
 shift_op: TK_OC_SL		{ $$ = create_node($1); }
 | 	  TK_OC_SR		{ $$ = create_node($1); };
 
-shift: id shift_op expr		{ $$ = $2; add_node($$, $1); add_node($$, $3); implicit_conversion(TYPE_INT, $3); };
+shift: id shift_op expr		{ implicit_conversion(TYPE_INT, $3); $$ = $2; add_node($$, $1); add_node($$, $3); };
 
 /** Flow change commands **/
 return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); };
 
 /** If-then-else statement **/
-if: TK_PR_IF '(' expr ')' block		{ $$ = binary_node($1, $3, $5); implicit_conversion(TYPE_BOOL, $3); };
+if: TK_PR_IF '(' expr ')' block		{ implicit_conversion(TYPE_BOOL, $3); $$ = binary_node($1, $3, $5); };
 else: TK_PR_ELSE block			{ $$ = $2; };
 if_else: if else 			{ $$ = $1; add_node($$, $2); }
 | 	 if				{ $$ = $1; };
@@ -270,8 +270,8 @@ for_list_element: local_var_with_init				{ $$ = $1; }
 for_list: for_list_element 					{ $$= $1; }
 | 	  for_list_element ',' for_list				{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
-for: TK_PR_FOR '(' for_list ':' expr ':' for_list ')' block	{ $$ = quaternary_node($1, $3, $5, $7, $9); libera(create_node($4)); libera(create_node($6)); implicit_conversion(TYPE_BOOL, $5); };
-while: TK_PR_WHILE '(' expr ')' TK_PR_DO block			{ $$ = binary_node($1, $3, $6); implicit_conversion(TYPE_BOOL, $3); };
+for: TK_PR_FOR '(' for_list ':' expr ':' for_list ')' block	{ implicit_conversion(TYPE_BOOL, $5); $$ = quaternary_node($1, $3, $5, $7, $9); libera(create_node($4)); libera(create_node($6)); };
+while: TK_PR_WHILE '(' expr ')' TK_PR_DO block			{ implicit_conversion(TYPE_BOOL, $3); $$ = binary_node($1, $3, $6); };
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT		{ $$ = create_node($1); $$->type = TYPE_INT; }
@@ -311,7 +311,7 @@ expr: term				       { $$ = $1; }
 |     expr TK_OC_NE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
 |     expr TK_OC_AND expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
 |     expr TK_OC_OR expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
-|     expr '?' expr ':' expr	{ $$ = ternary_node($4, $1, $3, $5); libera(create_node($2)); }
+|     expr '?' expr ':' expr	{ $$ = ternary_node($4, $1, $3, $5); libera(create_node($2));  check_type(BOOL_OP, $1); }
 |     '(' expr ')'		{ $$ = $2; };
 
 %%

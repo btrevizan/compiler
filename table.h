@@ -72,6 +72,7 @@ Symbol* get_entry(Table* table, const char* key);
 void remove_entry(Table* table, const char* key);
 void add_symbol(Table* table, Symbol* value);
 void add_identifier(Table* table, int type, Lexeme* identifier);
+void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer);
 void add_function(Table* table, int type, Lexeme* function, Param* params);
 
 void delete_symbol(Symbol* symbol);
