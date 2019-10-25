@@ -14,6 +14,8 @@ typedef struct stack {
     int size;
 } Stack;
 
+Stack* scope;
+
 Stack* init_stack();
 Table* peek(Stack* stack);
 void push(Stack* stack, Table* value);

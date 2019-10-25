@@ -20,6 +20,7 @@
 #define NATUREZA_FUNCAO             7
 #define NATUREZA_VETOR              8
 
+#define TYPE_NAN                    -1
 #define TYPE_INT                    10
 #define TYPE_FLOAT                  11
 #define TYPE_CHAR                   12

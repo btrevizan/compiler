@@ -4,6 +4,9 @@
 #include "tree.h"
 #include "stack.h"
 
+#define ARITH_OP    555
+#define BOOL_OP     556
+
 // Throws ERR_UNDECLARED
 // ERR_DECLARED is thrown by the add_entry
 void check_declaration(Stack* stack, Node* id);
@@ -16,6 +19,7 @@ void check_args(Node* id);
 
 // Throws ERR_WRONG_PAR_RETURN, ERR_WRONG_TYPE, ERR_STRING_TO_X,
 // ERR_CHAR_TO_X, ERR_WRONG_PAR_INPUT and ERR_WRONG_PAR_OUTPUT
-void check_type(Node* id);
+void implicit_conversion(int expected, Node* given);
+void check_type(int operation, Node* node);
 
 #endif //COMPILER_CHECKS_H

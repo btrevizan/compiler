@@ -7,6 +7,7 @@ extern void *arvore;
 
 typedef struct node {
     int index;
+    int type;
     struct node* parent;
     struct lexeme* value;
     struct node** children;
@@ -27,5 +28,7 @@ void libera(void *arvore);
 void exporta(void *arvore);
 
 void print_node_value(Lexeme* value);
+
+int infer_type(Node* node1, Node* node2);
 
 #endif //COMPILER_TREE_H

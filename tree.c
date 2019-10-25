@@ -1,5 +1,8 @@
 #include "tree.h"
 #include "lexical.h"
+#include "symbol_table.h"
+#include "error.h"
+#include "stack.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -27,10 +30,14 @@ void add_lexeme(Node* parent, Lexeme* value) {  // alias for add_node(parent, cr
 Node* create_node(Lexeme* value) {
     Node* node = (Node*) malloc(sizeof(Node));
     node->index = -1;
+    node->type = TYPE_NAN;
     node->parent = NULL;
     node->value = value;
     node->n_children = 0;
     node->children = NULL;
+
+    if(value->token_type == TK_ID)
+        node->type = search(scope, value->token_value.string)->type;
 
     return node;
 }
@@ -141,3 +148,24 @@ void exporta(void *arvore) {
 //            break;
 //    }
 //}
+
+int infer_type(Node* node1, Node* node2) {
+    // Same
+    if(node1->type == TYPE_INT && node2->type == TYPE_INT) return TYPE_INT;
+    if(node1->type == TYPE_FLOAT && node2->type == TYPE_FLOAT) return TYPE_FLOAT;
+    if(node1->type == TYPE_BOOL && node2->type == TYPE_BOOL) return TYPE_BOOL;
+
+    // Float and int
+    if(node1->type == TYPE_FLOAT && node2->type == TYPE_INT) return TYPE_FLOAT;
+    if(node1->type == TYPE_INT && node2->type == TYPE_FLOAT) return TYPE_FLOAT;
+
+    // Bool and int
+    if(node1->type == TYPE_BOOL && node2->type == TYPE_INT) return TYPE_INT;
+    if(node1->type == TYPE_INT && node2->type == TYPE_BOOL) return TYPE_INT;
+
+    // Bool and float
+    if(node1->type == TYPE_BOOL && node2->type == TYPE_FLOAT) return TYPE_FLOAT;
+    if(node1->type == TYPE_FLOAT && node2->type == TYPE_BOOL) return TYPE_FLOAT;
+
+    return TYPE_NAN;
+}

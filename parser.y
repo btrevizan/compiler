@@ -12,7 +12,7 @@
 	int yylex(void);
 	void yyerror (char const *s);
 
-	Stack *scope;
+	extern Stack *scope;
 %}
 
 %union {
@@ -217,10 +217,10 @@ type: TK_PR_INT		{ $$ = TYPE_INT; }
 
 initialization: TK_OC_LE directTerm							{ $$ = unary_node($1, $2); };
 
-local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; add_lexeme($$, $4); add_identifier(peek(scope), $3, $4); }
-|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); add_identifier(peek(scope), $2, $3); }
-|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; add_lexeme($$, $3); add_identifier(peek(scope), $2, $3); }
-|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; add_lexeme($$, $2); add_identifier(peek(scope), $1, $2); };
+local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; add_identifier(peek(scope), $3, $4); add_lexeme($$, $4); }
+|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); }
+|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); }
+|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; add_identifier(peek(scope), $1, $2); add_lexeme($$, $2); };
 
 local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4); }
 | 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); }
@@ -229,12 +229,12 @@ local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_i
 
 /** Assignment **/
 declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };
-indexer: '[' expr ']'			{ $$ = $2; };
+indexer: '[' expr ']'			{ $$ = $2; implicit_conversion(TYPE_INT, $2); };
 
 id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; check_usage(scope, $1); }
 |   declared_id				{ $$ = $1; check_usage(scope, $$); };
 
-assignment: id '=' expr			{ $$ = binary_node($2, $1, $3); };
+assignment: id '=' expr			{ $$ = binary_node($2, $1, $3); implicit_conversion($1->type, $3); $$->type = $1->type; };
 
 /** Input and output **/
 args: expr 				{ $$ = $1; }
@@ -274,12 +274,12 @@ for: TK_PR_FOR '(' for_list ':' expr ':' for_list ')' block	{ $$ = quaternary_no
 while: TK_PR_WHILE '(' expr ')' TK_PR_DO block			{ $$ = binary_node($1, $3, $6); };
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
-literal: TK_LIT_INT		{ $$ = create_node($1); }
-| 	 TK_LIT_FLOAT		{ $$ = create_node($1); }
-|	 TK_LIT_FALSE		{ $$ = create_node($1); }
-|	 TK_LIT_TRUE		{ $$ = create_node($1); }
-|	 TK_LIT_CHAR		{ $$ = create_node($1); }
-|	 TK_LIT_STRING		{ $$ = create_node($1); };
+literal: TK_LIT_INT		{ $$ = create_node($1); $$->type = TYPE_INT; }
+| 	 TK_LIT_FLOAT		{ $$ = create_node($1); $$->type = TYPE_FLOAT; }
+|	 TK_LIT_FALSE		{ $$ = create_node($1); $$->type = TYPE_BOOL; }
+|	 TK_LIT_TRUE		{ $$ = create_node($1); $$->type = TYPE_BOOL; }
+|	 TK_LIT_CHAR		{ $$ = create_node($1); $$->type = TYPE_CHAR; }
+|	 TK_LIT_STRING		{ $$ = create_node($1); $$->type = TYPE_STRING; };
 
 directTerm: id 			{ $$ = $1; }
 | 	    literal		{ $$ = $1; };
@@ -287,30 +287,30 @@ directTerm: id 			{ $$ = $1; }
 term: directTerm		{ $$ = $1; }
 |     call			{ $$ = $1; };
 
-expr: term			{ $$ = $1; }
-|     '+' expr			%prec UPLUS  { $$ = unary_node($1, $2); }
-|     '-' expr			%prec UMINUS { $$ = unary_node($1, $2); }
-|     '!' expr			{ $$ = unary_node($1, $2); }
-|     '&' expr			%prec UADDRESS { $$ = unary_node($1, $2); }
-|     '*' expr			%prec UPOINTER { $$ = unary_node($1, $2); }
-|     '?' expr			{ $$ = unary_node($1, $2); }
-|     '#' expr			{ $$ = unary_node($1, $2); }
-|     expr '+' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '-' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '*' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '/' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '%' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '|' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '&' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '^' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '>' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr '<' expr		{ $$ = binary_node($2, $1, $3); }
-|     expr TK_OC_LE expr	{ $$ = binary_node($2, $1, $3); }
-|     expr TK_OC_GE expr	{ $$ = binary_node($2, $1, $3); }
-|     expr TK_OC_EQ expr	{ $$ = binary_node($2, $1, $3); }
-|     expr TK_OC_NE expr	{ $$ = binary_node($2, $1, $3); }
-|     expr TK_OC_AND expr	{ $$ = binary_node($2, $1, $3); }
-|     expr TK_OC_OR expr	{ $$ = binary_node($2, $1, $3); }
+expr: term				       { $$ = $1; }
+|     '+' expr			%prec UPLUS    { $$ = unary_node($1, $2); $$->type = $2->type; check_type(ARITH_OP, $$); }
+|     '-' expr			%prec UMINUS   { $$ = unary_node($1, $2); $$->type = $2->type; check_type(ARITH_OP, $$); }
+|     '!' expr				       { $$ = unary_node($1, $2); $$->type = $2->type; check_type(BOOL_OP, $$); }
+|     '&' expr			%prec UADDRESS { $$ = unary_node($1, $2); /* TODO: pointer type? */ }
+|     '*' expr			%prec UPOINTER { $$ = unary_node($1, $2); /* TODO: type of the pointer? */ }
+|     '?' expr				       { $$ = unary_node($1, $2); /* TODO: what type? */ }
+|     '#' expr				       { $$ = unary_node($1, $2); /* TODO: what type? */ }
+|     expr '+' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '-' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '*' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '/' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '%' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '|' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '&' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '^' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '>' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
+|     expr '<' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
+|     expr TK_OC_LE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
+|     expr TK_OC_GE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
+|     expr TK_OC_EQ expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
+|     expr TK_OC_NE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
+|     expr TK_OC_AND expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
+|     expr TK_OC_OR expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
 |     expr '?' expr ':' expr	{ $$ = ternary_node($4, $1, $3, $5); libera(create_node($2)); }
 |     '(' expr ')'		{ $$ = $2; };
 
