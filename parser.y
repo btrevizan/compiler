@@ -4,7 +4,7 @@
 	#include "lexical.h"
 	#include "tree.h"
 	#include "stack.h"
-	#include "symbol_table.h"
+	#include "table.h"
 	#include "checks.h"
 
 	extern int yylineno;
@@ -254,7 +254,7 @@ shift_op: TK_OC_SL		{ $$ = create_node($1); }
 shift: id shift_op expr		{ $$ = $2; add_node($$, $1); add_node($$, $3); };
 
 /** Flow change commands **/
-return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); };
+return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); };
 
 /** If-then-else statement **/
 if: TK_PR_IF '(' expr ')' block		{ $$ = binary_node($1, $3, $5); };

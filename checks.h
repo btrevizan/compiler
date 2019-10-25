@@ -21,5 +21,6 @@ void check_args(Node* id);
 // ERR_CHAR_TO_X, ERR_WRONG_PAR_INPUT and ERR_WRONG_PAR_OUTPUT
 void implicit_conversion(int expected, Node* given);
 void check_type(int operation, Node* node);
+void check_return_type(Stack* scope, Node* node);
 
 #endif //COMPILER_CHECKS_H
