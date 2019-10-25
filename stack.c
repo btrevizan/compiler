@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "stack.h"
-#include "symbol_table.h"
+#include "table.h"
 
 Stack* init_stack() {
     Stack* stack = malloc(sizeof(stack));

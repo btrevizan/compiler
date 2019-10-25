@@ -1,7 +1,7 @@
 #ifndef COMPILER_STACK_H
 #define COMPILER_STACK_H
 
-#include "symbol_table.h"
+#include "table.h"
 
 typedef struct item {
     struct item* next;

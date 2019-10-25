@@ -1,7 +1,7 @@
 #include "tree.h"
 #include "lexical.h"
-#include "symbol_table.h"
-#include "error.h"
+#include "table.h"
+#include "errors.h"
 #include "stack.h"
 #include <stdlib.h>
 #include <stdio.h>

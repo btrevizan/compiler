@@ -1,6 +1,6 @@
-#include "symbol_table.h"
+#include "table.h"
 #include "lexical.h"
-#include "error.h"
+#include "errors.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

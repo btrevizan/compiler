@@ -3,9 +3,9 @@
 #include "lexical.h"
 #include "checks.h"
 #include "stack.h"
-#include "error.h"
+#include "errors.h"
 #include "tree.h"
-#include "symbol_table.h"
+#include "table.h"
 
 void check_declaration(Stack* stack, Node* id) {
     Symbol* symbol = search(stack, id->value->token_value.string);
