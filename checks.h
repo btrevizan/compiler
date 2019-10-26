@@ -15,7 +15,7 @@ void check_declaration(Stack* stack, Node* id);
 void check_usage(Stack* stack, Node* id);
 
 // Throws ERR_MISSING_ARGS, ERR_EXCESS_ARGS and ERR_WRONG_TYPE_ARGS
-void check_args(Node* id);
+void check_args(Stack *scope, Node *id, Node *args);
 
 // Throws ERR_WRONG_PAR_RETURN, ERR_WRONG_TYPE, ERR_STRING_TO_X,
 // ERR_CHAR_TO_X, ERR_WRONG_PAR_INPUT and ERR_WRONG_PAR_OUTPUT

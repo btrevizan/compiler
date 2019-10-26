@@ -237,8 +237,8 @@ input: TK_PR_INPUT expr			{ libera($2); $$ = NULL; };
 output: TK_PR_OUTPUT args		{ libera($2); $$ = NULL; };
 
 /** Function call **/
-call: declared_id '(' args ')'		{ $$ = $1; $$->value->token_type = TK_FN; add_node($$, $3); check_usage(scope, $1); }
-|     declared_id '(' ')'		{ $$ = $1; $$->value->token_type = TK_FN; check_usage(scope, $1); };
+call: declared_id '(' args ')'		{ $$ = $1; $$->value->token_type = TK_FN; add_node($$, $3); check_usage(scope, $1); check_args(scope, $1, $3); }
+|     declared_id '(' ')'		{ $$ = $1; $$->value->token_type = TK_FN; check_usage(scope, $1); check_args(scope, $1, NULL); };
 
 /** Shift command **/
 shift_op: TK_OC_SL		{ $$ = create_node($1); }

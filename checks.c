@@ -129,3 +129,43 @@ void check_return_type(Stack* scope, Node* expr_node) {
         exit(ERR_WRONG_PAR_RETURN);
     }   
 }
+
+void check_args(Stack *scope, Node *id, Node *args) {
+    Symbol *function = search(scope, id->value->token_value.string);
+    Param* params_list = function->args;
+    Node* args_list = args;
+    int seen_count = 0; // nb of arguments we've already checked
+
+    while(params_list != NULL){
+        if(args_list == NULL) {
+            if(function->args_number != seen_count) {
+                printf("ERR_MISSING_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, seen_count);
+                exit(ERR_MISSING_ARGS);
+            } else {
+                break;
+            } 
+        }
+
+        if(params_list->symbol->type != args_list->type){
+            printf("ERR_WRONG_TYPE_ARGS. Expecting type %d, but %d was given.\n", params_list->symbol->type, args_list->type);
+            exit(ERR_WRONG_TYPE_ARGS);
+        }
+
+        params_list = params_list->next;
+        if(args_list->n_children != 0)
+            args_list = args_list->children[args_list->n_children - 1];
+        else args_list = NULL;
+        seen_count++;
+    }
+
+    if( args_list != NULL ) {
+        while(args_list != NULL) {
+            if(args_list->n_children != 0)
+                args_list = args_list->children[args_list->n_children - 1];
+            else args_list = NULL;
+            seen_count++;
+        }
+        printf("ERR_EXCESS_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, seen_count);
+        exit(ERR_EXCESS_ARGS);
+    }
+}
