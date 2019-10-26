@@ -176,8 +176,8 @@ body: '{' command_list '}' 	{ $$ = $2; }
 params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_param($2, $3); add_symbol(peek(scope), $$->symbol); }
 | 	type TK_IDENTIFICADOR			{ $$ = create_param($1, $2); add_symbol(peek(scope), $$->symbol); };
 
-list_of_params: params				{ $$ = $1; }
-| 		params ',' list_of_params	{ $$ = $1; $$->next = $3; };
+list_of_params: params				{ $$ = $1; $$->count = 1; }
+| 		params ',' list_of_params	{ $$ = $1; $$->next = $3; $$->count = $3->count + 1; };
 
 /****** SIMPLE COMMANDS ******/
 simple_command: local_var_with_init	{ $$ = $1; }

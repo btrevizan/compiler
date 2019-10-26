@@ -197,24 +197,19 @@ void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer) {
 }
 
 void add_function(Table* table, int type, Lexeme* function, Param* params){
-    Table* args = create_table();
-    Param* aux;
-
-    while(params != NULL) {
-        add_symbol(args, params->symbol);
-        aux = params;
-        params = params->next;
-        free(aux);
-    }
-
     Symbol* symbol = create_symbol(NATUREZA_FUNCAO, type, function);
-    symbol->args = args;
+    symbol->args = params;
+
+    if(params == NULL) 
+        symbol->args_number = 0;
+    else
+        symbol->args_number = params->count;
 
     add_symbol(table, symbol);
 }
 
 void delete_symbol(Symbol* symbol) {
-    delete_table(symbol->args);
+    delete_param_list(symbol->args);
     delete_lexeme(symbol->lexeme);
 
     free(symbol);
@@ -242,6 +237,17 @@ void delete_table(Table* table) {
     free(table);
 
     table = NULL;
+}
+
+void delete_param_list(Param* list) {
+    Param *aux;
+
+    while(list != NULL) {
+        delete_symbol(list->symbol);
+        aux = list->next;
+        free(list);
+        list = aux;
+    }
 }
 
 void print_table(Table* table) {

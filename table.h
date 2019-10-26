@@ -37,8 +37,8 @@ typedef struct symbol {
     int nature;
     int type;
     int size;
-    // args_number is in args->count
-    struct table* args;
+    int args_number;
+    struct param* args;
     Lexeme* lexeme;
 } Symbol;
 
@@ -56,6 +56,7 @@ typedef struct table {
 
 typedef struct param {
     Symbol* symbol;
+    int count;          // list size, from this element forward
     struct param* next;
 } Param;
 
@@ -78,6 +79,7 @@ void add_function(Table* table, int type, Lexeme* function, Param* params);
 void delete_symbol(Symbol* symbol);
 void delete_entry(Entry* entry);
 void delete_table(Table* table);
+void delete_param_list(Param* list);
 
 void print_table(Table* table);
 
