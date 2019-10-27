@@ -101,7 +101,18 @@ void check_type(int operation, Node* node) {
             exit(ERR_WRONG_PAR_INPUT);
         }
     } else if(operation == OUTPUT_OP) {
-        //TODO
+        Node* args_list = node;
+
+        while(args_list != NULL) {
+            if(args_list->value->literal_type == LT_STRING) {
+                printf("ERR_WRONG_PAR_RETURN. Output parameter can't be neither a string literal nor an expression.\n");
+                exit(ERR_WRONG_PAR_OUTPUT);
+            }
+            
+            if(args_list->n_children != 0)
+                args_list = args_list->children[args_list->n_children - 1];
+            else args_list = NULL;
+        }
     }
 
 }
