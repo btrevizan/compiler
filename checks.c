@@ -93,8 +93,15 @@ void check_type(int operation, Node* node) {
         if(node->type == TYPE_FLOAT) return;
 
         implicit_conversion(TYPE_INT, node);  // try implicit conversion expecting that node->type = TYPE_BOOL
-    } else if (operation == BOOL_OP) {
+    } else if(operation == BOOL_OP) {
         implicit_conversion(TYPE_BOOL, node);
+    } else if(operation == INPUT_OP) {
+        if(node->value->token_type == TK_ID){
+            printf("ERR_WRONG_PAR_INPUT. Input parameter can't be an identifier.\n");
+            exit(ERR_WRONG_PAR_INPUT);
+        }
+    } else if(operation == OUTPUT_OP) {
+        //TODO
     }
 
 }

@@ -6,6 +6,8 @@
 
 #define ARITH_OP    555
 #define BOOL_OP     556
+#define INPUT_OP	557
+#define OUTPUT_OP	558
 
 // Throws ERR_UNDECLARED
 // ERR_DECLARED is thrown by the add_entry

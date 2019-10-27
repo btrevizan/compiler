@@ -233,7 +233,7 @@ assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node(
 args: expr 				{ $$ = $1; }
 |     expr ',' args			{ $$ = $1; add_node($$, $3); };
 
-input: TK_PR_INPUT expr			{ libera($2); $$ = NULL; };
+input: TK_PR_INPUT expr			{ check_type(INPUT_OP, $2); libera($2); $$ = NULL; };
 output: TK_PR_OUTPUT args		{ libera($2); $$ = NULL; };
 
 /** Function call **/
