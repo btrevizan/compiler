@@ -138,7 +138,7 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 
 prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); }
 |     init_env global_var prog 		{ $$ = NULL; }
-| 					{ $$ = NULL; };
+| 					{ $$ = NULL; destroy_stack(scope);};
 
 /** SYMBOL TABLE STACK INITIALIZATION **/
 init_env: /* Empty */ { if(scope == NULL) { scope = init_stack(); push(scope, create_table()); } };
@@ -151,9 +151,9 @@ leave_scope: /* Empty */ { pop(scope); };
 
 /** GLOBAL VAR DECLARATION **/
 global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(peek(scope), $2, $3); $$ = NULL; }
-|	    TK_PR_STATIC type TK_IDENTIFICADOR '[' literal ']' ';'	{ implicit_conversion(TYPE_INT, $5); add_vector(peek(scope), $2, $3, $5); $$ = NULL; }
+|	    TK_PR_STATIC type TK_IDENTIFICADOR '[' literal ']' ';'	{ implicit_conversion(TYPE_INT, $5); add_vector(peek(scope), $2, $3, $5); libera($5); $$ = NULL; }
 | 	    type TK_IDENTIFICADOR ';'					{ add_identifier(peek(scope), $1, $2); $$ = NULL; }
-| 	    type TK_IDENTIFICADOR '[' literal ']' ';'			{ implicit_conversion(TYPE_INT, $4); add_vector(peek(scope), $1, $2, $4); $$ = NULL; };
+| 	    type TK_IDENTIFICADOR '[' literal ']' ';'			{ implicit_conversion(TYPE_INT, $4); add_vector(peek(scope), $1, $2, $4); libera($4); $$ = NULL; };
 
 /** FUNCTION **/
 function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); } ')' enter_scope body leave_scope {
