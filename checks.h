@@ -21,6 +21,7 @@ void check_args(Stack *scope, Node *id, Node *args);
 
 // Throws ERR_WRONG_PAR_RETURN, ERR_WRONG_TYPE, ERR_STRING_TO_X,
 // ERR_CHAR_TO_X, ERR_WRONG_PAR_INPUT and ERR_WRONG_PAR_OUTPUT
+int implicit_conversion_check(int expected, Node* given);
 void implicit_conversion(int expected, Node* given);
 void check_type(int operation, Node* node);
 void check_return_type(Stack* scope, Node* node);
