@@ -102,7 +102,8 @@ Symbol* create_symbol(int nature, int type, Lexeme* lexeme) {
     symbol->args = NULL;
     symbol->lexeme = malloc(sizeof(Lexeme));
     memmove(symbol->lexeme, lexeme, sizeof(Lexeme));
-    symbol->lexeme->token_value.string = strdup(lexeme->token_value.string);
+    if(lexeme->literal_type == LT_NAL || lexeme->literal_type == LT_STRING)
+        symbol->lexeme->token_value.string = strdup(lexeme->token_value.string);
 
     return symbol;
 }

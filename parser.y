@@ -151,10 +151,10 @@ enter_scope: /* Empty */ { push(scope, create_table()); };
 leave_scope: /* Empty */ { delete_table(pop(scope)); };
 
 /** GLOBAL VAR DECLARATION **/
-global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(peek(scope), $2, $3); $$ = NULL; }
-|	    TK_PR_STATIC type TK_IDENTIFICADOR '[' literal ']' ';'	{ implicit_conversion(TYPE_INT, $5); add_vector(peek(scope), $2, $3, $5); libera($5); $$ = NULL; }
-| 	    type TK_IDENTIFICADOR ';'					{ add_identifier(peek(scope), $1, $2); $$ = NULL; }
-| 	    type TK_IDENTIFICADOR '[' literal ']' ';'			{ implicit_conversion(TYPE_INT, $4); add_vector(peek(scope), $1, $2, $4); libera($4); $$ = NULL; };
+global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(peek(scope), $2, $3); $$ = NULL; delete_lexeme($3); }
+|	    TK_PR_STATIC type TK_IDENTIFICADOR '[' literal ']' ';'	{ implicit_conversion(TYPE_INT, $5); add_vector(peek(scope), $2, $3, $5); libera($5); $$ = NULL; delete_lexeme($3); }
+| 	    type TK_IDENTIFICADOR ';'					{ add_identifier(peek(scope), $1, $2); $$ = NULL; delete_lexeme($2);}
+| 	    type TK_IDENTIFICADOR '[' literal ']' ';'			{ implicit_conversion(TYPE_INT, $4); add_vector(peek(scope), $1, $2, $4); libera($4); $$ = NULL; delete_lexeme($2); };
 
 /** FUNCTION **/
 function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); } ')' enter_scope body leave_scope {
@@ -174,8 +174,8 @@ function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2,
 body: '{' command_list '}' 	{ $$ = $2; }
 |     '{' '}'			{ $$ = NULL; };
 
-params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_param($2, $3); add_symbol(peek(scope), create_symbol(NATUREZA_IDENTIFICADOR, $2, $3)); }
-| 	type TK_IDENTIFICADOR			{ $$ = create_param($1, $2); add_symbol(peek(scope), create_symbol(NATUREZA_IDENTIFICADOR, $1, $2)); };
+params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_param($2, $3); add_symbol(peek(scope), create_symbol(NATUREZA_IDENTIFICADOR, $2, $3)); delete_lexeme($3); }
+| 	type TK_IDENTIFICADOR			{ $$ = create_param($1, $2); add_symbol(peek(scope), create_symbol(NATUREZA_IDENTIFICADOR, $1, $2)); delete_lexeme($2); };
 
 list_of_params: params				{ $$ = $1; $$->count = 1; }
 | 		params ',' list_of_params	{ $$ = $1; $$->next = $3; $$->count = $3->count + 1; };
@@ -216,10 +216,10 @@ local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initializati
 |	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); }
 |	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; implicit_conversion($1, $$->children[0]); add_identifier(peek(scope), $1, $2); add_lexeme($$, $2); };
 
-local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4); }
-| 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); }
-|	   	        TK_PR_CONST type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); }
-|	   	        type TK_IDENTIFICADOR						{ add_identifier(peek(scope), $1, $2); };
+local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4); delete_lexeme($4); }
+| 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); delete_lexeme($3); }
+|	   	        TK_PR_CONST type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); delete_lexeme($3); }
+|	   	        type TK_IDENTIFICADOR						{ add_identifier(peek(scope), $1, $2); delete_lexeme($2); };
 
 /** Assignment **/
 declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };
