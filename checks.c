@@ -118,7 +118,7 @@ void check_type(int operation, Node* node) {
 
         while(args_list != NULL) {
             if(args_list->value->literal_type == LT_CHAR) {
-                printf("ERR_WRONG_PAR_RETURN. Output parameter must be either a string literal or an expression.\n");
+                printf("ERR_WRONG_PAR_OUTPUT. Output parameter must be either a string literal or an expression.\n");
                 exit(ERR_WRONG_PAR_OUTPUT);
             }
 
