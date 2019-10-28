@@ -1,0 +1,6 @@
+//O comando de retorno return deve ser seguido obrigatoriamente por uma expressão cujo tipo é compatível com o tipo de retorno da função
+int main()
+{
+  bool a;
+  return a;
+}

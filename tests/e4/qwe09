@@ -1,0 +1,11 @@
+//Essa verificação de declaração prévia deve considerar o escopo da linguagem.
+//ERR_DECLARED
+int f()
+{
+  return 0;
+}
+
+int f()
+{
+  return 0;
+}

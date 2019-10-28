@@ -1,0 +1,11 @@
+//ERR_EXCESS_ARGS
+int f(int a)
+{
+  return a;
+}
+int main()
+{
+  int a;
+  f(a, a);
+  return a;
+}

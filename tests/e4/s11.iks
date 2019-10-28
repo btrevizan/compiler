@@ -1,0 +1,6 @@
+// ERR_EXCESS_ARGS
+int g(int x){}
+int f()
+{
+  g(10, 12);
+}

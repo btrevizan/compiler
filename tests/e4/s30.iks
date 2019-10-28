@@ -1,0 +1,10 @@
+// ERR_WRONG_PAR_RETURN
+char g()
+{
+   char c;
+   return c;
+}
+int f()
+{
+   return g();
+}

@@ -1,0 +1,8 @@
+//Variáveis somente podem ser usadas sem indexação
+//ERR_VECTOR
+int v[10];
+int f()
+{
+  v = 2;
+  return 0;
+}

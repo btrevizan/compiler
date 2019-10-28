@@ -1,0 +1,8 @@
+//o comando output aceita um literal string ou uma expressão aritmética a ser impressa
+//ERR_WRONG_PAR_OUTPUT
+int main()
+{
+  int a;
+  output 'a';
+  return a;
+}

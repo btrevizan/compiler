@@ -1,0 +1,8 @@
+//O comando input somente aceita identificadores de qualquer tipo como parâmetro
+//ERR_WRONG_PAR_INPUT
+int main()
+{
+  int a;
+  input "um";
+  return a;
+}

@@ -1,0 +1,6 @@
+// ERR_DECLARED
+int f()
+{
+  int x;
+  float x;
+}

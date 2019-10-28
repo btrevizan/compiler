@@ -1,0 +1,7 @@
+// ERR_STRING_TO_X
+int x[10];
+int f()
+{
+  string str;
+  x[str] = 3;
+}

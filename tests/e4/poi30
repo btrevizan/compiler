@@ -1,0 +1,7 @@
+//O comando input somente aceita identificadores de qualquer tipo como parâmetro
+int main()
+{
+  int a;
+  input a;
+  return a;
+}

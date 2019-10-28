@@ -1,0 +1,7 @@
+//Variáveis com o mesmo nome podem existir em escopos diferentes.
+int a;
+int main()
+{
+  float a;
+  return a;
+}

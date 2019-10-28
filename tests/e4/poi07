@@ -1,0 +1,9 @@
+//verificando-se se não houve dupla declaração
+//ERR_DECLARED
+int a;
+int a;
+int f()
+{
+  a = 2;
+  return a;
+}

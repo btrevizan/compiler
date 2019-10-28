@@ -1,0 +1,10 @@
+//ERR_CHAR_TO_X
+int main()
+{
+  char c;
+  int a;
+  int b;
+  int d;
+  a = b + d * c;
+  return b;
+}

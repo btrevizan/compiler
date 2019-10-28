@@ -1,0 +1,11 @@
+// ERR_STRING_TO_X
+string g()
+{
+   string ret;
+   return ret;
+}
+int f()
+{
+  int x;
+  x = 10 + 3.4 * g() + 2.3;
+}

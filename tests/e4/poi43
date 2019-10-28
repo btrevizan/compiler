@@ -1,0 +1,7 @@
+//o comando output aceita um literal string ou uma expressão aritmética a ser impressa
+int main()
+{
+  int a;
+  output "a";
+  return a;
+}

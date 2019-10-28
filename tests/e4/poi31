@@ -1,0 +1,7 @@
+//O comando input somente aceita identificadores de qualquer tipo como parâmetro
+float main()
+{
+  float a;
+  input a;
+  return a;
+}

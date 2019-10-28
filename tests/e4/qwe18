@@ -1,0 +1,15 @@
+//A lista de argumentos fornecidos em uma chamada de função deve ser verificada contra a lista de parâmetros formais na declaração da mesma função.
+int g(int a, int b, int c)
+{
+  int x;
+  return x;
+}
+
+int f()
+{
+  int x;
+  int y;
+  int z;
+  g(x, y, z);
+  return 0;
+}
