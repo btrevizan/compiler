@@ -100,7 +100,9 @@ Symbol* create_symbol(int nature, int type, Lexeme* lexeme) {
     symbol->type = type;
     symbol->size = get_type_size(symbol->type);
     symbol->args = NULL;
-    symbol->lexeme = lexeme;
+    symbol->lexeme = malloc(sizeof(Lexeme));
+    memmove(symbol->lexeme, lexeme, sizeof(Lexeme));
+    symbol->lexeme->token_value.string = strdup(lexeme->token_value.string);
 
     return symbol;
 }
@@ -210,8 +212,8 @@ void add_function(Table* table, int type, Lexeme* function, Param* params){
 
 void delete_symbol(Symbol* symbol) {
     delete_param_list(symbol->args);
-    // Don't free function IDs cause they're freed with the AST
-    if(symbol->lexeme != NULL && symbol->nature != NATUREZA_FUNCAO) delete_lexeme(symbol->lexeme);
+    
+    if(symbol->lexeme != NULL) delete_lexeme(symbol->lexeme);
 
     free(symbol);
     symbol = NULL;

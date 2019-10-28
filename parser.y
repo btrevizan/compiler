@@ -1,6 +1,7 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <string.h>
 	#include "lexical.h"
 	#include "tree.h"
 	#include "stack.h"
@@ -173,8 +174,8 @@ function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2,
 body: '{' command_list '}' 	{ $$ = $2; }
 |     '{' '}'			{ $$ = NULL; };
 
-params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_param($2, $3); add_symbol(peek(scope), $$->symbol); }
-| 	type TK_IDENTIFICADOR			{ $$ = create_param($1, $2); add_symbol(peek(scope), $$->symbol); };
+params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_param($2, $3); add_symbol(peek(scope), create_symbol(NATUREZA_IDENTIFICADOR, $2, $3)); }
+| 	type TK_IDENTIFICADOR			{ $$ = create_param($1, $2); add_symbol(peek(scope), create_symbol(NATUREZA_IDENTIFICADOR, $1, $2)); };
 
 list_of_params: params				{ $$ = $1; $$->count = 1; }
 | 		params ',' list_of_params	{ $$ = $1; $$->next = $3; $$->count = $3->count + 1; };
