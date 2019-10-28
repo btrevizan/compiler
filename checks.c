@@ -109,16 +109,17 @@ void check_type(int operation, Node* node) {
     } else if(operation == BOOL_OP) {
         implicit_conversion(TYPE_BOOL, node);
     } else if(operation == INPUT_OP) {
-        if(node->value->token_type == TK_ID){
-            printf("ERR_WRONG_PAR_INPUT. Input parameter can't be an identifier.\n");
+        if(node->value->token_type != TK_ID){
+            printf("ERR_WRONG_PAR_INPUT. Input parameter must be an identifier.\n");
             exit(ERR_WRONG_PAR_INPUT);
         }
     } else if(operation == OUTPUT_OP) {
         Node* args_list = node;
 
         while(args_list != NULL) {
-            if(args_list->value->literal_type == LT_STRING) {
-                printf("ERR_WRONG_PAR_RETURN. Output parameter can't be neither a string literal nor an expression.\n");
+            if(args_list->value->token_type == TK_ID || args_list->value->token_type == TK_FN || 
+                args_list->value->token_type == TK_VC) {
+                printf("ERR_WRONG_PAR_RETURN. Output parameter must be either a string literal or an expression.\n");
                 exit(ERR_WRONG_PAR_OUTPUT);
             }
 
