@@ -210,7 +210,8 @@ void add_function(Table* table, int type, Lexeme* function, Param* params){
 
 void delete_symbol(Symbol* symbol) {
     delete_param_list(symbol->args);
-    delete_lexeme(symbol->lexeme);
+    // Don't free function IDs cause they're freed with the AST
+    if(symbol->lexeme != NULL && symbol->nature != NATUREZA_FUNCAO) delete_lexeme(symbol->lexeme);
 
     free(symbol);
     symbol = NULL;

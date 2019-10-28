@@ -147,7 +147,7 @@ init_env: /* Empty */ { if(scope == NULL) { scope = init_stack(); push(scope, cr
 enter_scope: /* Empty */ { push(scope, create_table()); };
 
 /** LEAVE SCOPE **/
-leave_scope: /* Empty */ { pop(scope); };
+leave_scope: /* Empty */ { delete_table(pop(scope)); };
 
 /** GLOBAL VAR DECLARATION **/
 global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(peek(scope), $2, $3); $$ = NULL; }
