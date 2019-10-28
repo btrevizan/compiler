@@ -3,6 +3,7 @@
 #include "table.h"
 #include "errors.h"
 #include "stack.h"
+#include "checks.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -36,8 +37,10 @@ Node* create_node(Lexeme* value) {
     node->n_children = 0;
     node->children = NULL;
 
-    if(value != NULL && value->token_type == TK_ID)
+    if(value != NULL && value->token_type == TK_ID) {
+        check_declaration(scope, node);
         node->type = search(scope, value->token_value.string)->type;
+    }
 
     return node;
 }
