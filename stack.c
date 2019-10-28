@@ -4,7 +4,7 @@
 #include "table.h"
 
 Stack* init_stack() {
-    Stack* stack = malloc(sizeof(stack));
+    Stack* stack = malloc(sizeof(Stack));
     stack->top = NULL;
     stack->size = 0;
 
@@ -29,7 +29,7 @@ void push(Stack* stack, Table* value) {
     if(stack->top != NULL) stack->top->prev = item;
 
     stack->top = item;
-    stack->size++;
+    stack->size = stack->size + 1;
 }
 
 Table* pop(Stack* stack) {
@@ -42,7 +42,7 @@ Table* pop(Stack* stack) {
     stack->top = stack->top->next;
     if(stack->top != NULL) stack->top->prev = NULL;
 
-    stack->size--;
+    stack->size = stack->size - 1;
 
     free(item);
     return table;
@@ -58,6 +58,7 @@ void destroy_stack(Stack* stack) {
     }
 
     free(stack);
+    stack = NULL;
 }
 
 Symbol* search(Stack* stack, const char* key) {
