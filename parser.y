@@ -224,7 +224,7 @@ local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_i
 declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };
 indexer: '[' expr ']'			{ $$ = $2; implicit_conversion(TYPE_INT, $2); };
 
-id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; check_usage(scope, $1); }
+id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; $$->type = $1->type; check_usage(scope, $1); }
 |   declared_id				{ $$ = $1; check_usage(scope, $$); };
 
 assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; };
