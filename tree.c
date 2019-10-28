@@ -170,5 +170,7 @@ int infer_type(Node* node1, Node* node2) {
     if(node1->type == TYPE_BOOL && node2->type == TYPE_FLOAT) return TYPE_FLOAT;
     if(node1->type == TYPE_FLOAT && node2->type == TYPE_BOOL) return TYPE_FLOAT;
 
-    return TYPE_NAN;
+    implicit_conversion(node1->type, node2);
+
+    return node2->type;
 }
