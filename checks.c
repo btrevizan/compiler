@@ -117,8 +117,7 @@ void check_type(int operation, Node* node) {
         Node* args_list = node;
 
         while(args_list != NULL) {
-            if(args_list->value->token_type == TK_ID || args_list->value->token_type == TK_FN || 
-                args_list->value->token_type == TK_VC) {
+            if(args_list->value->literal_type == LT_CHAR) {
                 printf("ERR_WRONG_PAR_RETURN. Output parameter must be either a string literal or an expression.\n");
                 exit(ERR_WRONG_PAR_OUTPUT);
             }
