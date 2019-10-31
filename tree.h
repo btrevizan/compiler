@@ -8,6 +8,7 @@ extern void *arvore;
 typedef struct node {
     int index;
     int type;
+    int coercion;
     struct node* parent;
     struct lexeme* value;
     struct node** children;

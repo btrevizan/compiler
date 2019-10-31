@@ -27,6 +27,14 @@
 #define TYPE_STRING                 13
 #define TYPE_BOOL                   14
 
+#define NO_CONVERSION               100
+#define INT_TO_FLOAT                101
+#define INT_TO_BOOL                 102
+#define BOOL_TO_INT                 103
+#define BOOL_TO_FLOAT               104
+#define FLOAT_TO_INT                105
+#define FLOAT_TO_BOOL               106
+
 #define SIZE_INT                    4
 #define SIZE_CHAR                   1
 #define SIZE_FLOAT                  8

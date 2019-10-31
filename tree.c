@@ -32,6 +32,7 @@ Node* create_node(Lexeme* value) {
     Node* node = (Node*) malloc(sizeof(Node));
     node->index = -1;
     node->type = TYPE_NAN;
+    node->coercion = NO_CONVERSION;
     node->parent = NULL;
     node->value = value;
     node->n_children = 0;

@@ -69,27 +69,24 @@ int implicit_conversion_check(int expected, Node* given) {
 
     if(expected == TYPE_INT) {
 
-        given->type = TYPE_INT;
-        given->value->literal_type = LT_INT;
-
         if(given->type == TYPE_FLOAT)
-            given->value->token_value.integer = (int) given->value->token_value.real;
+            given->coercion = FLOAT_TO_INT;
+        else  // bool
+            given->coercion = BOOL_TO_INT;
 
     } else if(expected == TYPE_FLOAT) {
 
-        given->type = TYPE_FLOAT;
-        given->value->literal_type = LT_FLOAT;
-        given->value->token_value.real = (float) given->value->token_value.integer;
+        if(given->type == TYPE_INT)
+            given->coercion = INT_TO_FLOAT;
+        else  // bool
+            given->coercion = BOOL_TO_FLOAT;
 
     } else if(expected == TYPE_BOOL) {
 
-        given->type = TYPE_BOOL;
-        given->value->literal_type = LT_BOOL;
-
         if(given->type == TYPE_INT)
-            given->value->token_value.integer = given->value->token_value.integer > 0 ? 1 : 0;
+            given->coercion = INT_TO_BOOL;
         else  // float
-            given->value->token_value.integer = given->value->token_value.real > 0 ? 1 : 0;
+            given->coercion = FLOAT_TO_BOOL;
 
     } else {
         return ERR_WRONG_TYPE;
