@@ -49,7 +49,7 @@ void implicit_conversion(int expected, Node* given) {
         exit(ERR_STRING_TO_X);
     } else if (res == ERR_CHAR_TO_X){
         printf("ERR_CHAR_TO_X. Cannot convert %d to char.\n", given->type);
-        exit(ERR_STRING_TO_X);
+        exit(ERR_CHAR_TO_X);
     } else if (res == ERR_WRONG_TYPE){
         printf("ERR_WRONG_TYPE. Expecting type %d, but %d was given.\n", expected, given->type);
         exit(ERR_WRONG_TYPE);
