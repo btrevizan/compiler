@@ -1,0 +1,7 @@
+// ERR_STRING_TO_X
+int f()
+{
+  int x;
+  string str;
+  x = 10 + 3.4 * str + 2.3;
+}

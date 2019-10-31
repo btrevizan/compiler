@@ -1,0 +1,12 @@
+//ERR_DECLARED
+int f(int a)
+{
+  int a;
+  return a;
+}
+int main()
+{
+  int b;
+  f(b);
+  return b;
+}

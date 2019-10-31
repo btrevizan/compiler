@@ -1,0 +1,11 @@
+//ERR_WRONG_TYPE_ARGS
+int f(int a)
+{
+  return a;
+}
+char main()
+{
+  char a;
+  f(a);
+  return a;
+}

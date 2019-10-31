@@ -1,0 +1,7 @@
+//Todos os identificadores devem ter sido declarados no momento do seu uso, seja como variável, como vetor ou como função.
+//ERR_UNDECLARED
+int f()
+{
+  a = 2;
+  return a;
+}

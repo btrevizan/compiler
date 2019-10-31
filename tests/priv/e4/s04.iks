@@ -1,0 +1,3 @@
+// ERR_DECLARED
+int f(){}
+int f(){}

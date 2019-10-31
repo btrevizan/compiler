@@ -1,7 +1,8 @@
+// ERR_UNDECLARED
 int f()
 {
-  int x;
   {
     int x;
   };
+  x = 1;
 }

@@ -1,0 +1,11 @@
+// ERR_CHAR_TO_X
+char g()
+{
+   char ret;
+   return ret;
+}
+int f()
+{
+  int x;
+  x = 10 + 3.4 * g() + 2.3;
+}

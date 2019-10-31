@@ -1,0 +1,12 @@
+// ERR_STRING_TO_X
+string g()
+{
+  string ret;
+  return ret;
+}
+
+int f()
+{
+  int x;
+  x = g();
+}

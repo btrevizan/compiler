@@ -1,0 +1,10 @@
+//ERR_STRING_TO_X
+int main()
+{
+  string c;
+  int a;
+  int b;
+  int d;
+  a = b + d * c;
+  return b;
+}

@@ -1,0 +1,8 @@
+//ERR_CHAR_TO_X
+int main()
+{
+  int b;
+  char c;
+  b = c;
+  return b;
+}

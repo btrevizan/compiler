@@ -1,0 +1,6 @@
+// ERR_VECTOR
+int x[10];
+int f()
+{
+  x = 1;
+}

@@ -1,7 +1,8 @@
+// ERR_DECLARED
 int f()
 {
   int x;
   {
-    string x;
+    int x;
   };
 }

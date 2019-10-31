@@ -1,0 +1,7 @@
+//O comando de retorno return deve ser seguido obrigatoriamente por uma expressão cujo tipo é compatível com o tipo de retorno da função
+//ERR_WRONG_PAR_RETURN
+float main()
+{
+  bool a;
+  return "a";
+}

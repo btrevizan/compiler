@@ -1,0 +1,18 @@
+//Todos os identificadores devem ter sido declarados no momento do seu uso, seja como variável, como vetor ou como função.
+//ERR_DECLARED
+float g()
+{
+  float b;
+  return b;
+}
+
+int g()
+{
+  int a;
+  return a;
+}
+
+int f()
+{
+  return g();
+}

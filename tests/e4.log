@@ -1,0 +1,90 @@
+| Grupo   | Test    | Res | VGRESULT              | VGCUTIN | Erro                 | Code | TEST.WORKED |
+|---------+---------+-----+-----------------------+---------+----------------------+------+-------------|
+| Xi      | poi01   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | poi02   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | poi03   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | poi04   |  10 | 0 0 0 17106 0         |   17106 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | poi05   |  10 | 0 0 0 17106 0         |   17106 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | poi06   |  10 | 0 0 0 17182 0         |   17182 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | poi07   |  11 | 0 0 0 16884 0         |   16884 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | poi08   |  11 | 0 0 0 17218 0         |   17218 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | poi09   |  11 | 0 0 0 16948 0         |   16948 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | poi10   |  11 | 0 0 0 17103 0         |   17103 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | poi11   |   0 | 2 0 0 0 0             |       2 |                      |    0 | TRUE        |
+| Xi      | poi12   |  20 | 0 0 0 17311 0         |   17311 | ERR_VARIABLE         |   20 | TRUE        |
+| Xi      | poi13   |  21 | 0 0 0 17291 0         |   17291 | ERR_VECTOR           |   21 | TRUE        |
+| Xi      | poi14   |  22 | 0 0 0 17510 0         |   17510 | ERR_FUNCTION         |   22 | TRUE        |
+| Xi      | poi15   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | poi17   |  31 | 0 0 0 17363 0         |   17363 | ERR_STRING_TO_X      |   31 | TRUE        |
+| Xi      | poi18   |  31 | 0 0 0 17357 0         |   17357 | ERR_CHAR_TO_X        |   32 | FALSE       |
+| Xi      | poi21   |  31 | 0 0 0 17745 0         |   17745 | ERR_CHAR_TO_X        |   32 | FALSE       |
+| Xi      | poi22   |  31 | 0 0 0 17745 0         |   17745 | ERR_STRING_TO_X      |   31 | TRUE        |
+| Xi      | poi24   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | poi25   |  40 | 0 0 0 17568 0         |   17568 | ERR_MISSING_ARGS     |   40 | TRUE        |
+| Xi      | poi26   |  41 | 0 0 0 17716 0         |   17716 | ERR_EXCESS_ARGS      |   41 | TRUE        |
+| Xi      | poi27   |  42 | 0 0 0 17642 0         |   17642 | ERR_WRONG_TYPE_ARGS  |   42 | TRUE        |
+| Xi      | poi28   |  11 | 0 0 0 17300 0         |   17300 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | poi29   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | poi47   |   0 | 2 0 0 0 0             |       2 |                      |    0 | TRUE        |
+| Xi      | poi48   |   0 | 2 0 0 0 0             |       2 |                      |    0 | TRUE        |
+| Xi      | poi49   |   0 | 2 0 0 0 0             |       2 |                      |    0 | TRUE        |
+| Xi      | poi50   |  52 | 0 0 0 17270 0         |   17270 | ERR_WRONG_PAR_RETURN |   52 | TRUE        |
+| Xi      | poi51   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | qwe01   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | qwe02   |  10 | 0 0 0 17106 0         |   17106 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | qwe03   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | qwe04   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | qwe05   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | qwe06   |  10 | 0 0 0 17106 0         |   17106 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | qwe07   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | qwe08   |  11 | 0 0 0 17218 0         |   17218 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | qwe09   |  11 | 0 0 0 17101 0         |   17101 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | qwe10   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | qwe11   |  21 | 0 0 0 17206 0         |   17206 | ERR_VECTOR           |   21 | TRUE        |
+| Xi      | qwe12   |  20 | 0 0 0 17302 0         |   17302 | ERR_VARIABLE         |   20 | TRUE        |
+| Xi      | qwe13   |  22 | 0 0 0 17423 0         |   17423 | ERR_FUNCTION         |   22 | TRUE        |
+| Xi      | qwe14   |  20 | 0 0 0 17182 0         |   17182 | ERR_VARIABLE         |   20 | TRUE        |
+| Xi      | qwe15   |  21 | 0 0 0 17182 0         |   17182 | ERR_VECTOR           |   21 | TRUE        |
+| Xi      | qwe18   |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | qwe19   |  40 | 0 0 0 17945 0         |   17945 | ERR_MISSING_ARGS     |   40 | TRUE        |
+| Xi      | qwe20   |  41 | 0 0 0 18245 0         |   18245 | ERR_EXCESS_ARGS      |   41 | TRUE        |
+| Xi      | qwe21   |  42 | 0 0 0 18095 0         |   18095 | ERR_WRONG_TYPE_ARGS  |   42 | TRUE        |
+| Xi      | s00.iks |  10 | 0 0 0 17106 0         |   17106 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | s01.iks |  10 | 0 0 0 17392 0         |   17392 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | s02.iks |  10 | 0 0 0 17106 0         |   17106 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | s03.iks |  11 | 0 0 0 17218 0         |   17218 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | s04.iks |  11 | 0 0 0 16950 0         |   16950 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | s05.iks |  20 | 0 0 0 17302 0         |   17302 | ERR_VARIABLE         |   20 | TRUE        |
+| Xi      | s06.iks |  21 | 0 0 0 17206 0         |   17206 | ERR_VECTOR           |   21 | TRUE        |
+| Xi      | s07.iks |  22 | 0 0 0 17272 0         |   17272 | ERR_FUNCTION         |   22 | TRUE        |
+| Xi      | s08.iks |  31 | 0 0 0 17354 0         |   17354 | ERR_STRING_TO_X      |   31 | TRUE        |
+| Xi      | s09.iks |  31 | 0 0 0 17348 0         |   17348 | ERR_CHAR_TO_X        |   32 | FALSE       |
+| Xi      | s10.iks |  40 | 0 0 0 17330 0         |   17330 | ERR_MISSING_ARGS     |   40 | TRUE        |
+| Xi      | s11.iks |  41 | 0 0 0 17474 0         |   17474 | ERR_EXCESS_ARGS      |   41 | TRUE        |
+| Xi      | s12.iks |  42 | 0 0 0 17480 0         |   17480 | ERR_WRONG_TYPE_ARGS  |   42 | TRUE        |
+| Xi      | s13.iks |  42 | 0 0 0 17486 0         |   17486 | ERR_WRONG_TYPE_ARGS  |   42 | TRUE        |
+| Xi      | s16.iks |  52 | 0 0 0 17267 0         |   17267 | ERR_WRONG_PAR_RETURN |   52 | TRUE        |
+| Xi      | s17.iks |  31 | 0 0 0 17354 0         |   17354 | ERR_STRING_TO_X      |   31 | TRUE        |
+| Xi      | s18.iks |  31 | 0 0 0 17354 0         |   17354 | ERR_CHAR_TO_X        |   32 | FALSE       |
+| Xi      | s19.iks |  30 | 0 0 0 17278 0         |   17278 | ERR_WRONG_TYPE       |   30 | TRUE        |
+| Xi      | s20.iks |  30 | 0 0 0 17272 0         |   17272 | ERR_WRONG_TYPE       |   30 | TRUE        |
+| Xi      | s21.iks |  30 | 0 0 0 17270 0         |   17270 | ERR_WRONG_TYPE       |   30 | TRUE        |
+| Xi      | s22.iks |  30 | 0 0 0 17276 0         |   17276 | ERR_WRONG_TYPE       |   30 | TRUE        |
+| Xi      | s23.iks |  31 | 0 0 0 17330 0         |   17330 | ERR_STRING_TO_X      |   31 | TRUE        |
+| Xi      | s24.iks |  31 | 0 0 0 17324 0         |   17324 | ERR_CHAR_TO_X        |   32 | FALSE       |
+| Xi      | s25.iks |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | s26.iks |  31 | 0 0 0 17492 0         |   17492 | ERR_CHAR_TO_X        |   32 | FALSE       |
+| Xi      | s27.iks |  31 | 0 0 0 17610 0         |   17610 | ERR_STRING_TO_X      |   31 | TRUE        |
+| Xi      | s28.iks |  31 | 0 0 0 17825 0         |   17825 | ERR_STRING_TO_X      |   31 | TRUE        |
+| Xi      | s29.iks |  31 | 0 0 0 17825 0         |   17825 | ERR_CHAR_TO_X        |   32 | FALSE       |
+| Xi      | s30.iks |  52 | 0 0 0 17480 0         |   17480 | ERR_WRONG_PAR_RETURN |   52 | TRUE        |
+| Xi      | s31.iks |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | s32.iks |  10 | 0 0 0 17248 0         |   17248 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | s33.iks |  10 | 0 0 0 17248 0         |   17248 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | s34.iks |  10 | 0 0 0 17146 0         |   17146 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | s35.iks |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | s36.iks |  11 | 0 0 0 17218 0         |   17218 | ERR_DECLARED         |   11 | TRUE        |
+| Xi      | s37.iks |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |
+| Xi      | s38.iks |  31 | 0 0 0 17569 0         |   17569 | ERR_STRING_TO_X      |   31 | TRUE        |
+| Xi      | s39.iks |  10 | 0 0 0 19234 0         |   19234 | ERR_UNDECLARED       |   10 | TRUE        |
+| Xi      | s40.iks |   0 | no leaks are possible |       0 |                      |    0 | TRUE        |

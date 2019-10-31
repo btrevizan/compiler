@@ -1,0 +1,14 @@
+//A lista de argumentos fornecidos em uma chamada de função deve ser verificada contra a lista de parâmetros formais na declaração da mesma função.
+//ERR_MISSING_ARGS
+int g(int a, int b, int c)
+{
+  return 0;
+}
+
+int f()
+{
+  int x;
+  int y;
+  g(x, y);
+  return 0;
+}

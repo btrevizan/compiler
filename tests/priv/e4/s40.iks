@@ -1,4 +1,4 @@
-//ERR_UNDECLARED
+int x;
 int f()
 {
   {
@@ -9,9 +9,6 @@ int f()
             {
               {
                 {
-                  {
-                     int x;
-                  };
                   {
                      x = 3;
                   };

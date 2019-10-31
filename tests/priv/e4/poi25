@@ -1,0 +1,11 @@
+//ERR_MISSING_ARGS
+int f(int a)
+{
+  return a;
+}
+int main()
+{
+  int a;
+  f();
+  return a;
+}

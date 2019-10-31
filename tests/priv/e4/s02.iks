@@ -1,5 +1,5 @@
 // ERR_UNDECLARED
 int f()
 {
-  x = 1;
+  g();
 }

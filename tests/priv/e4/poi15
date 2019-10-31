@@ -1,0 +1,14 @@
+//O uso de identificadores deve ser compatível com sua declaração e com seu tipo.
+//e funções apenas devem ser usadas como chamada de função
+//isto é, seguidas da lista de argumentos entre parênteses.
+int f(int a, int b, int c)
+{
+  return a;
+}
+
+int main()
+{
+  int a;
+  a = f(a, 2, 3);
+  return a;
+}
