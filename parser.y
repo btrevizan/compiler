@@ -75,6 +75,7 @@
 %type <parameter> list_of_params
 %type <node> prog
 %type <node> global_var
+%type <node> lit_indexer
 %type <node> function
 %type <node> simple_command
 %type <node> command_list
@@ -154,7 +155,11 @@ leave_scope: /* Empty */ { delete_table(pop(scope)); };
 global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(peek(scope), $2, $3); $$ = NULL; delete_lexeme($3); }
 |	    TK_PR_STATIC type TK_IDENTIFICADOR '[' literal ']' ';'	{ implicit_conversion(TYPE_INT, $5); add_vector(peek(scope), $2, $3, $5); libera($5); $$ = NULL; delete_lexeme($3); }
 | 	    type TK_IDENTIFICADOR ';'					{ add_identifier(peek(scope), $1, $2); $$ = NULL; delete_lexeme($2);}
-| 	    type TK_IDENTIFICADOR '[' literal ']' ';'			{ implicit_conversion(TYPE_INT, $4); add_vector(peek(scope), $1, $2, $4); libera($4); $$ = NULL; delete_lexeme($2); };
+| 	    type TK_IDENTIFICADOR lit_indexer ';'			{ add_vector(peek(scope), $1, $2, $3); libera($3); $$ = NULL; delete_lexeme($2); };
+
+/* Literal indexer */
+lit_indexer: '[' literal ']'	{ implicit_conversion(TYPE_INT, $2); $$ = $2;}
+| '[' literal ']' lit_indexer	{ implicit_conversion(TYPE_INT, $2); $$ = $2; add_node($$, $4); };
 
 /** FUNCTION **/
 function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); } ')' enter_scope body leave_scope {
@@ -224,6 +229,7 @@ local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_i
 /** Assignment **/
 declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };
 indexer: '[' expr ']'			{ $$ = $2; implicit_conversion(TYPE_INT, $2); };
+| '[' expr ']' indexer			{ $$ = $2; implicit_conversion(TYPE_INT, $2);  add_node($$, $4); }
 
 id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; $$->type = $1->type; check_usage(scope, $1); }
 |   declared_id				{ $$ = $1; check_usage(scope, $$); };
