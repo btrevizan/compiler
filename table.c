@@ -124,7 +124,7 @@ void add_entry(Table* table, Entry* entry) {
         resize(table, table->base_size * 2);
 
     if(get_entry(table, entry->key) != NULL) {
-        printf("ERR_DECLARED: '%s' was already declared.\n", entry->value->lexeme->token_value.string);
+        fprintf(stderr, "ERR_DECLARED: '%s' was already declared.\n", entry->value->lexeme->token_value.string);
         exit(ERR_DECLARED);
     }
 

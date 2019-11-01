@@ -11,7 +11,7 @@ void check_declaration(Stack* stack, Node* id) {
     Symbol* symbol = search(stack, id->value->token_value.string);
 
     if(symbol == NULL) {
-        printf("ERR_UNDECLARED: '%s' was not declared.\n", id->value->token_value.string);
+        fprintf(stderr, "ERR_UNDECLARED: '%s' was not declared.\n", id->value->token_value.string);
         exit(ERR_UNDECLARED);
     }
 }
@@ -22,7 +22,7 @@ void check_usage(Stack* stack, Node* id) {
     switch (symbol->nature) {
         case NATUREZA_IDENTIFICADOR:
             if(id->value->token_type != TK_ID) {
-                printf("ERR_VARIABLE. '%s' is a variable.\n", id->value->token_value.string);
+                fprintf(stderr, "ERR_VARIABLE. '%s' is a variable.\n", id->value->token_value.string);
                 exit(ERR_VARIABLE);
             }
             break;
@@ -36,7 +36,7 @@ void check_usage(Stack* stack, Node* id) {
 
         case NATUREZA_VETOR:
             if(id->value->token_type != TK_VC) {
-                printf("ERR_VECTOR. '%s' is a vector.\n", id->value->token_value.string);
+                fprintf(stderr, "ERR_VECTOR. '%s' is a vector.\n", id->value->token_value.string);
                 exit(ERR_VECTOR);
             }
     }
@@ -45,13 +45,13 @@ void check_usage(Stack* stack, Node* id) {
 void implicit_conversion(int expected, Node* given) {
     int res = implicit_conversion_check(expected, given);
     if(res == ERR_STRING_TO_X){
-        printf("ERR_STRING_TO_X. Cannot convert %d to string.\n", given->type);
+        fprintf(stderr, "ERR_STRING_TO_X. Cannot convert %d to string.\n", given->type);
         exit(ERR_STRING_TO_X);
     } else if (res == ERR_CHAR_TO_X){
-        printf("ERR_CHAR_TO_X. Cannot convert %d to char.\n", given->type);
+        fprintf(stderr, "ERR_CHAR_TO_X. Cannot convert %d to char.\n", given->type);
         exit(ERR_CHAR_TO_X);
     } else if (res == ERR_WRONG_TYPE){
-        printf("ERR_WRONG_TYPE. Expecting type %d, but %d was given.\n", expected, given->type);
+        fprintf(stderr, "ERR_WRONG_TYPE. Expecting type %d, but %d was given.\n", expected, given->type);
         exit(ERR_WRONG_TYPE);
     }
 }
@@ -107,7 +107,7 @@ void check_type(int operation, Node* node) {
         implicit_conversion(TYPE_BOOL, node);
     } else if(operation == INPUT_OP) {
         if(node->value->token_type != TK_ID){
-            printf("ERR_WRONG_PAR_INPUT. Input parameter must be an identifier.\n");
+            fprintf(stderr, "ERR_WRONG_PAR_INPUT. Input parameter must be an identifier.\n");
             exit(ERR_WRONG_PAR_INPUT);
         }
     } else if(operation == OUTPUT_OP) {
@@ -115,7 +115,7 @@ void check_type(int operation, Node* node) {
 
         while(args_list != NULL) {
             if(args_list->value->literal_type == LT_CHAR) {
-                printf("ERR_WRONG_PAR_OUTPUT. Output parameter must be either a string literal or an expression.\n");
+                fprintf(stderr, "ERR_WRONG_PAR_OUTPUT. Output parameter must be either a string literal or an expression.\n");
                 exit(ERR_WRONG_PAR_OUTPUT);
             }
 
@@ -147,7 +147,7 @@ void check_return_type(Stack* scope, Node* expr_node) {
     }
 
     if(function == NULL) {
-        printf("ERROR. 'return' command in global scope.\n");
+        fprintf(stderr, "ERROR. 'return' command in global scope.\n");
         exit(-1);
     }
 
@@ -155,7 +155,7 @@ void check_return_type(Stack* scope, Node* expr_node) {
     if(function->type != expr_node->type) {
         // Try to cast it to an acceptable type
         if(implicit_conversion_check(function->type, expr_node)){
-            printf("ERR_WRONG_PAR_RETURN. Expecting type %d, but %d was given.\n", function->type, expr_node->type);
+            fprintf(stderr, "ERR_WRONG_PAR_RETURN. Expecting type %d, but %d was given.\n", function->type, expr_node->type);
             exit(ERR_WRONG_PAR_RETURN);
         }
     }   
@@ -171,7 +171,7 @@ void check_args(Stack *scope, Node *id, Node *args) {
         // Check if there's still arguments left to check
         if(args_list == NULL) {
             if(function->args_number != seen_count) {
-                printf("ERR_MISSING_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, seen_count);
+                fprintf(stderr, "ERR_MISSING_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, seen_count);
                 exit(ERR_MISSING_ARGS);
             } else {
                 break;
@@ -182,7 +182,7 @@ void check_args(Stack *scope, Node *id, Node *args) {
         if(params_list->symbol->type != args_list->type){
             // Try to cast it to an acceptable type
             if(implicit_conversion_check(params_list->symbol->type, args_list)){
-                printf("ERR_WRONG_TYPE_ARGS. Expecting type %d, but %d was given.\n", params_list->symbol->type, args_list->type);
+                fprintf(stderr, "ERR_WRONG_TYPE_ARGS. Expecting type %d, but %d was given.\n", params_list->symbol->type, args_list->type);
                 exit(ERR_WRONG_TYPE_ARGS);
             }
         }
@@ -205,7 +205,7 @@ void check_args(Stack *scope, Node *id, Node *args) {
             seen_count++;
         }
         
-        printf("ERR_EXCESS_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, seen_count);
+        fprintf(stderr, "ERR_EXCESS_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, seen_count);
         exit(ERR_EXCESS_ARGS);
     }
 }
