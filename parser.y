@@ -7,6 +7,7 @@
 	#include "stack.h"
 	#include "table.h"
 	#include "checks.h"
+	#include "code.h"
 
 	extern int yylineno;
 

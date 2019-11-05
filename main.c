@@ -10,12 +10,14 @@ extern int yylex_destroy(void);
 void *arvore = NULL;
 void libera (void *arvore);
 void exporta (void *arvore);
+void gera_codigo (void *arvore);
 
 int main (int argc, char **argv)
 {
     int ret = yyparse();
     exporta(arvore);
     libera(arvore);
+    gera_codigo(arvore);
     arvore = NULL;
     yylex_destroy();
     return ret;
