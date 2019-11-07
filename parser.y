@@ -153,9 +153,9 @@ enter_scope: /* Empty */ { push(scope, create_table()); };
 leave_scope: /* Empty */ { delete_table(pop(scope)); };
 
 /** GLOBAL VAR DECLARATION **/
-global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(peek(scope), $2, $3); $$ = NULL; delete_lexeme($3); }
-|	    TK_PR_STATIC type TK_IDENTIFICADOR '[' literal ']' ';'	{ implicit_conversion(TYPE_INT, $5); add_vector(peek(scope), $2, $3, $5); libera($5); $$ = NULL; delete_lexeme($3); }
-| 	    type TK_IDENTIFICADOR ';'					{ add_identifier(peek(scope), $1, $2); $$ = NULL; delete_lexeme($2);}
+global_var: TK_PR_STATIC type TK_IDENTIFICADOR ';'	        	{ add_identifier(peek(scope), $2, $3,  get_local_offset($2, NOT_ARRAY)); $$ = NULL; delete_lexeme($3); }
+|	    TK_PR_STATIC type TK_IDENTIFICADOR lit_indexer ';'	{ add_vector(peek(scope), $2, $3, $4); libera($4); $$ = NULL; delete_lexeme($3); }
+| 	    type TK_IDENTIFICADOR ';'					{ add_identifier(peek(scope), $1, $2, get_offset_rbss($1, NOT_ARRAY)); $$ = NULL; delete_lexeme($2);}
 | 	    type TK_IDENTIFICADOR lit_indexer ';'			{ add_vector(peek(scope), $1, $2, $3); libera($3); $$ = NULL; delete_lexeme($2); };
 
 /* Literal indexer */
@@ -217,15 +217,15 @@ type: TK_PR_INT		{ $$ = TYPE_INT; }
 
 initialization: TK_OC_LE directTerm							{ $$ = unary_node($1, $2); };
 
-local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; implicit_conversion($3, $$->children[0]); add_identifier(peek(scope), $3, $4); add_lexeme($$, $4); }
-|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); }
-|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3); add_lexeme($$, $3); }
-|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; implicit_conversion($1, $$->children[0]); add_identifier(peek(scope), $1, $2); add_lexeme($$, $2); };
+local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; implicit_conversion($3, $$->children[0]); add_identifier(peek(scope), $3, $4, get_local_offset($3, NOT_ARRAY)); add_lexeme($$, $4); }
+|	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3,  get_local_offset($2, NOT_ARRAY)); add_lexeme($$, $3); }
+|	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3,  get_local_offset($2, NOT_ARRAY)); add_lexeme($$, $3); }
+|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; implicit_conversion($1, $$->children[0]); add_identifier(peek(scope), $1, $2,  get_local_offset($1, NOT_ARRAY)); add_lexeme($$, $2); };
 
-local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4); delete_lexeme($4); }
-| 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); delete_lexeme($3); }
-|	   	        TK_PR_CONST type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3); delete_lexeme($3); }
-|	   	        type TK_IDENTIFICADOR						{ add_identifier(peek(scope), $1, $2); delete_lexeme($2); };
+local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4, get_local_offset($3, NOT_ARRAY)); delete_lexeme($4); }
+| 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3,  get_local_offset($2, NOT_ARRAY)); delete_lexeme($3); }
+|	   	        TK_PR_CONST type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3,  get_local_offset($2, NOT_ARRAY)); delete_lexeme($3); }
+|	   	        type TK_IDENTIFICADOR						{ add_identifier(peek(scope), $1, $2,  get_local_offset($1, NOT_ARRAY)); delete_lexeme($2); };
 
 /** Assignment **/
 declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };

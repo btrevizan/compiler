@@ -76,3 +76,7 @@ Symbol* search(Stack* stack, const char* key) {
 
     return NULL;
 }
+
+int is_global(Item *item) {
+    return item->next == NULL ? 1 : 0;
+}

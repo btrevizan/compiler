@@ -1,5 +1,35 @@
 #include "code.h"
 
+/* Global scope's offset */
+int get_offset_rbss(int type, int array_len){
+	static int offset_rbss = 0;
+
+	if(array_len <= 0) 
+		array_len = 1;
+
+	offset_rbss += get_type_size(type)*array_len;
+	
+	return offset_rbss;
+}
+
+void set_local_offset(int offset){
+	offset_rfp = offset;
+}
+
+int get_current_local_offset(){
+	return offset_rfp;
+}
+
+int get_local_offset(int type, int array_len){
+
+	if(array_len <= 0) 
+		array_len = 1;
+
+	offset_rfp += get_type_size(type)*array_len;
+	
+	return offset_rfp;
+}
+
 char* get_register(){
 	static int register_label = 0;	// register allocation, register names are 'r'+register_label
 	

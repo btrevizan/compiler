@@ -188,8 +188,9 @@ void remove_entry(Table* table, const char* key) {
     table->count--;
 }
 
-void add_identifier(Table* table, int type, Lexeme* identifier){
+void add_identifier(Table* table, int type, Lexeme* identifier, long int address){
     Symbol *symbol = create_symbol(NATUREZA_IDENTIFICADOR, type, identifier);
+    symbol->address = address;
     add_symbol(table, symbol);
 }
 
@@ -209,6 +210,9 @@ void add_function(Table* table, int type, Lexeme* function, Param* params){
         symbol->args_number = params->count;
 
     add_symbol(table, symbol);
+
+    // Resets the address relative to rfp
+    set_local_offset(0);
 }
 
 void delete_symbol(Symbol* symbol) {

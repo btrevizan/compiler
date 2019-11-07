@@ -5,6 +5,7 @@
 
 #include "lexical.h"
 #include "tree.h"
+#include "code.h"
 #include <stdlib.h>
 
 #define TABLE_LENGTH 20
@@ -45,6 +46,7 @@ typedef struct symbol {
     int nature;
     int type;
     int size;
+    long int address;
     int args_number;
     struct param* args;
     Lexeme* lexeme;
@@ -76,11 +78,13 @@ Entry* create_entry(const char* key, Symbol* value);
 Symbol* create_symbol(int nature, int type, Lexeme* lexeme);
 Param* create_param(int type, Lexeme* identifier);
 
+int get_type_size(int type);
+
 Symbol* get_entry(Table* table, const char* key);
 
 void remove_entry(Table* table, const char* key);
 void add_symbol(Table* table, Symbol* value);
-void add_identifier(Table* table, int type, Lexeme* identifier);
+void add_identifier(Table* table, int type, Lexeme* identifier, long int address);
 void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer);
 void add_function(Table* table, int type, Lexeme* function, Param* params);
 
