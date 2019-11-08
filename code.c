@@ -1,7 +1,6 @@
 #include "code.h"
 
-/* Global scope's offset */
-int get_offset_rbss(int type, int array_len){
+int get_global_offset(int type, int array_len){
 	static int offset_rbss = 0;
 
 	if(array_len <= 0) 

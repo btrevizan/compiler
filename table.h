@@ -41,12 +41,15 @@
 #define SIZE_FLOAT                  8
 #define SIZE_BOOL                   1
 
+#define GLOBAL                      0
+#define LOCAL                       1
+
 typedef struct symbol {
     // line number is in lexeme->line_number
     int nature;
     int type;
-    int size;
-    long int address;
+    struct dimension* dimension;  // dimensions of array type
+    long long int address;
     int args_number;
     struct param* args;
     Lexeme* lexeme;
@@ -70,6 +73,12 @@ typedef struct param {
     struct param* next;
 } Param;
 
+typedef struct dimension {
+    int size;
+    int count;
+    struct dimension* next;
+} Dim;
+
 static Entry DELETED_ENTRY = {NULL, NULL};
 
 Table* create_table();
@@ -77,6 +86,7 @@ Table* create_sized_table(int size);
 Entry* create_entry(const char* key, Symbol* value);
 Symbol* create_symbol(int nature, int type, Lexeme* lexeme);
 Param* create_param(int type, Lexeme* identifier);
+Dim* create_dim(int type);
 
 int get_type_size(int type);
 
@@ -84,14 +94,17 @@ Symbol* get_entry(Table* table, const char* key);
 
 void remove_entry(Table* table, const char* key);
 void add_symbol(Table* table, Symbol* value);
-void add_identifier(Table* table, int type, Lexeme* identifier, long int address);
-void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer);
+void add_identifier(Table* table, int type, Lexeme* identifier, int scope);
+void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer, int scope);
 void add_function(Table* table, int type, Lexeme* function, Param* params);
+
+Dim* convert_dim(Node *node);
 
 void delete_symbol(Symbol* symbol);
 void delete_entry(Entry* entry);
 void delete_table(Table* table);
 void delete_param_list(Param* list);
+void delete_dim_list(Dim* list);
 
 void print_table(Table* table);
 

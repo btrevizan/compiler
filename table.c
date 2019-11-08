@@ -96,9 +96,13 @@ Entry* create_entry(const char* key, Symbol* value) {
 Symbol* create_symbol(int nature, int type, Lexeme* lexeme) {
     Symbol* symbol = malloc(sizeof(Symbol));
 
+    if(nature == NATUREZA_IDENTIFICADOR || nature == NATUREZA_VETOR)
+        symbol->dimension = create_dim(type);
+    else
+        symbol->dimension = NULL;
+
     symbol->nature = nature;
     symbol->type = type;
-    symbol->size = get_type_size(symbol->type);
     symbol->args = NULL;
     symbol->lexeme = malloc(sizeof(Lexeme));
     memmove(symbol->lexeme, lexeme, sizeof(Lexeme));
@@ -115,6 +119,48 @@ Param* create_param(int type, Lexeme* identifier) {
     param->next = NULL;
 
     return param;
+}
+
+Dim* create_dim(int type) {
+    Dim *d = malloc(sizeof(Dim));
+    d->size = get_type_size(type);
+    d->count = 1;
+    d->next = NULL;
+    return d;
+}
+
+Dim* convert_dim(Node *node) {
+    Node *current;
+    Dim *dimension, *first, *aux;
+    int total_count = 1;
+
+    current = node;
+    first = (current != NULL) ? malloc(sizeof(Dim)) : NULL;
+    
+    if(first != NULL) {
+        first->size = node->value->token_value.integer;
+        total_count *= first->size;
+        current = (current->n_children > 0) ? current = current->children[0] : NULL;
+        first->next = NULL;
+    }
+
+    aux = first;
+
+    while(current != NULL){
+        dimension = malloc(sizeof(Dim));
+        dimension->size = current->value->token_value.integer;
+        total_count *= dimension->size;
+
+        aux->next = dimension;
+        aux = aux->next;
+        current = (current->n_children > 0) ? current = current->children[0] : NULL;
+    }
+    aux->next = NULL;
+
+    if(first != NULL)
+        first->count = total_count;
+
+    return first;
 }
 
 void add_entry(Table* table, Entry* entry) {
@@ -188,16 +234,20 @@ void remove_entry(Table* table, const char* key) {
     table->count--;
 }
 
-void add_identifier(Table* table, int type, Lexeme* identifier, long int address){
+void add_identifier(Table* table, int type, Lexeme* identifier, int scope){
     Symbol *symbol = create_symbol(NATUREZA_IDENTIFICADOR, type, identifier);
-    symbol->address = address;
     add_symbol(table, symbol);
+
+    symbol->address = (scope == GLOBAL) ? get_global_offset(type, NOT_ARRAY) : get_local_offset(type, NOT_ARRAY);
 }
 
-void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer) {
+void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer, int scope) {
     Symbol *symbol = create_symbol(NATUREZA_VETOR, type, identifier);
-    symbol->size = symbol->size * indexer->value->token_value.integer;
+    delete_dim_list(symbol->dimension);
+    symbol->dimension = convert_dim(indexer);
     add_symbol(table, symbol);
+
+    symbol->address = (scope == GLOBAL) ? get_global_offset(type, symbol->dimension->count) : get_local_offset(type, symbol->dimension->count);
 }
 
 void add_function(Table* table, int type, Lexeme* function, Param* params){
@@ -217,6 +267,7 @@ void add_function(Table* table, int type, Lexeme* function, Param* params){
 
 void delete_symbol(Symbol* symbol) {
     delete_param_list(symbol->args);
+    delete_dim_list(symbol->dimension);
     
     if(symbol->lexeme != NULL) delete_lexeme(symbol->lexeme);
 
@@ -252,6 +303,16 @@ void delete_param_list(Param* list) {
 
     while(list != NULL) {
         delete_symbol(list->symbol);
+        aux = list->next;
+        free(list);
+        list = aux;
+    }
+}
+
+void delete_dim_list(Dim* list) {
+    Dim *aux;
+
+    while(list != NULL) {
         aux = list->next;
         free(list);
         list = aux;
