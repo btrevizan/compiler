@@ -49,6 +49,7 @@ typedef struct symbol {
     int nature;
     int type;
     struct dimension* dimension;  // dimensions of array type
+    char* base; // base register for addressing (either rbss or rfp)
     long long int address;
     int args_number;
     struct param* args;
@@ -89,6 +90,7 @@ Param* create_param(int type, Lexeme* identifier);
 Dim* create_dim(int type);
 
 int get_type_size(int type);
+void set_scope(Symbol* symbol, int scope, int type);
 
 Symbol* get_entry(Table* table, const char* key);
 

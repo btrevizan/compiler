@@ -163,6 +163,16 @@ Dim* convert_dim(Node *node) {
     return first;
 }
 
+void set_scope(Symbol* symbol, int scope, int type){
+    if(scope == GLOBAL){
+        symbol->address = get_global_offset(type, NOT_ARRAY);
+        symbol->base = strdup("rbss"); 
+    } else {
+        symbol->address = get_local_offset(type, NOT_ARRAY);
+        symbol->base = strdup("rfp"); 
+    }
+}
+
 void add_entry(Table* table, Entry* entry) {
     if(table == NULL) return;
 
@@ -237,8 +247,7 @@ void remove_entry(Table* table, const char* key) {
 void add_identifier(Table* table, int type, Lexeme* identifier, int scope){
     Symbol *symbol = create_symbol(NATUREZA_IDENTIFICADOR, type, identifier);
     add_symbol(table, symbol);
-
-    symbol->address = (scope == GLOBAL) ? get_global_offset(type, NOT_ARRAY) : get_local_offset(type, NOT_ARRAY);
+    set_scope(symbol, scope, type);
 }
 
 void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer, int scope) {
@@ -246,8 +255,7 @@ void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer, int s
     delete_dim_list(symbol->dimension);
     symbol->dimension = convert_dim(indexer);
     add_symbol(table, symbol);
-
-    symbol->address = (scope == GLOBAL) ? get_global_offset(type, symbol->dimension->count) : get_local_offset(type, symbol->dimension->count);
+    set_scope(symbol, scope, type);
 }
 
 void add_function(Table* table, int type, Lexeme* function, Param* params){
