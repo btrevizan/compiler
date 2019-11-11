@@ -48,8 +48,3 @@ char* get_label(){
 
 	return s;
 }
-
-void gera_codigo(void* arvore){
-	//NOT_YET_IMPLEMENTED
-	return;
-}

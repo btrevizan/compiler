@@ -1,8 +1,8 @@
 all: parser.y scanner.l main.c tree.c table.c stack.c checks.c
 	bison -d parser.y --report-file=report.out -r all
 	flex scanner.l
-	gcc -c lex.yy.c parser.tab.c lexical.c tree.c table.c stack.c checks.c code.c -g
-	gcc -o etapa5 lex.yy.o parser.tab.o lexical.o tree.o table.o stack.o checks.o code.o main.c -ll -lm
+	gcc -c lex.yy.c parser.tab.c lexical.c tree.c table.c stack.c checks.c code.c iloc.c -g
+	gcc -o etapa5 lex.yy.o parser.tab.o lexical.o tree.o table.o stack.o checks.o code.o iloc.o main.c -ll -lm
 
 # test_analysis: etapa3 tests/e2/asl150
 # 	./etapa3 < tests/e2/asl150

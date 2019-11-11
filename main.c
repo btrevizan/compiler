@@ -17,7 +17,6 @@ int main (int argc, char **argv)
     int ret = yyparse();
     exporta(arvore);
     libera(arvore);
-    gera_codigo(arvore);
     arvore = NULL;
     yylex_destroy();
     return ret;

@@ -19,6 +19,4 @@ void set_local_offset(int offset);
 int get_local_offset(int type, int array_len);
 int get_current_local_offset();
 
-void gera_codigo(void* arvore);
-
 #endif //CODE_GEN_H
