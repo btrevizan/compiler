@@ -87,7 +87,7 @@ Code* add_op(Code* code, Operation* op) {
     return new_code;
 }
 
-Code* make_code_load(Stack* scope, Node *id, Code* instr_list) {
+Code* make_code_load(Stack* scope, Node* id, Code* instr_list) {
     Symbol* symbol = search(scope, id->value->token_value.string);
 
     id->temp = get_register();
@@ -96,13 +96,26 @@ Code* make_code_load(Stack* scope, Node *id, Code* instr_list) {
     return add_op(instr_list, op);
 }
 
-Code* make_code_store(Stack* scope, Node *id, Node* expr, Code* instr_list) {
-    Symbol* symbol = search(scope, id->value->token_value.string);
+Code* make_code_store(Stack* scope, Lexeme* id, Node* expr, Code* instr_list) {
+	Operation *op;
+    Symbol* symbol = search(scope, id->token_value.string);
+    Code *last_instr = instr_list;
 
-    Operation *op = init_op_rrc("storeAI", expr->temp, symbol->base, symbol->address);
-    op->type = OP_STC;
+    // expression isn't a literal
+    if(expr->temp != NULL){
+	    op = init_op_rrc("storeAI", expr->temp, symbol->base, symbol->address);
+	    op->type = OP_STC;
+	} else {
+		char *lit_register = get_register();
+		op = init_op_ldc("loadI", lit_register, expr->value->token_value.integer);
+		Code *load_lit = add_op(instr_list, op);
+		last_instr = load_lit;
 
-    return add_op(instr_list, op);
+		op = init_op_rrc("storeAI", lit_register, symbol->base, symbol->address);
+	    op->type = OP_STC;
+	}
+
+    return add_op(last_instr, op);
 }
 
 Code* remove_code(Code* code) {

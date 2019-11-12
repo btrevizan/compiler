@@ -29,6 +29,7 @@ typedef struct operation {
 Operation* init_op_rrr(char* op, char* arg1, char* arg2, char* arg3);
 Operation* init_op_rrc(char* op, char* arg1, char* arg2, int argI);
 Operation* init_op_rr(char* op, char* arg1, char* arg2);
+Operation* init_op_ldc(char* op, char* arg1, int argI);
 Operation* init_dummy();
 Operation* init_nop();
 

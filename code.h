@@ -35,8 +35,8 @@ Code* add_dummy(Code* code);
 Code* add_op(Code* code, Operation* op);
 Code* remove_code(Code* code);
 
-Code* make_code_load(Stack* scope, Node *id, Code* instr_list);
-Code* make_code_store(Stack* scope, Node *id, Node* expr, Code* instr_list);
+Code* make_code_load(Stack* scope, Node* id, Code* instr_list);
+Code* make_code_store(Stack* scope, Lexeme* id, Node* expr, Code* instr_list);
 
 void destroy_code(Code* code);
 void destroy_code_list(Code* code);

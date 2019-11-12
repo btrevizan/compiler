@@ -39,6 +39,17 @@ Operation* init_op_rr(char* op, char* arg1, char* arg2) {
     return operation;
 }
 
+Operation* init_op_ldc(char* op, char* arg1, int argI) {
+    Operation* operation = malloc(sizeof(Operation));
+
+    operation->op = op;
+    operation->arg1 = arg1;
+    operation->argI = argI;
+    operation->type = OP_LDC;
+
+    return operation;
+}
+
 Operation* init_dummy() {
     Operation* operation = malloc(sizeof(Operation));
 
