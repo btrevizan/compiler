@@ -1,4 +1,6 @@
 #include "code.h"
+#include "iloc.h"
+#include <stdlib.h>
 
 int get_global_offset(int type, int array_len){
 	static int offset_rbss = 0;
@@ -47,4 +49,72 @@ char* get_label(){
 	jump_label++;
 
 	return s;
+}
+
+Code* init_code() {
+    Code* code = malloc(sizeof(Code));
+
+    code->operation = NULL;
+    code->next = NULL;
+    code->prev = NULL;
+
+    return code;
+}
+
+Code* add_dummy(Code* code) {
+    Code* new_code = init_code();
+
+    new_code->operation = init_dummy();
+    new_code->prev = code;
+
+    code->next = new_code;
+    return new_code;
+}
+
+Code* add_op(Code* code, Operation* op) {
+    Code* new_code = init_code();
+
+    new_code->operation = op;
+    new_code->prev = code;
+
+    code->next = new_code;
+    return new_code;
+}
+
+Code* remove_code(Code* code) {
+    Code* c;
+
+    if(code->prev == NULL) {
+        c = code->next;
+        c->prev = NULL;
+    } else if(code->next == NULL) {
+        c = code->prev;
+        c->next = NULL;
+    } else {
+        c = code->next;
+
+        code->prev->next = code->next;
+        code->next->prev = code->prev;
+
+        while(c->next != NULL) c = c->next;
+    }
+
+    destroy_code(code);
+    return c;
+}
+
+void destroy_code(Code* code) {
+    destroy_op(code->operation);
+    free(code);
+}
+
+void destroy_code_list(Code* code) {
+    if(code == NULL) return;
+
+    while(code->next != NULL) code = code->next;
+
+    destroy_code_list(code->prev);
+    destroy_code(code);
+
+    code = NULL;
 }
