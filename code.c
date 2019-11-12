@@ -87,6 +87,31 @@ Code* add_op(Code* code, Operation* op) {
     return new_code;
 }
 
+int is_array(Lexeme* lex) {
+	return lex->token_type == TK_VC;
+}
+
+// TODO: need
+char* calculate_address(Symbol* s,  Node* id){
+	Node *current = id->children[1];
+	int address = current->value->token_value.integer;
+	Dim *dimension = s->dimension->next;
+
+	current = current->children[0];
+	while(current != NULL) {
+		address *= dimension->size;
+		address += current->value->token_value.integer;
+
+		current = current->children[0];
+		dimension = dimension->next;
+	}
+
+	address *= get_type_size(s->type);
+	char *addr_reg = get_register();
+
+	return addr_reg;
+}
+
 Code* make_code_load(Stack* scope, Node* id, Code* instr_list) {
     Symbol* symbol = search(scope, id->value->token_value.string);
 
@@ -96,23 +121,46 @@ Code* make_code_load(Stack* scope, Node* id, Code* instr_list) {
     return add_op(instr_list, op);
 }
 
-Code* make_code_store(Stack* scope, Lexeme* id, Node* expr, Code* instr_list) {
+Operation* store_imm_or_reg(Node* expr, Symbol *symbol, Code** instr_list){
 	Operation *op;
-    Symbol* symbol = search(scope, id->token_value.string);
-    Code *last_instr = instr_list;
 
-    // expression isn't a literal
     if(expr->temp != NULL){
+    	// expression isn't a literal
 	    op = init_op_rrc("storeAI", expr->temp, symbol->base, symbol->address);
 	    op->type = OP_STC;
 	} else {
+		// expression is a literal
 		char *lit_register = get_register();
 		op = init_op_ldc("loadI", lit_register, expr->value->token_value.integer);
-		Code *load_lit = add_op(instr_list, op);
-		last_instr = load_lit;
+		Code *load_lit = add_op(*instr_list, op);
+		*instr_list = load_lit;
 
 		op = init_op_rrc("storeAI", lit_register, symbol->base, symbol->address);
 	    op->type = OP_STC;
+	}
+
+	return op;
+}
+
+Code* make_code_store_assign(Stack* scope, Lexeme* id, Node* expr, Code* instr_list) {
+	Operation *op;
+    Symbol* symbol = search(scope, id->token_value.string);
+    Code *last_instr = instr_list;
+    op = store_imm_or_reg(expr, symbol, &last_instr);
+
+    return add_op(last_instr, op);
+}
+
+Code* make_code_store(Stack* scope, Node* id, Node* expr, Code* instr_list) {
+	Operation *op;
+    Symbol* symbol = search(scope, id->value->token_value.string);
+    Code *last_instr = instr_list;
+    char* final_address;
+
+    if(is_array(id->value)){
+	    op = store_imm_or_reg(expr, symbol, &instr_list);
+	} else {
+		final_address = calculate_address(symbol, id);
 	}
 
     return add_op(last_instr, op);
