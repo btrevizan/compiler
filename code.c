@@ -87,11 +87,20 @@ Code* add_op(Code* code, Operation* op) {
     return new_code;
 }
 
-Code* make_code_var(Stack* scope, Node *id, Code* instr_list) {
+Code* make_code_load(Stack* scope, Node *id, Code* instr_list) {
     Symbol* symbol = search(scope, id->value->token_value.string);
 
     id->temp = get_register();
     Operation *op = init_op_rrc("loadAI", symbol->base, id->temp, symbol->address);
+
+    return add_op(instr_list, op);
+}
+
+Code* make_code_store(Stack* scope, Node *id, Node* expr, Code* instr_list) {
+    Symbol* symbol = search(scope, id->value->token_value.string);
+
+    Operation *op = init_op_rrc("storeAI", expr->temp, symbol->base, symbol->address);
+    op->type = OP_STC;
 
     return add_op(instr_list, op);
 }

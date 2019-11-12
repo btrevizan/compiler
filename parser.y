@@ -229,15 +229,15 @@ local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_i
 |	   	        type TK_IDENTIFICADOR						{ add_identifier(peek(scope), $1, $2, LOCAL); delete_lexeme($2); };
 
 /** Assignment **/
-declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); instr_list = make_code_var(scope, $$, instr_list); };
+declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };
 
 indexer: '[' expr ']'			{ $$ = $2; implicit_conversion(TYPE_INT, $2); }
 |        '[' expr ']' indexer	        { $$ = $2; implicit_conversion(TYPE_INT, $2);  add_node($$, $4); };
 
 id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; $$->type = $1->type; check_usage(scope, $1); }
-|   declared_id				{ $$ = $1; check_usage(scope, $$); };
+|   declared_id				{ $$ = $1; check_usage(scope, $$); instr_list = make_code_load(scope, $$, instr_list); };
 
-assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; };
+assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; instr_list = make_code_store(scope, $1, $3, instr_list); };
 
 /** Input and output **/
 args: expr 				{ $$ = $1; }
