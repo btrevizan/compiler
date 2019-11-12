@@ -5,7 +5,6 @@
 
 #include "lexical.h"
 #include "tree.h"
-#include "code.h"
 #include <stdlib.h>
 
 #define TABLE_LENGTH 20

@@ -87,19 +87,19 @@ char* op2str(Operation* op) {
             break;
 
         case OP_STC:
-            snprintf(result, n, "%s %s => %s %d", op->op, op->arg1, op->arg2, op->argI);
+            snprintf(result, n, "%s %s => %s, %d", op->op, op->arg1, op->arg2, op->argI);
             break;
 
         case OP_STR2:
-            snprintf(result, n, "%s %s => %s %s", op->op, op->arg1, op->arg2, op->arg3);
+            snprintf(result, n, "%s %s => %s, %s", op->op, op->arg1, op->arg2, op->arg3);
             break;
 
         case OP_RRR:
-            snprintf(result, n, "%s %s %s => %s", op->op, op->arg1, op->arg2, op->arg3);
+            snprintf(result, n, "%s %s, %s => %s", op->op, op->arg1, op->arg2, op->arg3);
             break;
 
         case OP_RRC:
-            snprintf(result, n, "%s %s %d => %s", op->op, op->arg1, op->argI, op->arg2);
+            snprintf(result, n, "%s %s, %d => %s", op->op, op->arg1, op->argI, op->arg2);
             break;
 
         case OP_RR:

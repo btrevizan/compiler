@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "table.h"
+#include "stack.h"
+#include "tree.h"
 #include "iloc.h"
 
 #define MAX_LENGTH_LABEL 8
@@ -15,6 +17,8 @@ typedef struct code {
     struct code* next;
     struct code* prev;
 } Code;
+
+Code *instr_list;
 
 int offset_rfp;
 
@@ -30,6 +34,8 @@ Code* init_code();
 Code* add_dummy(Code* code);
 Code* add_op(Code* code, Operation* op);
 Code* remove_code(Code* code);
+
+Code* make_code_var(Stack* scope, Node *id, Code* instr_list);
 
 void destroy_code(Code* code);
 void destroy_code_list(Code* code);

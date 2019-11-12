@@ -66,8 +66,11 @@ Code* add_dummy(Code* code) {
 
     new_code->operation = init_dummy();
     new_code->prev = code;
+    new_code->next = NULL;
 
-    code->next = new_code;
+    if(code != NULL)
+    	code->next = new_code;
+
     return new_code;
 }
 
@@ -76,9 +79,21 @@ Code* add_op(Code* code, Operation* op) {
 
     new_code->operation = op;
     new_code->prev = code;
+    new_code->next = NULL;
 
-    code->next = new_code;
+    if(code != NULL)
+    	code->next = new_code;
+
     return new_code;
+}
+
+Code* make_code_var(Stack* scope, Node *id, Code* instr_list) {
+    Symbol* symbol = search(scope, id->value->token_value.string);
+
+    id->temp = get_register();
+    Operation *op = init_op_rrc("loadAI", symbol->base, id->temp, symbol->address);
+
+    return add_op(instr_list, op);
 }
 
 Code* remove_code(Code* code) {

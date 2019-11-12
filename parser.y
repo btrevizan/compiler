@@ -15,6 +15,7 @@
 	void yyerror (char const *s);
 
 	extern Stack *scope;
+	extern Code *instr_list;
 %}
 
 %union {
@@ -228,7 +229,7 @@ local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_i
 |	   	        type TK_IDENTIFICADOR						{ add_identifier(peek(scope), $1, $2, LOCAL); delete_lexeme($2); };
 
 /** Assignment **/
-declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); };
+declared_id: TK_IDENTIFICADOR 		{ $$ = create_node($1); check_declaration(scope, $$); instr_list = make_code_var(scope, $$, instr_list); };
 
 indexer: '[' expr ']'			{ $$ = $2; implicit_conversion(TYPE_INT, $2); }
 |        '[' expr ']' indexer	        { $$ = $2; implicit_conversion(TYPE_INT, $2);  add_node($$, $4); };

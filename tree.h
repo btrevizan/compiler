@@ -9,6 +9,7 @@ typedef struct node {
     int index;
     int type;
     int coercion;
+    char* temp;	// Temporary value or register associated with this node (for code generation)
     struct node* parent;
     struct lexeme* value;
     struct node** children;
