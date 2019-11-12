@@ -112,7 +112,7 @@ char* calculate_address(Symbol* s,  Node* id){
 	return addr_reg;
 }
 
-Code* make_code_load(Stack* scope, Node* id, Code* instr_list) {
+Code* make_code_load(Stack* scope, Node* id) {
     Symbol* symbol = search(scope, id->value->token_value.string);
 
     id->temp = get_register();
@@ -121,7 +121,7 @@ Code* make_code_load(Stack* scope, Node* id, Code* instr_list) {
     return add_op(instr_list, op);
 }
 
-Operation* store_imm_or_reg(Node* expr, Symbol *symbol, Code** instr_list){
+Operation* store_imm_or_reg(Node* expr, Symbol *symbol){
 	Operation *op;
 
     if(expr->temp != NULL){
@@ -132,8 +132,8 @@ Operation* store_imm_or_reg(Node* expr, Symbol *symbol, Code** instr_list){
 		// expression is a literal
 		char *lit_register = get_register();
 		op = init_op_ldc("loadI", lit_register, expr->value->token_value.integer);
-		Code *load_lit = add_op(*instr_list, op);
-		*instr_list = load_lit;
+		Code *load_lit = add_op(instr_list, op);
+		instr_list = load_lit;
 
 		op = init_op_rrc("storeAI", lit_register, symbol->base, symbol->address);
 	    op->type = OP_STC;
@@ -142,28 +142,26 @@ Operation* store_imm_or_reg(Node* expr, Symbol *symbol, Code** instr_list){
 	return op;
 }
 
-Code* make_code_store_assign(Stack* scope, Lexeme* id, Node* expr, Code* instr_list) {
+Code* make_code_store_assign(Stack* scope, Lexeme* id, Node* expr) {
 	Operation *op;
     Symbol* symbol = search(scope, id->token_value.string);
-    Code *last_instr = instr_list;
-    op = store_imm_or_reg(expr, symbol, &last_instr);
+    op = store_imm_or_reg(expr, symbol);
 
-    return add_op(last_instr, op);
+    return add_op(instr_list, op);
 }
 
-Code* make_code_store(Stack* scope, Node* id, Node* expr, Code* instr_list) {
+Code* make_code_store(Stack* scope, Node* id, Node* expr) {
 	Operation *op;
     Symbol* symbol = search(scope, id->value->token_value.string);
-    Code *last_instr = instr_list;
     char* final_address;
 
     if(is_array(id->value)){
-	    op = store_imm_or_reg(expr, symbol, &instr_list);
+	    op = store_imm_or_reg(expr, symbol);
 	} else {
 		final_address = calculate_address(symbol, id);
 	}
 
-    return add_op(last_instr, op);
+    return add_op(instr_list, op);
 }
 
 Code* remove_code(Code* code) {
