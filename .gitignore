@@ -4,3 +4,7 @@ cmake-build-debug/CMakeFiles*
 cmake-build-debug/cmake_install.cmake
 
 lex.yy.c
+*.o
+etapa*
+parser.tab.*
+report.out
