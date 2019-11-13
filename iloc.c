@@ -95,6 +95,20 @@ Operation* init_nop() {
     return operation;
 }
 
+Operation* init_op_label(char* label) {
+    Operation* operation = malloc(sizeof(Operation));
+
+    operation->op = malloc(10);
+    snprintf(operation->op, 10, "%s:", label);
+
+    operation->arg1 = NULL;
+    operation->arg2 = NULL;
+    operation->arg3 = NULL;
+    operation->type = OP_LABEL;
+
+    return operation;
+}
+
 char* op2str(Operation* op) {
     if(op == NULL) return "";
 
