@@ -35,9 +35,9 @@ Code* add_dummy(Code* code);
 Code* add_op(Code* code, Operation* op);
 Code* remove_code(Code* code);
 
-Code* make_code_loadI(Node* literal);
-Code* make_code_loadAI(Stack* scope, Node* id);
-Code* make_code_store(Stack* scope, Lexeme* id, Node* expr);
+Code* make_code_load(Stack* scope, Node* id);
+Code* make_code_store(Stack* scope, Node* id, Node* expr);
+Code* make_code_store_assign(Stack* scope, Lexeme* id, Node* expr);
 
 Code* make_code_nop();
 Code* make_code_binop(char* op, Node* a, Node* b);
@@ -69,7 +69,6 @@ Code* make_code_cmpEQ(char* r1, char* r2, char* r3);
 Code* make_code_cmpGE(char* r1, char* r2, char* r3);
 Code* make_code_cmpGT(char* r1, char* r2, char* r3);
 Code* make_code_cmpNE(char* r1, char* r2, char* r3);
-
 
 void destroy_code(Code* code);
 void destroy_code_list(Code* code);
