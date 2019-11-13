@@ -159,28 +159,41 @@ void make_code_nop() {
     add_op(op);
 }
 
-void make_code_binop(char* op, Node* a, Node* b) {
-    char* r = get_register();
+void make_code_binop(char* op_name, Node* expr1, Node* expr2, Node* op) {
     Operation* operation;
+    op->temp = get_register();
 
-    if(b->temp != NULL) {  // b is not a literal
-        operation = init_op_rrr(op, a->temp, b->temp, r);
-        add_op(operation);
-    } else {
+    if(expr2->temp == NULL) {
+
+        // expr2 is a literal
         char *opi = malloc(10);
-        snprintf(opi, 10, "%sI", op);
+        snprintf(opi, 10, "%sI", op_name);
 
-        operation = init_op_rrc(opi, a->temp, r, b->value->token_value.integer);
-        add_op(operation);
+        operation = init_op_rrc(opi, expr1->temp, op->temp, expr2->value->token_value.integer);
 
-        if (strcmp(op, "sub") == 0 || strcmp(op, "div") == 0) {
+    } else if (expr1->temp == NULL) {
+
+        // expr1 is a literal
+        if (strcmp(op_name, "sub") == 0 || strcmp(op_name, "div") == 0) {
+
             char *ropi = malloc(10);
-            snprintf(ropi, 10, "r%s", opi);
+            snprintf(ropi, 10, "r%sI", op_name);
 
-            Operation *r_operation = init_op_crr(ropi, a->temp, get_register(), b->value->token_value.integer);
-            add_op(r_operation);
+            operation = init_op_crr(ropi, expr2->temp, op->temp, expr1->value->token_value.integer);
+
+        } else {
+
+            char *opi = malloc(10);
+            snprintf(opi, 10, "%sI", op_name);
+
+            operation = init_op_rrc(opi, expr2->temp, op->temp, expr1->value->token_value.integer);
+
         }
+    } else {
+        operation = init_op_rrr(op_name, expr1->temp, expr2->temp, op->temp);
     }
+
+    add_op(operation);
 }
 
 void make_code_conversion(char* op, char* r1, char* r2) {
@@ -188,9 +201,11 @@ void make_code_conversion(char* op, char* r1, char* r2) {
     add_op(operation);
 }
 
-void make_code_flow_control(char* op, char* r1, char* r2, char* r3, int type) {
-    Operation* operation = init_op_rrr(op, r1, r2, r3);
-    operation->type = type;
+void make_code_cmp(char* op_name, Node* expr1, Node* expr2, Node* op) {
+    op->temp = get_register();
+
+    Operation* operation = init_op_rrr(op_name, expr1->temp, expr2->temp, op->temp);
+    operation->type = OP_CMP;
 
     add_op(operation);
 }

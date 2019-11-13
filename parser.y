@@ -298,22 +298,22 @@ expr: term				       { $$ = $1; }
 |     '*' expr			%prec UPOINTER { $$ = unary_node($1, $2); /* TODO: type of the pointer? */ }
 |     '?' expr				       { $$ = unary_node($1, $2); /* TODO: what type? */ }
 |     '#' expr				       { $$ = unary_node($1, $2); /* TODO: what type? */ }
-|     expr '+' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
-|     expr '-' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
-|     expr '*' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
-|     expr '/' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
+|     expr '+' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); make_code_binop("add", $1, $3, $$); }
+|     expr '-' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); make_code_binop("sub", $1, $3, $$); }
+|     expr '*' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); make_code_binop("mult", $1, $3, $$); }
+|     expr '/' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); make_code_binop("div", $1, $3, $$); }
 |     expr '%' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
 |     expr '|' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
 |     expr '&' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
 |     expr '^' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(ARITH_OP, $$); }
-|     expr '>' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
-|     expr '<' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
-|     expr TK_OC_LE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
-|     expr TK_OC_GE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
-|     expr TK_OC_EQ expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
-|     expr TK_OC_NE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
-|     expr TK_OC_AND expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
-|     expr TK_OC_OR expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); }
+|     expr '>' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); make_code_cmp("cmp_GT", $$, $3, $$); }
+|     expr '<' expr		{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); make_code_cmp("cmp_LT", $$, $3, $$); }
+|     expr TK_OC_LE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); make_code_cmp("cmp_LE", $$, $3, $$); }
+|     expr TK_OC_GE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); make_code_cmp("cmp_GE", $$, $3, $$); }
+|     expr TK_OC_EQ expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); make_code_cmp("cmp_EQ", $$, $3, $$); }
+|     expr TK_OC_NE expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); make_code_cmp("cmp_NE", $$, $3, $$); }
+|     expr TK_OC_AND expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); make_code_binop("and", $1, $3, $$); }
+|     expr TK_OC_OR expr	{ $$ = binary_node($2, $1, $3); $$->type = infer_type($1, $3); check_type(BOOL_OP, $$); make_code_binop("or", $1, $3, $$); }
 |     expr '?' expr ':' expr	{ $$ = ternary_node($4, $1, $3, $5); libera(create_node($2));  check_type(BOOL_OP, $1); }
 |     '(' expr ')'		{ $$ = $2; };
 

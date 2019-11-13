@@ -131,6 +131,7 @@ char* op2str(Operation* op) {
             break;
 
         case OP_RRC:
+        case OP_CRR:
             snprintf(result, n, "%s %s, %d => %s", op->op, op->arg1, op->argI, op->arg2);
             break;
 

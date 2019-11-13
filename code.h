@@ -39,10 +39,11 @@ void make_code_store(Stack* scope, Node* id, Node* expr);
 void make_code_store_assign(Stack* scope, Lexeme* id, Node* expr);
 
 void make_code_nop();
-void make_code_binop(char* op, Node* a, Node* b);
-void make_code_conversion(char* op, char* r1, char* r2);
-void make_code_flow_control(char* op, char* r1, char* r2, char* r3, int type);
-void make_code_jump(char* op, char* r1);
+void make_code_binop(char* op_name, Node* expr1, Node* expr2, Node* op);
+void make_code_cmp(char* op_name, Node* expr1, Node* expr2, Node* op);
+
+//void make_code_jump(char* op, char* r1);
+//void make_code_conversion(char* op, char* r1, char* r2);
 
 void destroy_code(Code* code);
 void destroy_code_list(Code* code);
