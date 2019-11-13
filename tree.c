@@ -33,6 +33,7 @@ Node* create_node(Lexeme* value) {
     node->index = -1;
     node->type = TYPE_NAN;
     node->coercion = NO_CONVERSION;
+    node->temp = NULL;
     node->parent = NULL;
     node->value = value;
     node->n_children = 0;
@@ -96,6 +97,7 @@ void libera(void *arvore) {
 
     delete_lexeme(node->value);
     free(node->children);
+    free(node->temp);
     free(node);
 }
 
