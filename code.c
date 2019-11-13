@@ -63,30 +63,19 @@ Code* init_code() {
     return code;
 }
 
-Code* add_dummy(Code* code) {
-    Code* new_code = init_code();
-
-    new_code->operation = init_dummy();
-    new_code->prev = code;
-    new_code->next = NULL;
-
-    if(code != NULL)
-    	code->next = new_code;
-
-    return new_code;
+void add_dummy() {
+    add_op(init_dummy());
 }
 
-Code* add_op(Code* code, Operation* op) {
+void add_op(Operation* op) {
     Code* new_code = init_code();
 
     new_code->operation = op;
-    new_code->prev = code;
+    new_code->prev = instr_list;
     new_code->next = NULL;
 
-    if(code != NULL)
-    	code->next = new_code;
-
-    return new_code;
+    instr_list->next = new_code;
+    instr_list = new_code;
 }
 
 int is_array(Lexeme* lex) {
@@ -114,13 +103,13 @@ char* calculate_address(Symbol* s,  Node* id){
 	return addr_reg;
 }
 
-Code* make_code_load(Stack* scope, Node* id) {
+void make_code_load(Stack* scope, Node* id) {
     Symbol* symbol = search(scope, id->value->token_value.string);
 
     id->temp = get_register();
     Operation *op = init_op_rrc("loadAI", symbol->base, id->temp, symbol->address);
 
-    return add_op(instr_list, op);
+    add_op(op);
 }
 
 Operation* store_imm_or_reg(Node* expr, Symbol *symbol){
@@ -134,8 +123,7 @@ Operation* store_imm_or_reg(Node* expr, Symbol *symbol){
 		// expression is a literal
 		char *lit_register = get_register();
 		op = init_op_ldc("loadI", lit_register, expr->value->token_value.integer);
-		Code *load_lit = add_op(instr_list, op);
-		instr_list = load_lit;
+		add_op(op);
 
 		op = init_op_rrc("storeAI", lit_register, symbol->base, symbol->address);
 	    op->type = OP_STC;
@@ -144,15 +132,15 @@ Operation* store_imm_or_reg(Node* expr, Symbol *symbol){
 	return op;
 }
 
-Code* make_code_store_assign(Stack* scope, Lexeme* id, Node* expr) {
+void make_code_store_assign(Stack* scope, Lexeme* id, Node* expr) {
 	Operation *op;
     Symbol* symbol = search(scope, id->token_value.string);
     op = store_imm_or_reg(expr, symbol);
 
-    return add_op(instr_list, op);
+    add_op(op);
 }
 
-Code* make_code_store(Stack* scope, Node* id, Node* expr) {
+void make_code_store(Stack* scope, Node* id, Node* expr) {
 	Operation *op;
     Symbol* symbol = search(scope, id->value->token_value.string);
     char* final_address;
@@ -163,168 +151,55 @@ Code* make_code_store(Stack* scope, Node* id, Node* expr) {
 		final_address = calculate_address(symbol, id);
 	}
 
-    return add_op(instr_list, op);
+    add_op(op);
 }
 
-Code* make_code_nop() {
+void make_code_nop() {
     Operation* op = init_nop();
-    return add_op(instr_list, op);
+    add_op(op);
 }
 
-Code* make_code_binop(char* op, Node* a, Node* b) {
+void make_code_binop(char* op, Node* a, Node* b) {
     char* r = get_register();
     Operation* operation;
-    Code* last_code = instr_list;
 
     if(b->temp != NULL) {  // b is not a literal
         operation = init_op_rrr(op, a->temp, b->temp, r);
-        last_code = add_op(last_code, operation);
+        add_op(operation);
     } else {
         char *opi = malloc(10);
         snprintf(opi, 10, "%sI", op);
 
         operation = init_op_rrc(opi, a->temp, r, b->value->token_value.integer);
-        last_code = add_op(last_code, operation);
+        add_op(operation);
 
-        if(strcmp(op, "sub") == 0 || strcmp(op, "div") == 0) {
+        if (strcmp(op, "sub") == 0 || strcmp(op, "div") == 0) {
             char *ropi = malloc(10);
             snprintf(ropi, 10, "r%s", opi);
 
-            Operation* r_operation = init_op_crr(ropi, a->temp, get_register(), b->value->token_value.integer);
-            last_code = add_op(last_code, r_operation);
+            Operation *r_operation = init_op_crr(ropi, a->temp, get_register(), b->value->token_value.integer);
+            add_op(r_operation);
         }
     }
-
-    return last_code;
 }
 
-Code* make_code_conversion(char* op, char* r1, char* r2) {
+void make_code_conversion(char* op, char* r1, char* r2) {
     Operation* operation = init_op_rr(op, r1, r2);
-    return add_op(instr_list, operation);
+    add_op(operation);
 }
 
-Code* make_code_flow_control(char* op, char* r1, char* r2, char* r3, int type) {
+void make_code_flow_control(char* op, char* r1, char* r2, char* r3, int type) {
     Operation* operation = init_op_rrr(op, r1, r2, r3);
     operation->type = type;
 
-    return add_op(instr_list, operation);
+    add_op(operation);
 }
 
-Code* make_code_jump(char* op, char* r1) {
+void make_code_jump(char* op, char* r1) {
     Operation* operation = init_op_r(op, r1);
     operation->type = OP_JMP;
 
-    return add_op(instr_list, operation);
-}
-
-Code* make_code_add(Node* a, Node* b) {
-    return make_code_binop("add", a, b);
-}
-
-Code* make_code_sub(Node* a, Node* b) {
-    return make_code_binop("sub", a, b);
-}
-
-Code* make_code_mult(Node* a, Node* b) {
-    return make_code_binop("mult", a, b);
-}
-
-Code* make_code_div(Node* a, Node* b) {
-    return make_code_binop("div", a, b);
-}
-
-Code* make_code_lshift(Node* a, Node* b) {
-    return make_code_binop("lshift", a, b);
-}
-
-Code* make_code_rshift(Node* a, Node* b) {
-    return make_code_binop("rshift", a, b);
-}
-
-Code* make_code_and(Node* a, Node* b) {
-    return make_code_binop("and", a, b);
-}
-
-Code* make_code_or(Node* a, Node* b) {
-    return make_code_binop("or", a, b);
-}
-
-Code* make_code_xor(Node* a, Node* b) {
-    return make_code_binop("xor", a, b);
-}
-
-Code* make_code_i2i(char* r1, char* r2) {
-    return make_code_conversion("i2i", r1, r2);
-}
-
-Code* make_code_c2c(char* r1, char* r2) {
-    return make_code_conversion("c2c", r1, r2);
-}
-
-Code* make_code_c2i(char* r1, char* r2) {
-    return make_code_conversion("c2i", r1, r2);
-}
-
-Code* make_code_i2c(char* r1, char* r2) {
-    return make_code_conversion("i2c", r1, r2);
-}
-
-Code* make_code_jmp(char* r1) {
-    return make_code_jump("jump", r1);
-}
-
-Code* make_code_jmpI(char* l1) {
-    return make_code_jump("jumpI", l1);
-}
-
-Code* make_code_cbr(char* r1, char* l2, char* l3) {
-    return make_code_flow_control("cbr", r1, l2, l3, OP_CBR);
-}
-
-Code* make_code_cmpLT(char* r1, char* r2, char* r3) {
-    return make_code_flow_control("cmp_LT", r1, r2, r3, OP_CMP);
-}
-
-Code* make_code_cmpLE(char* r1, char* r2, char* r3) {
-    return make_code_flow_control("cmp_LE", r1, r2, r3, OP_CMP);
-}
-
-Code* make_code_cmpEQ(char* r1, char* r2, char* r3) {
-    return make_code_flow_control("cmp_EQ", r1, r2, r3, OP_CMP);
-}
-
-Code* make_code_cmpGE(char* r1, char* r2, char* r3) {
-    return make_code_flow_control("cmp_GE", r1, r2, r3, OP_CMP);
-}
-
-Code* make_code_cmpGT(char* r1, char* r2, char* r3) {
-    return make_code_flow_control("cmp_GT", r1, r2, r3, OP_CMP);
-}
-
-Code* make_code_cmpNE(char* r1, char* r2, char* r3) {
-    return make_code_flow_control("cmp_NE", r1, r2, r3, OP_CMP);
-}
-
-Code* remove_code(Code* code) {
-    Code* c;
-
-    if(code->prev == NULL) {
-        c = code->next;
-        c->prev = NULL;
-    } else if(code->next == NULL) {
-        c = code->prev;
-        c->next = NULL;
-    } else {
-        c = code->next;
-
-        code->prev->next = code->next;
-        code->next->prev = code->prev;
-
-        while(c->next != NULL) c = c->next;
-    }
-
-    destroy_code(code);
-    return c;
+    add_op(operation);
 }
 
 void destroy_code(Code* code) {
