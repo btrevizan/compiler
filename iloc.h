@@ -5,17 +5,18 @@
 #define OP_NOP    791
 #define OP_RRR    792
 #define OP_RRC    793
-#define OP_RR     794
-#define OP_R      795
+#define OP_CRR    794
+#define OP_RR     795
+#define OP_R      796
 
-#define OP_CMP    796
-#define OP_JMP    797
-#define OP_CBR    798
-#define OP_LDC    799
-#define OP_LDR    800
-#define OP_STC    801
-#define OP_STR1   802
-#define OP_STR2   803
+#define OP_CMP    797
+#define OP_JMP    798
+#define OP_CBR    799
+#define OP_LDC    800
+#define OP_LDR    801
+#define OP_STC    802
+#define OP_STR1   803
+#define OP_STR2   804
 
 typedef struct operation {
     char* op;    // operator
@@ -28,7 +29,9 @@ typedef struct operation {
 
 Operation* init_op_rrr(char* op, char* arg1, char* arg2, char* arg3);
 Operation* init_op_rrc(char* op, char* arg1, char* arg2, int argI);
+Operation* init_op_crr(char* op, char* arg1, char* arg2, int argI);
 Operation* init_op_rr(char* op, char* arg1, char* arg2);
+Operation* init_op_r(char* op, char* arg1);
 Operation* init_op_ldc(char* op, char* arg1, int argI);
 Operation* init_dummy();
 Operation* init_nop();

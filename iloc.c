@@ -27,6 +27,13 @@ Operation* init_op_rrc(char* op, char* arg1, char* arg2, int argI) {
     return operation;
 }
 
+Operation* init_op_crr(char* op, char* arg1, char* arg2, int argI) {
+    Operation* operation = init_op_rrc(op, arg1, arg2, argI);
+    operation->type = OP_CRR;
+
+    return operation;
+}
+
 Operation* init_op_rr(char* op, char* arg1, char* arg2) {
     Operation* operation = malloc(sizeof(Operation));
 
@@ -39,11 +46,25 @@ Operation* init_op_rr(char* op, char* arg1, char* arg2) {
     return operation;
 }
 
+Operation* init_op_r(char* op, char* arg1) {
+    Operation* operation = malloc(sizeof(Operation));
+
+    operation->op = op;
+    operation->arg1 = arg1;
+    operation->arg2 = NULL;
+    operation->arg3 = NULL;
+    operation->type = OP_R;
+
+    return operation;
+}
+
 Operation* init_op_ldc(char* op, char* arg1, int argI) {
     Operation* operation = malloc(sizeof(Operation));
 
     operation->op = op;
     operation->arg1 = arg1;
+    operation->arg2 = NULL;
+    operation->arg3 = NULL;
     operation->argI = argI;
     operation->type = OP_LDC;
 

@@ -221,7 +221,7 @@ initialization: TK_OC_LE directTerm							{ $$ = unary_node($1, $2); };
 local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; implicit_conversion($3, $$->children[0]); add_identifier(peek(scope), $3, $4, LOCAL); add_lexeme($$, $4); }
 |	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3, LOCAL); add_lexeme($$, $3); }
 |	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3, LOCAL); add_lexeme($$, $3); }
-|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; implicit_conversion($1, $$->children[0]); add_identifier(peek(scope), $1, $2, LOCAL); add_lexeme($$, $2); instr_list = make_code_store(scope, $2, $3, instr_list); };
+|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; implicit_conversion($1, $$->children[0]); add_identifier(peek(scope), $1, $2, LOCAL); add_lexeme($$, $2); instr_list = make_code_store(scope, $2, $3); };
 
 local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4, LOCAL); delete_lexeme($4); }
 | 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3, LOCAL); delete_lexeme($3); }
@@ -237,7 +237,7 @@ indexer: '[' expr ']'			{ $$ = $2; implicit_conversion(TYPE_INT, $2); }
 id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; $$->type = $1->type; check_usage(scope, $1); }
 |   declared_id				{ $$ = $1; check_usage(scope, $$); };
 
-assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; instr_list = make_code_store(scope, $1->value, $3, instr_list); };
+assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; instr_list = make_code_store(scope, $1->value, $3); };
 
 /** Input and output **/
 args: expr 				{ $$ = $1; }
@@ -287,7 +287,7 @@ literal: TK_LIT_INT		{ $$ = create_node($1); $$->type = TYPE_INT; }
 directTerm: id 			{ $$ = $1; }
 | 	    literal		{ $$ = $1; };
 
-term: directTerm		{ $$ = $1; instr_list = make_code_load(scope, $$, instr_list); }
+term: directTerm		{ $$ = $1; instr_list = make_code_loadAI(scope, $$); }
 |     call			{ $$ = $1; };
 
 expr: term				       { $$ = $1; }
