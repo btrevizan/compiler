@@ -153,6 +153,10 @@ char* op2str(Operation* op) {
             snprintf(result, n, "%s %s => %s", op->op, op->arg1, op->arg2);
             break;
 
+        case OP_LABEL:
+            snprintf(result, n, "%s:", op->op);
+            break;
+
         case OP_DUMMY:
         case OP_NOP:
             snprintf(result, n, "%s", op->op);

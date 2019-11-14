@@ -25,7 +25,7 @@ typedef struct operation {
     char* arg2;  // argument 2 as char (register or label)
     char* arg3;  // argument 3 as char (register or label)
     int argI;    // argument as constant
-    int type;    // number of arguments
+    int type;    // type of operation
 } Operation;
 
 Operation* init_op_rrr(char* op, char* arg1, char* arg2, char* arg3);
