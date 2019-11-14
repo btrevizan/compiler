@@ -4,6 +4,7 @@
 #include "errors.h"
 #include "stack.h"
 #include "checks.h"
+#include "code.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -33,7 +34,10 @@ Node* create_node(Lexeme* value) {
     node->index = -1;
     node->type = TYPE_NAN;
     node->coercion = NO_CONVERSION;
+    node->code = init_code();
     node->temp = NULL;
+    node->truelist = NULL;
+    node->falselist = NULL;
     node->parent = NULL;
     node->value = value;
     node->n_children = 0;
@@ -95,9 +99,13 @@ void libera(void *arvore) {
     for(int i = node->n_children - 1; i >= 0; i--)
         libera(node->children[i]);
 
+    destroy_code(node->code);
     delete_lexeme(node->value);
+
     free(node->children);
     free(node->temp);
+    free(node->truelist);
+    free(node->falselist);
     free(node);
 }
 

@@ -1,11 +1,13 @@
 #ifndef COMPILER_BACKPATCHING_H
 #define COMPILER_BACKPATCHING_H
 
-#include "tree.h"
-#include "code.h"
+typedef struct patch {
+    char* arg_ptr;
+    struct patch* next;
+} Patch;
 
-Code* makelist(char* i);
-Code* merge(Code* p1, Code* p2);
-void backpatch(Code* p, char* i);
+Patch* makelist(char* label);
+Patch* merge(Patch* p1, Patch* p2);
+void backpatch(Patch* p, char* label);
 
 #endif //COMPILER_BACKPATCHING_H

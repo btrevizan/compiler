@@ -9,7 +9,10 @@ typedef struct node {
     int index;
     int type;
     int coercion;
+    struct code_t* code;
     char* temp;	// Temporary value or register associated with this node (for code generation)
+    struct patch* truelist;
+    struct patch* falselist;
     struct node* parent;
     struct lexeme* value;
     struct node** children;

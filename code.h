@@ -12,13 +12,11 @@
 #define NOT_ARRAY -1
 #define NOT_DECLARATION -1
 
-typedef struct code {
+typedef struct code_t {
     Operation* operation;
-    struct code* next;
-    struct code* prev;
+    struct code_t* next;
+    struct code_t* prev;
 } Code;
-
-Code *instr_list;
 
 int offset_rfp;
 
@@ -31,21 +29,22 @@ int get_local_offset(int type, int array_len);
 int get_current_local_offset();
 
 Code* init_code();
-void add_dummy();
-void add_op(Operation* op);
+void add_dummy(Code* code);
+void add_op(Code* code, Operation* op);
+void concat_code(Code* c1, Code* c2);
 
-void make_code_load(Stack* scope, Node* id);
-void make_code_store(Stack* scope, Node* id, Node* expr);
-void make_code_store_assign(Stack* scope, Lexeme* id, Node* expr);
+void load(Code* code, Stack* scope, Node* id);
+void store(Code* code, Stack* scope, Node* id, Node* expr);
+void store_assign(Code* code, Stack* scope, Lexeme* id, Node* expr);
 
-void make_code_nop();
-void make_code_binop(char* op_name, Node* expr1, Node* expr2, Node* op);
-void make_code_cmp(char* op_name, Node* expr1, Node* expr2, Node* op);
+void nop(Code* code);
+void binop(Code* code, char* op_name, Node* expr1, Node* expr2, Node* op);
+void cmp(Code* code, char* op_name, Node* expr1, Node* expr2, Node* op);
 
-//void make_code_jump(char* op, char* r1);
-//void make_code_conversion(char* op, char* r1, char* r2);
+//void jump(char* op, char* r1);
+//void conversion(char* op, char* r1, char* r2);
 
-char* load_index(Symbol* s, Node* id);
+char* load_index(Code* code, Symbol* s, Node* id);
 
 void destroy_code(Code* code);
 void destroy_code_list(Code* code);
