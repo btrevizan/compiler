@@ -85,7 +85,7 @@ void concat_code(Code* c1, Code* c2) {
     c1->next = aux2;
     aux2->prev = c1;
 
-    while(c1->next != NULL) c1 = c1->next;
+    c1 = c2;
 }
 
 int is_array(Lexeme* lex) {
