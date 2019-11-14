@@ -82,34 +82,88 @@ int is_array(Lexeme* lex) {
 	return lex->token_type == TK_VC;
 }
 
-// TODO: need
-char* calculate_address(Symbol* s,  Node* id){
+// Loads immeadiate value into register
+char* load_imm(int value) {
+	char *temp = get_register();
+
+	add_op(init_op_ldc("loadI", temp, value));
+
+	return temp;
+}
+
+// Load from memory
+char *load_mem(char* base_reg, int relative_addr) { 
+	char* temp = get_register();
+
+    Operation *op = init_op_rrc("loadAI", base_reg, temp, relative_addr);
+    add_op(op);
+
+    return temp;
+}
+
+// Load array from memory
+char *load_mem_array(char* base_reg, char* index_reg) { 
+	char* temp = get_register();
+
+	Operation *op = init_op_rrr("loadA0", base_reg, index_reg, temp);
+    add_op(op);
+
+    return temp;
+}
+
+char* calculate_address(Symbol* s,  Node* id) {
 	Node *current = id->children[1];
-	int address = current->value->token_value.integer;
+	char* address = load_index(s, id);
 	Dim *dimension = s->dimension->next;
+	char *address_x_width, *index;
 
 	current = current->children[0];
 	while(current != NULL) {
-		address *= dimension->size;
-		address += current->value->token_value.integer;
+		address_x_width = get_register();
+		add_op(init_op_rrc("multI", address, address_x_width, dimension->size));
+
+		index = load_index(s, current);
+		address = get_register();
+		add_op(init_op_rrr("add", index, address_x_width, address));
 
 		current = current->children[0];
 		dimension = dimension->next;
 	}
 
-	address *= get_type_size(s->type);
 	char *addr_reg = get_register();
+	add_op(init_op_rrc("multI", address, addr_reg, get_type_size(s->type)));
 
 	return addr_reg;
+}
+
+char* load_index(Symbol* s, Node* id) {
+	char* temp;
+
+	switch(id->value->token_type){
+		case TK_ID:
+			temp = load_mem(s->base, s->address);
+			break;
+		case TK_VC:
+			temp = load_mem_array(s->base, calculate_address(s,id));
+			break;
+		case TK_LT:
+			temp = load_imm(id->value->token_value.integer);
+			break;
+		default:
+			fprintf(stderr, "The token type %d is invalid.\n", id->value->token_type);
+	}
+
+	return temp;
 }
 
 void make_code_load(Stack* scope, Node* id) {
     Symbol* symbol = search(scope, id->value->token_value.string);
 
-    id->temp = get_register();
-    Operation *op = init_op_rrc("loadAI", symbol->base, id->temp, symbol->address);
-
-    add_op(op);
+    if(is_array(id->value)){
+    	id->temp = load_mem_array(symbol->base, calculate_address(symbol, id));
+	} else {
+		id->temp = load_mem(symbol->base, symbol->address);
+	}
 }
 
 Operation* store_imm_or_reg(Node* expr, Symbol *symbol){
@@ -121,10 +175,7 @@ Operation* store_imm_or_reg(Node* expr, Symbol *symbol){
 	    op->type = OP_STC;
 	} else {
 		// expression is a literal
-		char *lit_register = get_register();
-		op = init_op_ldc("loadI", lit_register, expr->value->token_value.integer);
-		add_op(op);
-
+		char *lit_register = load_imm(expr->value->token_value.integer);
 		op = init_op_rrc("storeAI", lit_register, symbol->base, symbol->address);
 	    op->type = OP_STC;
 	}
@@ -146,9 +197,9 @@ void make_code_store(Stack* scope, Node* id, Node* expr) {
     char* final_address;
 
     if(is_array(id->value)){
-	    op = store_imm_or_reg(expr, symbol);
+    	final_address = calculate_address(symbol, id);
 	} else {
-		final_address = calculate_address(symbol, id);
+		op = store_imm_or_reg(expr, symbol);
 	}
 
     add_op(op);

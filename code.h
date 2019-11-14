@@ -45,6 +45,8 @@ void make_code_cmp(char* op_name, Node* expr1, Node* expr2, Node* op);
 //void make_code_jump(char* op, char* r1);
 //void make_code_conversion(char* op, char* r1, char* r2);
 
+char* load_index(Symbol* s, Node* id);
+
 void destroy_code(Code* code);
 void destroy_code_list(Code* code);
 
