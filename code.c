@@ -105,6 +105,13 @@ CodeList* concat_code(CodeList* c1, CodeList* c2) {
     return codelist;
 }
 
+Operation* jump(char* op, char* r1) {
+    Operation* operation = init_op_r(op, r1);
+    operation->type = OP_JMP;
+
+    return operation;
+}
+
 int is_array(Lexeme* lex) {
 	return lex->token_type == TK_VC;
 }
@@ -200,7 +207,32 @@ Operation* store_imm_or_reg(CodeList* codelist, Node* expr, Symbol *symbol){
     	// expression isn't a literal
 	    op = init_op_rrc("storeAI", expr->temp, symbol->base, symbol->address);
 	    op->type = OP_STC;
-	} else {
+	} else if (expr->truelist != NULL || expr->falselist != NULL){
+        // expression is a boolean
+        char* t_label = get_label();
+        char* f_label = get_label();
+        char* next_label = get_label();
+        char *zero_value = load_imm(codelist, 0);
+        char *one_value = load_imm(codelist, 1);
+
+        // Add label, backpatch truelist to label, store 1 into variable, jump to next
+        add_op(codelist, init_op_label(t_label));
+        backpatch(expr->truelist, t_label);
+        op = init_op_rrc("storeAI", one_value, symbol->base, symbol->address);
+        op->type = OP_STC;
+        add_op(codelist, jump("jumpI", next_label));
+
+        // Add label, backpatch falselist to label, store 0 into variable, jump to next
+        add_op(codelist, init_op_label(f_label));
+        backpatch(expr->truelist, f_label);
+        op = init_op_rrc("storeAI", zero_value, symbol->base, symbol->address);
+        op->type = OP_STC;
+        add_op(codelist, jump("jumpI", next_label));
+
+        // After assignment code, put a label so we can jump there after assignment
+        add_op(codelist, init_op_label(next_label));
+        op->type = OP_JMP;
+    } else {
 		// expression is a literal
 		char *lit_register = load_imm(codelist, expr->value->token_value.integer);
 		op = init_op_rrc("storeAI", lit_register, symbol->base, symbol->address);
@@ -215,7 +247,7 @@ void store_assign(CodeList* codelist, Stack* scope, Lexeme* id, Node* expr) {
     Symbol* symbol = search(scope, id->token_value.string);
     op = store_imm_or_reg(codelist, expr, symbol);
 
-    add_op(codelist, op);
+    if(op->type != OP_JMP) add_op(codelist, op);
 }
 
 void store(CodeList* codelist, Stack* scope, Node* id, Node* expr) {
@@ -229,7 +261,7 @@ void store(CodeList* codelist, Stack* scope, Node* id, Node* expr) {
 		op = store_imm_or_reg(codelist, expr, symbol);
 	}
 
-    add_op(codelist, op);
+    if(op->type != OP_JMP) add_op(codelist, op);
 }
 
 void nop(CodeList* codelist) {
@@ -357,13 +389,6 @@ void or(Node* expr1, Node* expr2, Node* op) {
 void not(Node* expr, Node* op) {
     op->falselist = expr->truelist;
     op->truelist = expr->falselist;
-}
-
-Operation* jump(char* op, char* r1) {
-    Operation* operation = init_op_r(op, r1);
-    operation->type = OP_JMP;
-
-    return operation;
 }
 
 void if_then_else(Node* if_then, Node* else_block) {
