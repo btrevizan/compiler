@@ -34,7 +34,7 @@ Node* create_node(Lexeme* value) {
     node->index = -1;
     node->type = TYPE_NAN;
     node->coercion = NO_CONVERSION;
-    node->codelist = init_codelist();
+    node->codelist = NULL;
     node->temp = NULL;
     node->truelist = NULL;
     node->falselist = NULL;

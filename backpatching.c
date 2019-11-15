@@ -11,11 +11,16 @@ Patch* makelist(char* label) {
     return patch;
 }
 
-void merge(Patch* p1, Patch* p2) {
-    Patch* aux = p1;
-    while(aux->next != NULL) aux = aux->next;
+Patch* merge(Patch* p1, Patch* p2) {
+    if(p1 == NULL) {
+        (*p1) = (*p2);
+    } else {
+        Patch* aux = p1;
+        while(aux->next != NULL) aux = aux->next;
+        aux->next = p2;
+    }
 
-    aux->next = p2;
+    return p1;
 }
 
 void backpatch(Patch* p, char* label) {

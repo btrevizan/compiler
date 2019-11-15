@@ -7,7 +7,7 @@ typedef struct patch {
 } Patch;
 
 Patch* makelist(char* label);
-void merge(Patch* p1, Patch* p2);
+Patch* merge(Patch* p1, Patch* p2);
 void backpatch(Patch* p, char* label);
 
 #endif //COMPILER_BACKPATCHING_H

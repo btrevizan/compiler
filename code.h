@@ -44,8 +44,10 @@ void store(CodeList* codelist, Stack* scope, Node* id, Node* expr);
 void store_assign(CodeList* codelist, Stack* scope, Lexeme* id, Node* expr);
 
 void nop(CodeList* codelist);
-void binop(CodeList* codelist, char* op_name, Node* expr1, Node* expr2, Node* op);
-void cmp(CodeList* codelist, char* op_name, Node* expr1, Node* expr2, Node* op);
+void numeric(char* op_name, Node* expr1, Node* expr2, Node* op);
+void cmp(char* op_name, Node* expr1, Node* expr2, Node* op);
+void and(Node* expr1, Node* expr2, Node* op);
+void or(Node* expr1, Node* expr2, Node* op);
 
 //void jump(char* op, char* r1);
 //void conversion(char* op, char* r1, char* r2);

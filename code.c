@@ -1,6 +1,7 @@
 #include "lexical.h"
 #include "code.h"
 #include "iloc.h"
+#include "backpatching.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -235,7 +236,7 @@ void nop(CodeList* codelist) {
     add_op(codelist, op);
 }
 
-void binop(CodeList* codelist, char* op_name, Node* expr1, Node* expr2, Node* op) {
+void numeric(char* op_name, Node* expr1, Node* expr2, Node* op) {
     Operation* operation;
     op->temp = get_register();
 
@@ -269,22 +270,93 @@ void binop(CodeList* codelist, char* op_name, Node* expr1, Node* expr2, Node* op
         operation = init_op_rrr(op_name, expr1->temp, expr2->temp, op->temp);
     }
 
-    add_op(codelist, operation);
+    op->codelist = concat_code(expr1->codelist, expr2->codelist);
+    add_op(op->codelist, operation);
 }
 
-void conversion(CodeList* codelist, char* op, char* r1, char* r2) {
-    Operation* operation = init_op_rr(op, r1, r2);
-    add_op(codelist, operation);
+Operation* cbr(char* r1, char* l2, char* l3) {
+    Operation* op = init_op_rrr("cbr", r1, l2, l3);
+    op->type = OP_CBR;
+
+    return op;
 }
 
-void cmp(CodeList* codelist, char* op_name, Node* expr1, Node* expr2, Node* op) {
+void cmp(char* op_name, Node* expr1, Node* expr2, Node* op) {
     op->temp = get_register();
 
     Operation* operation = init_op_rrr(op_name, expr1->temp, expr2->temp, op->temp);
     operation->type = OP_CMP;
 
-    add_op(codelist, operation);
+    op->codelist = concat_code(expr1->codelist, expr2->codelist);
+    add_op(op->codelist, operation);
+
+    // For backpatching later
+    Operation* cbr_op = cbr(expr1->temp, malloc(10), malloc(10));
+    add_op(op->codelist, cbr_op);
+
+    op->truelist = makelist(cbr_op->arg2);
+    op->falselist = makelist(cbr_op->arg3);
 }
+
+Operation* logical(char* op_name, Node* expr1, Node* expr2, Node* op) {
+    Operation *operation;
+    op->temp = get_register();
+
+    if (expr2->temp == NULL) {
+
+        // expr2 is a literal
+        char *opi = malloc(10);
+        snprintf(opi, 10, "%sI", op_name);
+
+        operation = init_op_rrc(opi, expr1->temp, op->temp, expr2->value->token_value.integer);
+
+    } else {
+        operation = init_op_rrr(op_name, expr1->temp, expr2->temp, op->temp);
+    }
+
+    return operation;
+}
+
+void and(Node* expr1, Node* expr2, Node* op) {
+    // For backpatching
+    char* label = get_label();
+    backpatch(expr1->truelist, label);
+
+    op->truelist = expr2->truelist;
+    op->falselist = merge(expr1->falselist, expr2->falselist);
+
+    // Operator codelist
+    Operation* op_label = init_op_label(label);
+
+    CodeList* codelist;
+    (*codelist) = *(expr1->codelist);
+    add_op(codelist, op_label);
+
+    op->codelist = concat_code(codelist, expr2->codelist);
+}
+
+void or(Node* expr1, Node* expr2, Node* op) {
+    // For backpatching
+    char* label = get_label();
+    backpatch(expr1->falselist, label);
+
+    op->falselist = expr2->falselist;
+    op->truelist = merge(expr1->truelist, expr2->truelist);
+
+    // Operator codelist
+    Operation* op_label = init_op_label(label);
+
+    CodeList* codelist;
+    (*codelist) = *(expr1->codelist);
+    add_op(codelist, op_label);
+
+    op->codelist = concat_code(codelist, expr2->codelist);
+}
+
+//void conversion(CodeList* codelist, char* op, char* r1, char* r2) {
+//    Operation* operation = init_op_rr(op, r1, r2);
+//    add_op(codelist, operation);
+//}
 
 //void jump(Code* code, char* op, char* r1) {
 //    Operation* operation = init_op_r(op, r1);
