@@ -48,6 +48,7 @@ void numeric(char* op_name, Node* expr1, Node* expr2, Node* op);
 void cmp(char* op_name, Node* expr1, Node* expr2, Node* op);
 void and(Node* expr1, Node* expr2, Node* op);
 void or(Node* expr1, Node* expr2, Node* op);
+void not(Node* expr, Node* op);
 void if_then_else(Node* if_then, Node* else_block);
 void while_do(Node* expr, Node* block, Node* parent);
 

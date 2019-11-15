@@ -289,7 +289,7 @@ term: directTerm		{ $$ = $1; load($$->codelist, scope, $$); }
 expr: term				       { $$ = $1; }
 |     '+' expr			%prec UPLUS    { $$ = unary_node($1, $2); $$->type = $2->type; check_type(ARITH_OP, $$); }
 |     '-' expr			%prec UMINUS   { $$ = unary_node($1, $2); $$->type = $2->type; check_type(ARITH_OP, $$); }
-|     '!' expr				       { $$ = unary_node($1, $2); $$->type = $2->type; check_type(BOOL_OP, $$); }
+|     '!' expr				       { $$ = unary_node($1, $2); $$->type = $2->type; check_type(BOOL_OP, $$); not($2, $$); }
 |     '&' expr			%prec UADDRESS { $$ = unary_node($1, $2); /* TODO: pointer type? */ }
 |     '*' expr			%prec UPOINTER { $$ = unary_node($1, $2); /* TODO: type of the pointer? */ }
 |     '?' expr				       { $$ = unary_node($1, $2); /* TODO: what type? */ }

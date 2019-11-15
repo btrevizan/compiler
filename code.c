@@ -354,6 +354,11 @@ void or(Node* expr1, Node* expr2, Node* op) {
     op->codelist = concat_code(codelist, expr2->codelist);
 }
 
+void not(Node* expr, Node* op) {
+    op->falselist = expr->truelist;
+    op->truelist = expr->falselist;
+}
+
 Operation* jump(char* op, char* r1) {
     Operation* operation = init_op_r(op, r1);
     operation->type = OP_JMP;
