@@ -34,7 +34,7 @@ Node* create_node(Lexeme* value) {
     node->index = -1;
     node->type = TYPE_NAN;
     node->coercion = NO_CONVERSION;
-    node->code = init_code();
+    node->codelist = init_codelist();
     node->temp = NULL;
     node->truelist = NULL;
     node->falselist = NULL;
@@ -99,7 +99,7 @@ void libera(void *arvore) {
     for(int i = node->n_children - 1; i >= 0; i--)
         libera(node->children[i]);
 
-    destroy_code(node->code);
+    destroy_code_list(node->codelist);
     delete_lexeme(node->value);
 
     free(node->children);

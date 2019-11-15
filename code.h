@@ -18,6 +18,11 @@ typedef struct code_t {
     struct code_t* prev;
 } Code;
 
+typedef struct code_list {
+    Code* begin;
+    Code* end;
+} CodeList;
+
 int offset_rfp;
 
 char* get_register();
@@ -29,24 +34,25 @@ int get_local_offset(int type, int array_len);
 int get_current_local_offset();
 
 Code* init_code();
-void add_dummy(Code* code);
-void add_op(Code* code, Operation* op);
-void concat_code(Code* c1, Code* c2);
+CodeList* init_codelist();
+void add_dummy(CodeList* codelist);
+void add_op(CodeList* codelist, Operation* op);
+CodeList* concat_code(CodeList* c1, CodeList* c2);
 
-void load(Code* code, Stack* scope, Node* id);
-void store(Code* code, Stack* scope, Node* id, Node* expr);
-void store_assign(Code* code, Stack* scope, Lexeme* id, Node* expr);
+void load(CodeList* codelist, Stack* scope, Node* id);
+void store(CodeList* codelist, Stack* scope, Node* id, Node* expr);
+void store_assign(CodeList* codelist, Stack* scope, Lexeme* id, Node* expr);
 
-void nop(Code* code);
-void binop(Code* code, char* op_name, Node* expr1, Node* expr2, Node* op);
-void cmp(Code* code, char* op_name, Node* expr1, Node* expr2, Node* op);
+void nop(CodeList* codelist);
+void binop(CodeList* codelist, char* op_name, Node* expr1, Node* expr2, Node* op);
+void cmp(CodeList* codelist, char* op_name, Node* expr1, Node* expr2, Node* op);
 
 //void jump(char* op, char* r1);
 //void conversion(char* op, char* r1, char* r2);
 
-char* load_index(Code* code, Symbol* s, Node* id);
+char* load_index(CodeList* codelist, Symbol* s, Node* id);
 
 void destroy_code(Code* code);
-void destroy_code_list(Code* code);
+void destroy_code_list(CodeList* codelist);
 
 #endif //CODE_GEN_H

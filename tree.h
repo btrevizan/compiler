@@ -9,7 +9,7 @@ typedef struct node {
     int index;
     int type;
     int coercion;
-    struct code_t* code;
+    struct code_list* codelist;
     char* temp;	// Temporary value or register associated with this node (for code generation)
     struct patch* truelist;
     struct patch* falselist;
