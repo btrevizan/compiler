@@ -353,17 +353,49 @@ void or(Node* expr1, Node* expr2, Node* op) {
     op->codelist = concat_code(codelist, expr2->codelist);
 }
 
-//void conversion(CodeList* codelist, char* op, char* r1, char* r2) {
-//    Operation* operation = init_op_rr(op, r1, r2);
-//    add_op(codelist, operation);
-//}
+Operation* jump(char* op, char* r1) {
+    Operation* operation = init_op_r(op, r1);
+    operation->type = OP_JMP;
 
-//void jump(Code* code, char* op, char* r1) {
-//    Operation* operation = init_op_r(op, r1);
-//    operation->type = OP_JMP;
-//
-//    add_op(code, operation);
-//}
+    return operation;
+}
+
+void if_then_else(Node* if_then, Node* else_block) {
+    Node* expr = if_then->children[0];
+    Node* then_block = if_then->children[1];
+
+    char* label_true = get_label();
+    backpatch(expr->truelist, label_true);
+    Operation* op_label_true = init_op_label(label_true);
+    
+    CodeList* codelist;
+    (*codelist) = *(expr->codelist);
+
+    add_op(codelist, op_label_true);
+    codelist = concat_code(codelist, then_block->codelist);
+
+    char *label_end = get_label();
+    Operation *op_label_end = init_op_label(label_end);
+
+    if(else_block != NULL) {
+        char *label_false = get_label();
+        backpatch(expr->falselist, label_false);
+        Operation *op_label_false = init_op_label(label_false);
+
+        add_op(codelist, jump("jumpI", label_end));
+
+        add_op(codelist, op_label_false);
+        codelist = concat_code(codelist, else_block->codelist);
+    } else {
+        backpatch(expr->falselist, label_end);
+    }
+
+    // Not necessary, but kept to maintain the pattern
+    add_op(codelist, op_label_end);
+    add_op(codelist, init_nop());
+
+    if_then->codelist = codelist;
+}
 
 void destroy_code(Code* code) {
     destroy_op(code->operation);

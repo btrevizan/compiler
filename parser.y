@@ -258,8 +258,8 @@ return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $
 /** If-then-else statement **/
 if: TK_PR_IF '(' expr ')' block		{ implicit_conversion(TYPE_BOOL, $3); $$ = binary_node($1, $3, $5); };
 else: TK_PR_ELSE block			{ $$ = $2; };
-if_else: if else 			{ $$ = $1; add_node($$, $2); }
-| 	 if				{ $$ = $1; };
+if_else: if else 			{ $$ = $1; add_node($$, $2); if_then_else($$, $2); };
+| 	 if				{ $$ = $1; if_then_else($$, NULL); };
 
 /** Iterative commands **/
 for_list_element: local_var_with_init				{ $$ = $1; }
