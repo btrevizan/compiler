@@ -1,0 +1,6 @@
+//O comando de atribuição
+int main()
+{
+  int a;
+  a = 2;
+}
