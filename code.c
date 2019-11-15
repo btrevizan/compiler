@@ -367,7 +367,7 @@ void if_then_else(Node* if_then, Node* else_block) {
     char* label_true = get_label();
     backpatch(expr->truelist, label_true);
     Operation* op_label_true = init_op_label(label_true);
-    
+
     CodeList* codelist;
     (*codelist) = *(expr->codelist);
 
@@ -395,6 +395,32 @@ void if_then_else(Node* if_then, Node* else_block) {
     add_op(codelist, init_nop());
 
     if_then->codelist = codelist;
+}
+
+void while_do(Node* expr, Node* block, Node* parent) {
+    char* label_init = get_label();
+    Operation* op_label_init = init_op_label(label_init);
+
+    CodeList* codelist = init_codelist();
+    add_op(codelist, op_label_init);
+    codelist = concat_code(codelist, expr->codelist);
+
+    char* label_true = get_label();
+    Operation* op_label_true = init_op_label(label_true);
+    backpatch(expr->truelist, label_true);
+
+    add_op(codelist, op_label_true);
+    codelist = concat_code(codelist, block->codelist);
+    add_op(codelist, jump("jumpI", label_init));
+
+    char* label_false = get_label();
+    Operation* op_label_false = init_op_label(label_false);
+    backpatch(expr->falselist, label_false);
+
+    add_op(codelist, op_label_false);
+    add_op(codelist, init_nop());
+
+    parent->codelist = codelist;
 }
 
 void destroy_code(Code* code) {

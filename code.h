@@ -49,6 +49,7 @@ void cmp(char* op_name, Node* expr1, Node* expr2, Node* op);
 void and(Node* expr1, Node* expr2, Node* op);
 void or(Node* expr1, Node* expr2, Node* op);
 void if_then_else(Node* if_then, Node* else_block);
+void while_do(Node* expr, Node* block, Node* parent);
 
 //void jump(char* op, char* r1);
 //void conversion(char* op, char* r1, char* r2);

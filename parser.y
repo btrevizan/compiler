@@ -270,7 +270,7 @@ for_list: for_list_element 					{ $$= $1; }
 | 	  for_list_element ',' for_list				{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
 
 for: TK_PR_FOR '(' for_list ':' expr ':' for_list ')' block	{ implicit_conversion(TYPE_BOOL, $5); $$ = quaternary_node($1, $3, $5, $7, $9); libera(create_node($4)); libera(create_node($6)); };
-while: TK_PR_WHILE '(' expr ')' TK_PR_DO block			{ implicit_conversion(TYPE_BOOL, $3); $$ = binary_node($1, $3, $6); };
+while: TK_PR_WHILE '(' expr ')' TK_PR_DO block			{ implicit_conversion(TYPE_BOOL, $3); $$ = binary_node($1, $3, $6); while_do($3, $6, $$); };
 
 /****** ARITHMETIC AND LOGICAL EXPRESSIONS ******/
 literal: TK_LIT_INT		{ $$ = create_node($1); $$->type = TYPE_INT; }
