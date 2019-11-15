@@ -4,6 +4,7 @@ Função principal para realização da E3.
 Este arquivo não pode ser modificado.
 */
 #include <stdio.h>
+#include "code.h"
 #include "parser.tab.h" //arquivo gerado com bison -d parser.y
 extern int yylex_destroy(void);
 
@@ -16,6 +17,7 @@ int main (int argc, char **argv)
 {
     int ret = yyparse();
     exporta(arvore);
+    print_code(arvore);
     libera(arvore);
     arvore = NULL;
     yylex_destroy();

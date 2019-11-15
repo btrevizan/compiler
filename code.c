@@ -4,6 +4,7 @@
 #include "backpatching.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 int get_global_offset(int type, int array_len){
 	static int offset_rbss = 0;
@@ -438,4 +439,15 @@ void destroy_code_list(CodeList* codelist) {
     }
 
     free(codelist);
+}
+
+void print_code(Node* node) {
+    if(node == NULL) return;
+    if(node->codelist == NULL) return;
+
+    Code* code = node->codelist->begin;
+    while(code != NULL) {
+        printf("%s\n", op2str(code->operation));
+        code = code->next;
+    }
 }

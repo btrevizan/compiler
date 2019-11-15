@@ -59,4 +59,6 @@ char* load_index(CodeList* codelist, Symbol* s, Node* id);
 void destroy_code(Code* code);
 void destroy_code_list(CodeList* codelist);
 
+void print_code(Node* node);
+
 #endif //CODE_GEN_H
