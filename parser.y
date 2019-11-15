@@ -249,8 +249,8 @@ call: declared_id '(' args ')'		{ $$ = $1; $$->value->token_type = TK_FN; add_no
 |     declared_id '(' ')'		{ $$ = $1; $$->value->token_type = TK_FN; check_usage(scope, $1); check_args(scope, $1, NULL); };
 
 /** Shift command **/
-shift: id TK_OC_SL expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($2, $1, $3); binop($$->code, "lshift", $1, $3, $$); }
-|      id TK_OC_SR expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($2, $1, $3); binop($$->code, "rshift", $1, $3, $$); };
+shift: id TK_OC_SL expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($2, $1, $3); }
+|      id TK_OC_SR expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($2, $1, $3); };
 
 /** Flow change commands **/
 return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); };
