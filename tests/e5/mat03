@@ -1,0 +1,9 @@
+// Variavel para acessar array
+
+int a[2][2][2];
+
+int main(){
+	int b;
+	b = 1;
+	a[b][b][b] = 2;
+}
