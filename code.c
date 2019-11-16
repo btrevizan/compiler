@@ -212,7 +212,7 @@ void load(Stack* scope, Node* id) {
         Symbol *symbol = search(scope, id->value->token_value.string);
 
         if (is_array(id)) {
-            id->temp = load_mem_array(id->codelist, symbol->base, calculate_address(id->codelist, symbol, id));
+            id->temp = load_mem_array(id->codelist, symbol->base, calculate_address(scope, id->codelist, symbol, id));
         } else {
             id->temp = load_mem(id->codelist, symbol->base, symbol->address);
         }
@@ -278,7 +278,7 @@ void store(Stack* scope, Node* id, Node* expr, Node* assigment) {
 
     if(is_array(id)){
         symbol = search(scope, id->children[0]->value->token_value.string);
-    	final_address = calculate_address(assigment->codelist, symbol, id->children[1]);
+    	final_address = calculate_address(scope, assigment->codelist, symbol, id->children[1]);
         if(expr->temp != NULL)
             op = init_op_rrr("storeA0", expr->temp, symbol->base, final_address);
         else{
