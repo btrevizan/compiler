@@ -161,7 +161,7 @@ char* calculate_address(Stack* scope, CodeList* codelist, Symbol* s,  Node* id) 
 	Dim *dimension = s->dimension->next;
 	char *address_x_width, *index;
 
-	current = (current->children != NULL) ? current->children[0] : NULL;
+	current = (current->children != NULL) ? current->children[current->n_children-1] : NULL;
 	while(current != NULL) {
 		address_x_width = get_register();
 		add_op(codelist, init_op_rrc("multI", address, address_x_width, dimension->size));
@@ -170,7 +170,7 @@ char* calculate_address(Stack* scope, CodeList* codelist, Symbol* s,  Node* id) 
 		address = get_register();
 		add_op(codelist, init_op_rrr("add", index, address_x_width, address));
 
-		current = (current->children != NULL) ? current->children[0] : NULL;
+		current = (current->children != NULL) ? current->children[current->n_children-1] : NULL;
 		dimension = dimension->next;
 	}
 
@@ -186,8 +186,8 @@ char* load_index(Stack* scope, CodeList* codelist, Node* id) {
 
     // it's an array
     if(id->value == NULL){
-        s_index = search(scope, id->value->token_value.string);
-        temp = load_mem_array(codelist, s_index->base, calculate_address(scope, codelist, s_index, id));
+        s_index = search(scope, id->children[0]->value->token_value.string);
+        temp = load_mem_array(codelist, s_index->base, calculate_address(scope, codelist, s_index, id->children[1]));
     }else{
     	switch(id->value->token_type){
     		case TK_ID:
@@ -206,11 +206,13 @@ char* load_index(Stack* scope, CodeList* codelist, Node* id) {
 }
 
 void load(CodeList* codelist, Stack* scope, Node* id) {
-    Symbol* symbol = search(scope, id->value->token_value.string);
+    Symbol* symbol;
 
     if(is_array(id)){
-    	id->temp = load_mem_array(codelist, symbol->base, calculate_address(scope, codelist, symbol, id));
+        symbol = search(scope, id->children[0]->value->token_value.string);
+    	id->temp = load_mem_array(codelist, symbol->base, calculate_address(scope, codelist, symbol, id->children[1]));
 	} else {
+        symbol = search(scope, id->value->token_value.string);
 		id->temp = load_mem(codelist, symbol->base, symbol->address);
 	}
 }
