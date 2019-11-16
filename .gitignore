@@ -8,3 +8,4 @@ lex.yy.c
 etapa*
 parser.tab.*
 report.out
+*.csv
