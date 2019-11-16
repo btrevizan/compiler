@@ -205,17 +205,16 @@ char* load_index(Stack* scope, CodeList* codelist, Node* id) {
 
 void load(Stack* scope, Node* id) {
     id->codelist = init_codelist();
+    Symbol *symbol;
 
-    if (id->value->token_type == TK_LT) {
+    if (is_array(id)) {
+        symbol = search(scope, id->children[0]->value->token_value.string);
+        id->temp = load_mem_array(id->codelist, symbol->base, calculate_address(scope, id->codelist, symbol, id->children[1]));
+    } else if (id->value->token_type == TK_LT) {
         id->temp = load_imm(id->codelist, id->value->token_value.integer);
     } else {
-        Symbol *symbol = search(scope, id->value->token_value.string);
-
-        if (is_array(id)) {
-            id->temp = load_mem_array(id->codelist, symbol->base, calculate_address(scope, id->codelist, symbol, id));
-        } else {
-            id->temp = load_mem(id->codelist, symbol->base, symbol->address);
-        }
+        symbol = search(scope, id->value->token_value.string);
+        id->temp = load_mem(id->codelist, symbol->base, symbol->address);
     }
 }
 
