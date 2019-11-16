@@ -154,7 +154,7 @@ char* op2str(Operation* op) {
             break;
 
         case OP_LABEL:
-            snprintf(result, n, "%s", op->op);
+            snprintf(result, n, "%s nop", op->op);
             break;
 
         case OP_DUMMY:
