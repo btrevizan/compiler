@@ -363,7 +363,7 @@ void cmp(char* op_name, Node* expr1, Node* expr2, Node* op) {
     add_op(op->codelist, operation);
 
     // For backpatching later
-    Operation* cbr_op = cbr(expr1->temp, malloc(10), malloc(10));
+    Operation* cbr_op = cbr(op->temp, malloc(10), malloc(10));
     add_op(op->codelist, cbr_op);
 
     op->truelist = makelist(cbr_op->arg2);
