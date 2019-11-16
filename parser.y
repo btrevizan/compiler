@@ -202,7 +202,7 @@ simple_command: local_var_with_init	{ $$ = $1; }
 |		call			{ $$ = $1; };
 
 command_list: simple_command ';'			{ $$ = $1; }
-| 	      simple_command ';' command_list		{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); } };
+| 	      simple_command ';' command_list		{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); $$->codelist = concat_code($$->codelist, $3->codelist); } };
 
 block: '{' enter_scope command_list leave_scope '}' 	{ $$ = unary_node(NULL, $3);}
 |      '{' '}'						{ $$ = create_node(NULL); };
@@ -219,7 +219,7 @@ initialization: TK_OC_LE directTerm							{ $$ = unary_node($1, $2); };
 local_var_with_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR initialization	{ $$ = $5; implicit_conversion($3, $$->children[0]); add_identifier(peek(scope), $3, $4, LOCAL); add_lexeme($$, $4); }
 |	    	     TK_PR_STATIC type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3, LOCAL); add_lexeme($$, $3); }
 |	   	     TK_PR_CONST type TK_IDENTIFICADOR initialization			{ $$ = $4; implicit_conversion($2, $$->children[0]); add_identifier(peek(scope), $2, $3, LOCAL); add_lexeme($$, $3); }
-|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; implicit_conversion($1, $$->children[0]); add_identifier(peek(scope), $1, $2, LOCAL); add_lexeme($$, $2); store_assign($$->codelist, scope, $2, $3); };
+|	   	     type TK_IDENTIFICADOR initialization				{ $$ = $3; implicit_conversion($1, $$->children[0]); add_identifier(peek(scope), $1, $2, LOCAL); add_lexeme($$, $2); store_assign(scope, $2, $$); };
 
 local_var_without_init: TK_PR_STATIC TK_PR_CONST type TK_IDENTIFICADOR			{ add_identifier(peek(scope), $3, $4, LOCAL); delete_lexeme($4); }
 | 	   	        TK_PR_STATIC type TK_IDENTIFICADOR				{ add_identifier(peek(scope), $2, $3, LOCAL); delete_lexeme($3); }
@@ -235,7 +235,7 @@ indexer: '[' expr ']'			{ $$ = $2; implicit_conversion(TYPE_INT, $2); }
 id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_type = TK_VC; $$->type = $1->type; check_usage(scope, $1); }
 |   declared_id				{ $$ = $1; check_usage(scope, $$); };
 
-assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; store($$->codelist, scope, $1, $3); };
+assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; store(scope, $1, $3, $$); };
 
 /** Input and output **/
 args: expr 				{ $$ = $1; }
@@ -280,8 +280,8 @@ literal: TK_LIT_INT		{ $$ = create_node($1); $$->type = TYPE_INT; }
 |	 TK_LIT_CHAR		{ $$ = create_node($1); $$->type = TYPE_CHAR; }
 |	 TK_LIT_STRING		{ $$ = create_node($1); $$->type = TYPE_STRING; };
 
-directTerm: id 			{ $$ = $1; load($$->codelist, scope, $$); }
-| 	    literal		{ $$ = $1; $$->codelist = NULL; };
+directTerm: id 			{ $$ = $1; load(scope, $$); }
+| 	    literal		{ $$ = $1; load(scope, $$); };
 
 term: directTerm		{ $$ = $1; }
 |     call			{ $$ = $1; };

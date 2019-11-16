@@ -39,9 +39,9 @@ void add_dummy(CodeList* codelist);
 void add_op(CodeList* codelist, Operation* op);
 CodeList* concat_code(CodeList* c1, CodeList* c2);
 
-void load(CodeList* codelist, Stack* scope, Node* id);
-void store(CodeList* codelist, Stack* scope, Node* id, Node* expr);
-void store_assign(CodeList* codelist, Stack* scope, Lexeme* id, Node* expr);
+void load(Stack* scope, Node* id);
+void store(Stack* scope, Node* id, Node* expr, Node* assigment);
+void store_assign(Stack* scope, Lexeme* id, Node* expr);
 
 void nop(CodeList* codelist);
 void numeric(char* op_name, Node* expr1, Node* expr2, Node* op);

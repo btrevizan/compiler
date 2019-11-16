@@ -85,25 +85,23 @@ void add_op(CodeList* codelist, Operation* op) {
 
     new_code->operation = op;
     new_code->next = NULL;
+    new_code->prev = codelist->end;
 
-    if(codelist == NULL){
-        new_code->prev = NULL;
-        codelist = malloc(sizeof(CodeList));
-        codelist->begin = NULL;
-    } else {
-        new_code->prev = codelist->end;
+    if(codelist->end != NULL)
         codelist->end->next = new_code;
-    }
 
-    if(codelist->begin == NULL) {
+    if(codelist->begin == NULL)
         codelist->begin = new_code;
-    }
+
     codelist->end = new_code;
 
     //printf("%s\n", op2str(new_code->operation));    
 }
 
 CodeList* concat_code(CodeList* c1, CodeList* c2) {
+    if(c1 == NULL) return c2;
+    if(c2 == NULL) return c1;
+
     CodeList* codelist = malloc(sizeof(codelist));
 
     c1->end->next = c2->begin;
@@ -202,14 +200,20 @@ char* load_index(CodeList* codelist, Symbol* s, Node* id) {
 	return temp;
 }
 
-void load(CodeList* codelist, Stack* scope, Node* id) {
-    Symbol* symbol = search(scope, id->value->token_value.string);
+void load(Stack* scope, Node* id) {
+    id->codelist = init_codelist();
 
-    if(is_array(id)){
-    	id->temp = load_mem_array(codelist, symbol->base, calculate_address(codelist, symbol, id));
-	} else {
-		id->temp = load_mem(codelist, symbol->base, symbol->address);
-	}
+    if(id->value->token_type == TK_LT) {
+        id->temp = load_imm(id->codelist, id->value->token_value.integer);
+    } else {
+        Symbol* symbol = search(scope, id->value->token_value.string);
+
+        if(is_array(id)) {
+            id->temp = load_mem_array(id->codelist, symbol->base, calculate_address(id->codelist, symbol, id));
+        } else {
+            id->temp = load_mem(id->codelist, symbol->base, symbol->address);
+        }
+    }
 }
 
 Operation* store_imm_or_reg(CodeList* codelist, Node* expr, Symbol *symbol){
@@ -254,34 +258,36 @@ Operation* store_imm_or_reg(CodeList* codelist, Node* expr, Symbol *symbol){
 	return op;
 }
 
-void store_assign(CodeList* codelist, Stack* scope, Lexeme* id, Node* expr) {
+void store_assign(Stack* scope, Lexeme* id, Node* expr) {
 	Operation *op;
     Symbol* symbol = search(scope, id->token_value.string);
-    op = store_imm_or_reg(codelist, expr, symbol);
+    op = store_imm_or_reg(expr->codelist, expr, symbol);
 
-    if(op->type != OP_JMP) add_op(codelist, op);
+    if(op->type != OP_JMP) add_op(expr->codelist, op);
 }
 
-void store(CodeList* codelist, Stack* scope, Node* id, Node* expr) {
+void store(Stack* scope, Node* id, Node* expr, Node* assigment) {
 	Operation *op;
     Symbol* symbol;
-    char* final_address;      
+    char* final_address;
+
+    assigment->codelist = expr->codelist;
 
     if(is_array(id)){
         symbol = search(scope, id->children[0]->value->token_value.string);
-    	final_address = calculate_address(codelist, symbol, id->children[1]);
+    	final_address = calculate_address(assigment->codelist, symbol, id->children[1]);
         if(expr->temp != NULL)
             op = init_op_rrr("storeA0", expr->temp, symbol->base, final_address);
         else{
-            char *lit_register = load_imm(codelist, expr->value->token_value.integer);
+            char *lit_register = load_imm(assigment->codelist, expr->value->token_value.integer);
             op = init_op_rrr("storeA0", lit_register, symbol->base, final_address);
         }
 	} else {
         symbol = search(scope, id->value->token_value.string);
-		op = store_imm_or_reg(codelist, expr, symbol);
+		op = store_imm_or_reg(assigment->codelist, expr, symbol);
 	}
 
-    if(op->type != OP_JMP) add_op(codelist, op);
+    if(op->type != OP_JMP) add_op(assigment->codelist, op);
 }
 
 void nop(CodeList* codelist) {
@@ -493,11 +499,15 @@ void destroy_code_list(CodeList* codelist) {
 
 void print_code(Node* node) {
     if(node == NULL) return;
-    if(node->codelist == NULL) return;
 
-    Code* code = node->codelist->begin;
-    while(code != NULL) {
-        printf("%s\n", op2str(code->operation));
-        code = code->next;
+    if(node->codelist == NULL) {
+        for(int i = 0; i < node->n_children; i++)
+            print_code(node->children[i]);
+    } else {
+        Code* code = node->codelist->begin;
+        while(code != NULL) {
+            printf("%s\n", op2str(code->operation));
+            code = code->next;
+        }
     }
 }
