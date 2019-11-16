@@ -93,9 +93,7 @@ void add_op(CodeList* codelist, Operation* op) {
     if(codelist->begin == NULL)
         codelist->begin = new_code;
 
-    codelist->end = new_code;
-
-    printf("%s\n", op2str(new_code->operation));    
+    codelist->end = new_code;   
 }
 
 CodeList* concat_code(CodeList* c1, CodeList* c2) {
