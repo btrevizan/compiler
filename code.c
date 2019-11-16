@@ -399,7 +399,7 @@ void and(Node* expr1, Node* expr2, Node* op) {
     Operation* op_label = init_op_label(label);
 
     CodeList* codelist;
-    (*codelist) = *(expr1->codelist);
+    codelist = expr1->codelist;
     add_op(codelist, op_label);
 
     op->codelist = concat_code(codelist, expr2->codelist);
@@ -417,7 +417,7 @@ void or(Node* expr1, Node* expr2, Node* op) {
     Operation* op_label = init_op_label(label);
 
     CodeList* codelist;
-    (*codelist) = *(expr1->codelist);
+    codelist = expr1->codelist;
     add_op(codelist, op_label);
 
     op->codelist = concat_code(codelist, expr2->codelist);
@@ -432,12 +432,15 @@ void if_then_else(Node* if_then, Node* else_block) {
     Node* expr = if_then->children[0];
     Node* then_block = if_then->children[1];
 
+    if(then_block->n_children > 0)
+        then_block = then_block->children[0];
+
     char* label_true = get_label();
     backpatch(expr->truelist, label_true);
     Operation* op_label_true = init_op_label(label_true);
 
     CodeList* codelist;
-    (*codelist) = *(expr->codelist);
+    codelist = expr->codelist;
 
     add_op(codelist, op_label_true);
     codelist = concat_code(codelist, then_block->codelist);
@@ -445,7 +448,11 @@ void if_then_else(Node* if_then, Node* else_block) {
     char *label_end = get_label();
     Operation *op_label_end = init_op_label(label_end);
 
-    if(else_block != NULL) {
+    Node* else_cmds = NULL;
+    if(else_block != NULL && else_block->n_children > 0)
+        else_cmds = else_block->children[0];
+
+    if(else_cmds != NULL) {
         char *label_false = get_label();
         backpatch(expr->falselist, label_false);
         Operation *op_label_false = init_op_label(label_false);
@@ -453,7 +460,8 @@ void if_then_else(Node* if_then, Node* else_block) {
         add_op(codelist, jump("jumpI", label_end));
 
         add_op(codelist, op_label_false);
-        codelist = concat_code(codelist, else_block->codelist);
+
+        codelist = concat_code(codelist, else_cmds->codelist);
     } else {
         backpatch(expr->falselist, label_end);
     }
@@ -466,6 +474,10 @@ void if_then_else(Node* if_then, Node* else_block) {
 }
 
 void while_do(Node* expr, Node* block, Node* parent) {
+    Node* while_block = NULL;
+    if(block->n_children > 0)
+        while_block = block->children[0];
+
     char* label_init = get_label();
     Operation* op_label_init = init_op_label(label_init);
 
@@ -478,7 +490,10 @@ void while_do(Node* expr, Node* block, Node* parent) {
     backpatch(expr->truelist, label_true);
 
     add_op(codelist, op_label_true);
-    codelist = concat_code(codelist, block->codelist);
+
+    if(while_block != NULL)
+        codelist = concat_code(codelist, while_block->codelist);
+
     add_op(codelist, jump("jumpI", label_init));
 
     char* label_false = get_label();
