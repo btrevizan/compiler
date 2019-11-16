@@ -112,8 +112,8 @@ Operation* init_op_label(char* label) {
 char* op2str(Operation* op) {
     if(op == NULL) return "";
 
-    char* result;
     int n = 50;
+    char* result = malloc(n);
 
     switch (op->type) {
         case OP_JMP:
@@ -154,7 +154,7 @@ char* op2str(Operation* op) {
             break;
 
         case OP_LABEL:
-            snprintf(result, n, "%s:", op->op);
+            snprintf(result, n, "%s", op->op);
             break;
 
         case OP_DUMMY:

@@ -280,10 +280,10 @@ literal: TK_LIT_INT		{ $$ = create_node($1); $$->type = TYPE_INT; }
 |	 TK_LIT_CHAR		{ $$ = create_node($1); $$->type = TYPE_CHAR; }
 |	 TK_LIT_STRING		{ $$ = create_node($1); $$->type = TYPE_STRING; };
 
-directTerm: id 			{ $$ = $1; }
-| 	    literal		{ $$ = $1; };
+directTerm: id 			{ $$ = $1; load($$->codelist, scope, $$); }
+| 	    literal		{ $$ = $1; $$->codelist = NULL; };
 
-term: directTerm		{ $$ = $1; load($$->codelist, scope, $$); }
+term: directTerm		{ $$ = $1; }
 |     call			{ $$ = $1; };
 
 expr: term				       { $$ = $1; }
