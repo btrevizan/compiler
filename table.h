@@ -89,7 +89,7 @@ Param* create_param(int type, Lexeme* identifier);
 Dim* create_dim(int type);
 
 int get_type_size(int type);
-void set_scope(Symbol* symbol, int scope, int type);
+void set_scope(Symbol* symbol, int scope, int type, int dimension);
 
 Symbol* get_entry(Table* table, const char* key);
 

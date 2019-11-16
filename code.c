@@ -145,7 +145,7 @@ char *load_mem(CodeList* codelist, char* base_reg, int relative_addr) {
 char *load_mem_array(CodeList* codelist, char* base_reg, char* index_reg) {
 	char* temp = get_register();
 
-	Operation *op = init_op_rrr("loadA0", base_reg, index_reg, temp);
+	Operation *op = init_op_rrr("loadAO", base_reg, index_reg, temp);
     add_op(codelist, op);
 
     return temp;
@@ -172,8 +172,10 @@ char* calculate_address(Stack* scope, CodeList* codelist, Symbol* s,  Node* id) 
 
 	char *addr_reg = get_register();
 	add_op(codelist, init_op_rrc("multI", address, addr_reg, get_type_size(s->type)));
+    char *base_reg = get_register();
+    add_op(codelist, init_op_rrc("addI", addr_reg, base_reg, s->address));
 
-	return addr_reg;
+	return base_reg;
 }
 
 char* load_index(Stack* scope, CodeList* codelist, Node* id) {
@@ -287,10 +289,10 @@ void store(Stack* scope, Node* id, Node* expr, Node* assigment) {
         symbol = search(scope, id->children[0]->value->token_value.string);
     	final_address = calculate_address(scope, assigment->codelist, symbol, id->children[1]);
         if(expr->temp != NULL)
-            op = init_op_rrr("storeA0", expr->temp, symbol->base, final_address);
+            op = init_op_rrr("storeAO", expr->temp, symbol->base, final_address);
         else{
             char *lit_register = load_imm(assigment->codelist, expr->value->token_value.integer);
-            op = init_op_rrr("storeA0", lit_register, symbol->base, final_address);
+            op = init_op_rrr("storeAO", lit_register, symbol->base, final_address);
         }
         op->type = OP_STR2;
 	} else {
