@@ -95,7 +95,7 @@ void add_op(CodeList* codelist, Operation* op) {
 
     codelist->end = new_code;
 
-    //printf("%s\n", op2str(new_code->operation));    
+    printf("%s\n", op2str(new_code->operation));    
 }
 
 CodeList* concat_code(CodeList* c1, CodeList* c2) {
@@ -153,22 +153,22 @@ char *load_mem_array(CodeList* codelist, char* base_reg, char* index_reg) {
     return temp;
 }
 
-char* calculate_address(CodeList* codelist, Symbol* s,  Node* id) {
+char* calculate_address(Stack* scope, CodeList* codelist, Symbol* s,  Node* id) {
 	Node *current = id;
-	char* address = load_index(codelist, s, current);
+	char* address = load_index(scope, codelist, current);
 	Dim *dimension = s->dimension->next;
 	char *address_x_width, *index;
 
-	current = (current->children != NULL) ? current->children[0] : NULL;
+	current = (current->children != NULL) ? current->children[current->n_children-1] : NULL;
 	while(current != NULL) {
 		address_x_width = get_register();
 		add_op(codelist, init_op_rrc("multI", address, address_x_width, dimension->size));
 
-		index = load_index(codelist, s, current);
+		index = load_index(scope, codelist, current);
 		address = get_register();
 		add_op(codelist, init_op_rrr("add", index, address_x_width, address));
 
-		current = (current->children != NULL) ? current->children[0] : NULL;
+		current = (current->children != NULL) ? current->children[current->n_children-1] : NULL;
 		dimension = dimension->next;
 	}
 
@@ -178,16 +178,19 @@ char* calculate_address(CodeList* codelist, Symbol* s,  Node* id) {
 	return addr_reg;
 }
 
-char* load_index(CodeList* codelist, Symbol* s, Node* id) {
+char* load_index(Stack* scope, CodeList* codelist, Node* id) {
 	char* temp;
+    Symbol* s_index;
 
     // it's an array
     if(id->value == NULL){
-        temp = load_mem_array(codelist, s->base, calculate_address(codelist, s, id));
+        s_index = search(scope, id->children[0]->value->token_value.string);
+        temp = load_mem_array(codelist, s_index->base, calculate_address(scope, codelist, s_index, id->children[1]));
     }else{
     	switch(id->value->token_type){
     		case TK_ID:
-    			temp = load_mem(codelist, s->base, s->address);
+                s_index = search(scope, id->value->token_value.string);
+    			temp = load_mem(codelist, s_index->base, s_index->address);
     			break;
     		case TK_LT:
     			temp = load_imm(codelist, id->value->token_value.integer);
@@ -203,12 +206,12 @@ char* load_index(CodeList* codelist, Symbol* s, Node* id) {
 void load(Stack* scope, Node* id) {
     id->codelist = init_codelist();
 
-    if(id->value->token_type == TK_LT) {
+    if (id->value->token_type == TK_LT) {
         id->temp = load_imm(id->codelist, id->value->token_value.integer);
     } else {
-        Symbol* symbol = search(scope, id->value->token_value.string);
+        Symbol *symbol = search(scope, id->value->token_value.string);
 
-        if(is_array(id)) {
+        if (is_array(id)) {
             id->temp = load_mem_array(id->codelist, symbol->base, calculate_address(id->codelist, symbol, id));
         } else {
             id->temp = load_mem(id->codelist, symbol->base, symbol->address);
@@ -282,6 +285,7 @@ void store(Stack* scope, Node* id, Node* expr, Node* assigment) {
             char *lit_register = load_imm(assigment->codelist, expr->value->token_value.integer);
             op = init_op_rrr("storeA0", lit_register, symbol->base, final_address);
         }
+        op->type = OP_STR2;
 	} else {
         symbol = search(scope, id->value->token_value.string);
 		op = store_imm_or_reg(assigment->codelist, expr, symbol);

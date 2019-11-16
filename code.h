@@ -55,7 +55,7 @@ void while_do(Node* expr, Node* block, Node* parent);
 //void jump(char* op, char* r1);
 //void conversion(char* op, char* r1, char* r2);
 
-char* load_index(CodeList* codelist, Symbol* s, Node* id);
+char* load_index(Stack* scope, CodeList* codelist, Node* id);
 
 void destroy_code(Code* code);
 void destroy_code_list(CodeList* codelist);
