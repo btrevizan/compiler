@@ -273,6 +273,16 @@ void store(Stack* scope, Node* id, Node* expr, Node* assigment) {
 
     assigment->codelist = expr->codelist;
 
+    if(assigment->codelist->end->operation->type == OP_CBR) {
+        char* label = get_label();
+        Operation* op_label = init_op_label(label);
+
+        backpatch(expr->truelist, label);
+        backpatch(expr->falselist, label);
+
+        add_op(assigment->codelist, op_label);
+    }
+
     if(is_array(id)){
         symbol = search(scope, id->children[0]->value->token_value.string);
     	final_address = calculate_address(scope, assigment->codelist, symbol, id->children[1]);
