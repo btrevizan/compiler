@@ -251,8 +251,8 @@ input: TK_PR_INPUT expr			{ check_type(INPUT_OP, $2); libera($2); $$ = NULL; };
 output: TK_PR_OUTPUT args		{ check_type(OUTPUT_OP, $2); libera($2); $$ = NULL; };
 
 /** Function call **/
-call: declared_id '(' args ')'		{ $$ = $1; $$->value->token_type = TK_FN; add_node($$, $3); check_usage(scope, $1); check_args(scope, $1, $3); }
-|     declared_id '(' ')'		{ $$ = $1; $$->value->token_type = TK_FN; check_usage(scope, $1); check_args(scope, $1, NULL); };
+call: declared_id '(' args ')'		{ $$ = $1; $$->value->token_type = TK_FN; add_node($$, $3); check_usage(scope, $1); check_args(scope, $1, $3); setup_call(scope, $$, $3);}
+|     declared_id '(' ')'		{ $$ = $1; $$->value->token_type = TK_FN; check_usage(scope, $1); check_args(scope, $1, NULL); setup_call(scope, $$, NULL); };
 
 /** Shift command **/
 shift: id TK_OC_SL expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($2, $1, $3); }

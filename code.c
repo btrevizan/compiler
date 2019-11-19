@@ -561,6 +561,77 @@ void setup_function(Stack* scope, Node* function, Node* body, Param* params) {
     }
 }
 
+void setup_call(Stack* scope, Node* function, Node* args) {
+    Operation* op; 
+
+    // static link always zero, because we can't have nested functions
+    int static_link = 0;
+    CodeList* codelist = NULL;
+    int offset = 0, return_offset;
+    int call_sequence_len = 0;
+    Symbol* s = search(scope, function->value->token_value.string);
+
+    // pass all the arguments to new function
+    Node* current = args;
+    while(current != NULL) {
+        codelist = concat_code(codelist, args->codelist);
+
+        // puts argument into new activation record
+        op = init_op_rrc("storeAI", args->temp, "rsp", offset);
+        op->type = OP_STC;
+        add_op(codelist, op);
+        call_sequence_len++;
+        offset += get_type_size(args->type);
+
+        current = current->n_children ? NULL : current->children[current->n_children-1];
+    }
+    
+    return_offset = offset;
+    offset += get_type_size(function->type); // return value
+    offset += 4; // dynamic link space
+
+    // saves static link
+    char* static_temp = load_imm(codelist, static_link);
+    op = init_op_rrc("storeAI", static_temp, "rsp", offset);
+    call_sequence_len++;
+    op->type = OP_STC;
+    add_op(codelist, op);
+    offset += 4;
+
+    // saves machine state (rfp and rbss)
+    op = init_op_rrc("storeAI", "rfp", "rsp", offset);
+    call_sequence_len++;
+    op->type = OP_STC;
+    add_op(codelist, op);
+    offset += 4;
+
+    op = init_op_rrc("storeAI", "rbss", "rsp", offset);
+    call_sequence_len++;
+    op->type = OP_STC;
+    add_op(codelist, op);
+    offset += 4;    
+
+    // saves return address
+    char* pc_return = get_register();
+    // call_sequence_len+3 for the add and store of the return address and the jump
+    add_op(codelist, init_op_rrc("addI", pc_return, "rsp", call_sequence_len+3));
+    op = init_op_rrc("storeAI", pc_return, "rsp", offset);
+    op->type = OP_STC;
+    add_op(codelist, op);
+
+    // jump to function
+    add_op(codelist, jump("jumpI", s->base));
+
+    if(s->type != TYPE_NAN){
+        // the function is non-void
+        // PS: if this can just use RSP, we need to restore it inside the function call return sequence
+        Operation *op = init_op_rrc("loadAI", "rsp", function->temp, return_offset);
+        add_op(codelist, op);
+    }
+
+    function->codelist = codelist;
+}
+
 void destroy_code(Code* code) {
     destroy_op(code->operation);
     free(code);
