@@ -170,7 +170,7 @@ void set_scope(Symbol* symbol, int scope, int type, int dimension){
         symbol->base = strdup("rbss"); 
     } else {
         symbol->address = get_local_offset(type, dimension);
-        symbol->base = strdup("rfp"); 
+        symbol->base = strdup("rsp"); 
     }
 }
 
