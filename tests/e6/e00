@@ -1,0 +1,12 @@
+/* 99 in bss address */
+int x;
+
+int f()
+{
+  return 99;
+}
+
+int main()
+{
+  x = f();
+}

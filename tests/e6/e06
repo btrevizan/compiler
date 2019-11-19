@@ -1,0 +1,24 @@
+int x;
+int K;
+
+int f(int z, int w)
+{
+  return z*w;
+}
+
+int mult (int z, int w, int a, int b)
+{
+  int x;
+  x = f(z,w)+f(a,b);
+  return x;
+}
+
+int main()
+{
+  int y;
+  int z;
+  x = 2018;
+  y = 2;
+  z = 2;
+  K = mult(y*3, y*3, z*2, z*2);
+}
