@@ -95,6 +95,18 @@ Operation* init_nop() {
     return operation;
 }
 
+Operation* init_halt() {
+    Operation* operation = malloc(sizeof(Operation));
+
+    operation->op = "halt";
+    operation->arg1 = NULL;
+    operation->arg2 = NULL;
+    operation->arg3 = NULL;
+    operation->type = OP_HALT;
+
+    return operation;
+}
+
 Operation* init_op_label(char* label) {
     Operation* operation = malloc(sizeof(Operation));
 
@@ -159,6 +171,7 @@ char* op2str(Operation* op) {
 
         case OP_DUMMY:
         case OP_NOP:
+        case OP_HALT:
             snprintf(result, n, "%s", op->op);
             break;
 

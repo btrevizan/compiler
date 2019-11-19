@@ -18,6 +18,7 @@
 #define OP_STR1   803
 #define OP_STR2   804
 #define OP_LABEL  805
+#define OP_HALT   806
 
 typedef struct operation {
     char* op;    // operator
@@ -37,6 +38,7 @@ Operation* init_op_ldc(char* op, char* arg1, int argI);
 Operation* init_op_label(char* label);
 Operation* init_dummy();
 Operation* init_nop();
+Operation* init_halt();
 
 char* op2str(Operation* op);
 void destroy_op(Operation* op);

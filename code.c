@@ -510,14 +510,14 @@ void while_do(Node* expr, Node* block, Node* parent) {
 }
 
 void setup_code_start(Node* tree, Stack* scope) {
+    // if prog is null, we're generating code for the last function in the program
+    CodeList *codelist = init_codelist();
     Symbol* s = search(scope, "main");
 
     if(s == NULL){
         fprintf(stderr, "MAIN_NOT_FIND_ERROR. A main function must be defined.\n");
         exit(MAIN_NOT_FIND_ERROR);
     }
-
-    CodeList *codelist = init_codelist();
 
     // Setup of base registers
     add_op(codelist, init_op_ldc("loadI", "rfp", RFP_START_VALUE));
@@ -527,11 +527,38 @@ void setup_code_start(Node* tree, Stack* scope) {
     // Setup jump to main function
     add_op(codelist, jump("jumpI", s->base));
 
-    if(tree->n_children > 0)
-        // Empty program
-        tree->codelist = concat_code(codelist, tree->children[0]->codelist);
+    // Added this nop because of problems with concat_code
+    tree->codelist = concat_code(codelist, tree->codelist);
+}
+
+void link_code(Node* function, Node* prog) {
+    CodeList * codelist = NULL;
+
+    if(prog != NULL) codelist = concat_code(codelist, prog->codelist);
+    function->codelist = concat_code(function->codelist, codelist);
+}
+
+void setup_call(Stack* scope, Node* function, Node* body) {
+    Symbol* s = search(scope, function->value->token_value.string);
+    CodeList* codelist = init_codelist();
+
+    // Add label for function'f first instruction
+    add_op(codelist, init_op_label(s->base));
+
+    // TODO: add the rest of the call sequence here?
+
+    if(body != NULL)
+        function->codelist = concat_code(codelist, body->codelist);
     else
-        tree->codelist = codelist;
+        // Empty program
+        function->codelist = codelist;
+
+    if(strcmp(function->value->token_value.string, "main") != 0){
+        // TODO: add return sequence here?
+    } else {
+        // it's the main function, there's no return
+        add_op(function->codelist, init_halt());
+    }
 }
 
 void destroy_code(Code* code) {

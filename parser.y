@@ -75,6 +75,7 @@
 %type <parameter> params
 %type <parameter> list_of_params
 %type <node> prog
+%type <node> end_prog
 %type <node> global_var
 %type <node> lit_indexer
 %type <node> function
@@ -135,10 +136,12 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 /* Detailed error message */
 %define parse.error verbose
 
-%start prog
+%start end_prog
 %%
 
-prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); setup_code_start($$, scope); destroy_stack(scope);}
+end_prog: prog { $$ = $1, arvore = $$; setup_code_start($$, scope); destroy_stack(scope); }
+
+prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); link_code($$, $3); }
 |     init_env global_var prog 		{ $$ = NULL; }
 | 					{ $$ = NULL; };
 
@@ -167,7 +170,7 @@ function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2,
 }
 | 	  type TK_IDENTIFICADOR '(' { add_function(peek(scope), $1, $2, NULL); } ')' enter_scope body leave_scope {
 	$$ = unary_node($2, $7);
-
+	setup_call(scope, $$, $7);
 }
 | 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $2, $3, $6); } ')' body leave_scope {
 	$$ = unary_node($3, $9);

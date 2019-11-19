@@ -259,7 +259,7 @@ void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer, int s
     set_scope(symbol, scope, type, symbol->dimension->count);
 }
 
-void add_function(Table* table, int type, Lexeme* function, Param* params){
+void add_function(Table* table, int type, Lexeme* function, Param* params) {
     Symbol* symbol = create_symbol(NATUREZA_FUNCAO, type, function);
     symbol->args = params;
     symbol->base = get_label(); //function's first instruction label
