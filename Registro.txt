@@ -1,0 +1,14 @@
+Escolhemos não utilisar o campo "Temporários" do RA.
+A ordem dos outros registros é como segue:
+
+sp-->
+	Variáveis locais
+	Estado da máquina
+	Endereço de retorno
+	Vínculo estático
+	Vínculo dinâmico
+	Valor retornado
+	Argumentos
+fp-->
+
+A pilha cresce para os endereços maiores, então em qualquer momento do tempo os endereços dos ponteiros são tais que: sp >= fp.
