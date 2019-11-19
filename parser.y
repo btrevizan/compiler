@@ -138,9 +138,9 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 %start prog
 %%
 
-prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); }
+prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); setup_code_start($$, scope); destroy_stack(scope);}
 |     init_env global_var prog 		{ $$ = NULL; }
-| 					{ $$ = NULL; destroy_stack(scope);};
+| 					{ $$ = NULL; };
 
 /** SYMBOL TABLE STACK INITIALIZATION **/
 init_env: /* Empty */ { if(scope == NULL) { scope = init_stack(); push(scope, create_table()); } };

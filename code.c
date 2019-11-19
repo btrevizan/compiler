@@ -2,6 +2,7 @@
 #include "code.h"
 #include "iloc.h"
 #include "backpatching.h"
+#include "errors.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -506,6 +507,31 @@ void while_do(Node* expr, Node* block, Node* parent) {
     add_op(codelist, init_nop());
 
     parent->codelist = codelist;
+}
+
+void setup_code_start(Node* tree, Stack* scope) {
+    Symbol* s = search(scope, "main");
+
+    if(s == NULL){
+        fprintf(stderr, "MAIN_NOT_FIND_ERROR. A main function must be defined.\n");
+        exit(MAIN_NOT_FIND_ERROR);
+    }
+
+    CodeList *codelist = init_codelist();
+
+    // Setup of base registers
+    add_op(codelist, init_op_ldc("loadI", "rfp", RFP_START_VALUE));
+    add_op(codelist, init_op_ldc("loadI", "rsp", RSP_START_VALUE));
+    add_op(codelist, init_op_ldc("loadI", "rbss", RBSS_START_VALUE));
+
+    // Setup jump to main function
+    add_op(codelist, jump("jumpI", s->base));
+
+    if(tree->n_children > 0)
+        // Empty program
+        tree->codelist = concat_code(codelist, tree->children[0]->codelist);
+    else
+        tree->codelist = codelist;
 }
 
 void destroy_code(Code* code) {

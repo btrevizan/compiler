@@ -262,6 +262,7 @@ void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer, int s
 void add_function(Table* table, int type, Lexeme* function, Param* params){
     Symbol* symbol = create_symbol(NATUREZA_FUNCAO, type, function);
     symbol->args = params;
+    symbol->base = get_label(); //function's first instruction label
 
     if(params == NULL) 
         symbol->args_number = 0;

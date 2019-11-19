@@ -12,6 +12,10 @@
 #define NOT_ARRAY -1
 #define NOT_DECLARATION -1
 
+#define RFP_START_VALUE 2048
+#define RSP_START_VALUE 2048
+#define RBSS_START_VALUE 1024
+
 typedef struct code_t {
     Operation* operation;
     struct code_t* next;
@@ -51,6 +55,8 @@ void or(Node* expr1, Node* expr2, Node* op);
 void not(Node* expr, Node* op);
 void if_then_else(Node* if_then, Node* else_block);
 void while_do(Node* expr, Node* block, Node* parent);
+
+void setup_code_start(Node* tree, Stack* scope);
 
 //void jump(char* op, char* r1);
 //void conversion(char* op, char* r1, char* r2);
