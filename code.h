@@ -23,7 +23,7 @@ typedef struct code_list {
     Code* end;
 } CodeList;
 
-int offset_rfp;
+int offset_rsp;
 
 char* get_register();
 char* get_label();
