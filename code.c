@@ -538,7 +538,7 @@ void link_code(Node* function, Node* prog) {
     function->codelist = concat_code(function->codelist, codelist);
 }
 
-void setup_call(Stack* scope, Node* function, Node* body) {
+void setup_function(Stack* scope, Node* function, Node* body) {
     Symbol* s = search(scope, function->value->token_value.string);
     CodeList* codelist = init_codelist();
 

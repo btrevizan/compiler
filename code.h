@@ -57,7 +57,7 @@ void if_then_else(Node* if_then, Node* else_block);
 void while_do(Node* expr, Node* block, Node* parent);
 
 void setup_code_start(Node* tree, Stack* scope);
-void setup_call(Stack* scope, Node* function, Node* body);
+void setup_function(Stack* scope, Node* function, Node* body);
 void link_code(Node* function, Node* prog);
 
 //void jump(char* op, char* r1);

@@ -170,7 +170,7 @@ function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2,
 }
 | 	  type TK_IDENTIFICADOR '(' { add_function(peek(scope), $1, $2, NULL); } ')' enter_scope body leave_scope {
 	$$ = unary_node($2, $7);
-	setup_call(scope, $$, $7);
+	setup_function(scope, $$, $7);
 }
 | 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $2, $3, $6); } ')' body leave_scope {
 	$$ = unary_node($3, $9);
