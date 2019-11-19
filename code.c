@@ -101,7 +101,9 @@ CodeList* concat_code(CodeList* c1, CodeList* c2) {
     if(c1 == NULL) return c2;
     if(c2 == NULL) return c1;
 
-    CodeList* codelist = malloc(sizeof(codelist));
+    CodeList* codelist = malloc(sizeof(CodeList));
+
+    //printf("%p %p %p %p\n", c1, c2, c1->begin, c2->end);
 
     c1->end->next = c2->begin;
     c2->begin->prev = c1->end;
@@ -510,7 +512,6 @@ void while_do(Node* expr, Node* block, Node* parent) {
 }
 
 void setup_code_start(Node* tree, Stack* scope) {
-    // if prog is null, we're generating code for the last function in the program
     CodeList *codelist = init_codelist();
     Symbol* s = search(scope, "main");
 
@@ -566,9 +567,8 @@ void setup_call(Stack* scope, Node* function, Node* args) {
 
     // static link always zero, because we can't have nested functions
     int static_link = 0;
-    CodeList* codelist = NULL;
+    CodeList* codelist = init_codelist();
     int offset = 0, return_offset;
-    int call_sequence_len = 0;
     Symbol* s = search(scope, function->value->token_value.string);
 
     // pass all the arguments to new function
@@ -580,7 +580,6 @@ void setup_call(Stack* scope, Node* function, Node* args) {
         op = init_op_rrc("storeAI", args->temp, "rsp", offset);
         op->type = OP_STC;
         add_op(codelist, op);
-        call_sequence_len++;
         offset += get_type_size(args->type);
 
         current = current->n_children ? NULL : current->children[current->n_children-1];
@@ -593,28 +592,25 @@ void setup_call(Stack* scope, Node* function, Node* args) {
     // saves static link
     char* static_temp = load_imm(codelist, static_link);
     op = init_op_rrc("storeAI", static_temp, "rsp", offset);
-    call_sequence_len++;
     op->type = OP_STC;
     add_op(codelist, op);
     offset += 4;
 
     // saves machine state (rfp and rbss)
     op = init_op_rrc("storeAI", "rfp", "rsp", offset);
-    call_sequence_len++;
     op->type = OP_STC;
     add_op(codelist, op);
     offset += 4;
 
     op = init_op_rrc("storeAI", "rbss", "rsp", offset);
-    call_sequence_len++;
     op->type = OP_STC;
     add_op(codelist, op);
-    offset += 4;    
+    offset += 4;
 
     // saves return address
     char* pc_return = get_register();
-    // call_sequence_len+3 for the add and store of the return address and the jump
-    add_op(codelist, init_op_rrc("addI", pc_return, "rsp", call_sequence_len+3));
+    // 3 for the add and store of the return address and the jump
+    add_op(codelist, init_op_rrc("addI", "rpc", pc_return, 3));
     op = init_op_rrc("storeAI", pc_return, "rsp", offset);
     op->type = OP_STC;
     add_op(codelist, op);
@@ -625,8 +621,9 @@ void setup_call(Stack* scope, Node* function, Node* args) {
     if(s->type != TYPE_NAN){
         // the function is non-void
         // PS: if this can just use RSP, we need to restore it inside the function call return sequence
+        function->temp = get_register();
         Operation *op = init_op_rrc("loadAI", "rsp", function->temp, return_offset);
-        add_op(codelist, op);
+        add_op(codelist, op);    
     }
 
     function->codelist = codelist;

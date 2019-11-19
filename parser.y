@@ -139,10 +139,10 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 %start end_prog
 %%
 
-end_prog: prog { $$ = $1, arvore = $$; setup_code_start($$, scope); destroy_stack(scope); }
+end_prog: prog { $$ = $1; arvore = $$; setup_code_start($$, scope); destroy_stack(scope); }
 
 prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); link_code($$, $3); }
-|     init_env global_var prog 		{ $$ = NULL; }
+|     init_env global_var prog 		{ $$ = $3; }
 | 					{ $$ = NULL; };
 
 /** SYMBOL TABLE STACK INITIALIZATION **/
@@ -210,7 +210,7 @@ simple_command: local_var_with_init	{ $$ = $1; }
 command_list: simple_command ';'			{ $$ = $1; }
 | 	      simple_command ';' command_list		{ if($1 == NULL) { $$ = $3; } else { $$ = $1; add_node($$, $3); $$->codelist = concat_code($$->codelist, $3->codelist); } };
 
-block: '{' enter_scope command_list leave_scope '}' 	{ $$ = unary_node(NULL, $3); }
+block: '{' enter_scope command_list leave_scope '}' 	{ $$ = unary_node(NULL, $3); $$->codelist = $3->codelist; }
 |      '{' '}'						{ $$ = create_node(NULL); };
 
 /** Local variable declaration **/
