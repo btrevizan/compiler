@@ -28,14 +28,12 @@ int get_current_local_offset(){
 }
 
 int get_local_offset(int type, int array_len){
-    int prev_offset = offset_rsp;
-
 	if(array_len <= 0) 
 		array_len = 1;
 
 	offset_rsp -= get_type_size(type)*array_len;
 	
-	return prev_offset;
+	return offset_rsp;
 }
 
 char* get_register(){
@@ -98,12 +96,10 @@ void add_op(CodeList* codelist, Operation* op) {
 }
 
 CodeList* concat_code(CodeList* c1, CodeList* c2) {
-    if(c1 == NULL) return c2;
-    if(c2 == NULL) return c1;
+    if(c1 == NULL || c1->end == NULL) return c2;
+    if(c2 == NULL || c2->begin == NULL) return c1;
 
     CodeList* codelist = malloc(sizeof(CodeList));
-
-    //printf("%p %p %p %p\n", c1, c2, c1->begin, c2->end);
 
     c1->end->next = c2->begin;
     c2->begin->prev = c1->end;
@@ -582,7 +578,7 @@ void setup_call(Stack* scope, Node* function, Node* args) {
         add_op(codelist, op);
         offset += get_type_size(args->type);
 
-        current = current->n_children ? NULL : current->children[current->n_children-1];
+        current = current->n_children ? current->children[current->n_children-1] : NULL;
     }
     
     return_offset = offset;
