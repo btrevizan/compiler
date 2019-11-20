@@ -32,11 +32,6 @@ int offset_rsp;
 char* get_register();
 char* get_label();
 
-int get_global_offset(int type, int array_len);
-void set_local_offset(int offset);
-int get_local_offset(int type, int array_len);
-int get_current_local_offset();
-
 Code* init_code();
 CodeList* init_codelist();
 void add_dummy(CodeList* codelist);

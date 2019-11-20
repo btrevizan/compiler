@@ -1,14 +1,8 @@
-all: parser.y scanner.l main.c tree.c table.c stack.c checks.c
+all: parser.y scanner.l main.c tree.c table.c stack.c checks.c code.c iloc.c backpatching.c address.c
 	bison -d parser.y --report-file=report.out -r all
 	flex scanner.l
-	gcc -c lex.yy.c parser.tab.c lexical.c tree.c table.c stack.c checks.c code.c iloc.c backpatching.c -g
-	gcc -o etapa6 lex.yy.o parser.tab.o lexical.o tree.o table.o stack.o checks.o code.o iloc.o backpatching.o main.c -ll -lm
-
-# test_analysis: etapa3 tests/e2/asl150
-# 	./etapa3 < tests/e2/asl150
-#
-# test_leakage: etapa3 tests/e2/asl150
-# 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./etapa3 < tests/e2/asl150
+	gcc -c lex.yy.c parser.tab.c lexical.c tree.c table.c stack.c checks.c code.c iloc.c backpatching.c address.c -g
+	gcc -o etapa6 lex.yy.o parser.tab.o lexical.o tree.o table.o stack.o checks.o code.o iloc.o backpatching.o address.o main.c -ll -lm
 
 clean:
 	rm -f *.o
