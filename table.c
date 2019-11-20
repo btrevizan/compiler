@@ -2,6 +2,7 @@
 #include "lexical.h"
 #include "errors.h"
 #include "code.h"
+#include "address.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

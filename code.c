@@ -3,6 +3,7 @@
 #include "iloc.h"
 #include "backpatching.h"
 #include "errors.h"
+#include "address.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

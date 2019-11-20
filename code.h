@@ -12,10 +12,6 @@
 #define NOT_ARRAY -1
 #define NOT_DECLARATION -1
 
-#define RFP_START_VALUE 2048
-#define RSP_START_VALUE 2048
-#define RBSS_START_VALUE 1024
-
 typedef struct code_t {
     Operation* operation;
     struct code_t* next;
@@ -26,8 +22,6 @@ typedef struct code_list {
     Code* begin;
     Code* end;
 } CodeList;
-
-int offset_rsp;
 
 char* get_register();
 char* get_label();
@@ -55,9 +49,6 @@ void setup_code_start(Node* tree, Stack* scope);
 void setup_function(Stack* scope, Node* function, Node* body, Param* params);
 void setup_call(Stack* scope, Node* function, Node* args);
 void link_code(Node* function, Node* prog);
-
-//void jump(char* op, char* r1);
-//void conversion(char* op, char* r1, char* r2);
 
 char* load_index(Stack* scope, CodeList* codelist, Node* id);
 
