@@ -1,4 +1,4 @@
-Escolhemos não utilisar o campo "Temporários" do RA.
+Escolhemos não utilizar o campo "Temporários" do RA.
 A ordem dos outros registros é como segue:
 
 sp-->
