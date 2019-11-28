@@ -40,6 +40,9 @@ int get_type_size(int type) {
         case TYPE_BOOL:
             return SIZE_BOOL;
 
+        case TYPE_NAN:
+            return 0;
+
         default:
             return -1;
     }

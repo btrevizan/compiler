@@ -8,6 +8,7 @@
 	#include "table.h"
 	#include "checks.h"
 	#include "code.h"
+	#include "activation.h"
 
 	extern int yylineno;
 
