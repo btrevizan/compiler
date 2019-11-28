@@ -172,9 +172,12 @@ void set_scope(Symbol* symbol, int scope, int type, int dimension){
     if(scope == GLOBAL){
         symbol->address = get_global_offset(type, dimension);
         symbol->base = strdup("rbss"); 
-    } else {
+    } else if(scope == LOCAL) {
         symbol->address = get_local_offset(type, dimension);
         symbol->base = strdup("rsp"); 
+    } else if(scope == PARAM) {
+        symbol->address = get_param_offset(type, dimension);
+        symbol->base = strdup("rfp");
     }
 }
 
@@ -275,8 +278,16 @@ void add_function(Table* table, int type, Lexeme* function, Param* params) {
 
     add_symbol(table, symbol);
 
-    // Resets the address relative to rfp
+    // Resets the address relative to rsp
     set_local_offset(0);
+    // Resets the address relative to rfp
+    set_param_offset(0);
+}
+
+void add_param(Table* table, int type, Lexeme* identifier, int scope) {
+    Symbol* symbol = create_symbol(NATUREZA_IDENTIFICADOR, type, identifier);
+    add_symbol(table, symbol);
+    set_scope(symbol, scope, type, NOT_ARRAY);
 }
 
 void delete_symbol(Symbol* symbol) {

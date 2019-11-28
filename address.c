@@ -31,3 +31,16 @@ int get_local_offset(int type, int array_len){
 
     return offset_rsp;
 }
+
+void set_param_offset(int offset){
+    offset_rfp = offset;
+}
+
+int get_param_offset(int type, int array_len){
+    if(array_len <= 0)
+        array_len = 1;
+
+    offset_rfp += get_type_size(type)*array_len;
+
+    return offset_rfp;
+}

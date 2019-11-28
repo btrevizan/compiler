@@ -8,6 +8,7 @@
 	#include "table.h"
 	#include "checks.h"
 	#include "code.h"
+	#include "address.h"
 	#include "activation.h"
 
 	extern int yylineno;
@@ -147,7 +148,7 @@ prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); link_co
 | 					{ $$ = NULL; };
 
 /** SYMBOL TABLE STACK INITIALIZATION **/
-init_env: /* Empty */ { if(scope == NULL) { scope = init_stack(); push(scope, create_table()); } };
+init_env: /* Empty */ { if(scope == NULL) { scope = init_stack(); push(scope, create_table()); set_param_offset(0); } };
 
 /** ENTER NEW SCOPE **/
 enter_scope: /* Empty */ { push(scope, create_table()); };
@@ -186,8 +187,8 @@ function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2,
 body: '{' command_list '}' 	{ $$ = $2; }
 |     '{' '}'			{ $$ = NULL; };
 
-params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_param($2, $3); add_symbol(peek(scope), create_symbol(NATUREZA_IDENTIFICADOR, $2, $3)); delete_lexeme($3); }
-| 	type TK_IDENTIFICADOR			{ $$ = create_param($1, $2); add_symbol(peek(scope), create_symbol(NATUREZA_IDENTIFICADOR, $1, $2)); delete_lexeme($2); };
+params: TK_PR_CONST type TK_IDENTIFICADOR 	{ $$ = create_param($2, $3); add_param(peek(scope), $2, $3, PARAM); delete_lexeme($3); }
+| 	type TK_IDENTIFICADOR			{ $$ = create_param($1, $2); add_param(peek(scope), $1, $2, PARAM); delete_lexeme($2); };
 
 list_of_params: params				{ $$ = $1; $$->count = 1; }
 | 		params ',' list_of_params	{ $$ = $1; $$->next = $3; $$->count = $3->count + 1; };

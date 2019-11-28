@@ -42,6 +42,7 @@
 
 #define GLOBAL                      0
 #define LOCAL                       1
+#define PARAM                       2
 
 typedef struct symbol {
     // line number is in lexeme->line_number
@@ -98,6 +99,7 @@ void add_symbol(Table* table, Symbol* value);
 void add_identifier(Table* table, int type, Lexeme* identifier, int scope);
 void add_vector(Table* table, int type, Lexeme* identifier, Node* indexer, int scope);
 void add_function(Table* table, int type, Lexeme* function, Param* params);
+void add_param(Table* table, int type, Lexeme* identifier, int scope);
 
 Dim* convert_dim(Node *node);
 
