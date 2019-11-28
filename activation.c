@@ -85,7 +85,16 @@ void write_return_addr(ActivationRecord* ar, CodeList **codelist_p) {
     add_op(codelist, op);
 }
 
-char* load_arguments(ActivationRecord* ar, CodeList **codelist_p);
+char* load_arguments(ActivationRecord* ar, CodeList **codelist_p, Param* param_list) {
+    Param *current = param_list;
+    int offset = 0;
+
+    while(current != NULL){
+        offset += get_type_size(current->symbol->type);
+    }
+
+    ar->arguments_offset = offset;
+}
 
 char* load_return_value(ActivationRecord* ar, CodeList **codelist_p) {
     // PS: if this can just use RSP, we need to restore it inside the function call return sequence
@@ -98,9 +107,38 @@ char* load_return_value(ActivationRecord* ar, CodeList **codelist_p) {
     return temp;
 }
 
-char* load_dynamic_link(ActivationRecord* ar, CodeList **codelist_p);
-char* load_static_link(ActivationRecord* ar, CodeList **codelist_p);
-char* load_return_addr(ActivationRecord* ar, CodeList **codelist_p);
+char* load_dynamic_link(ActivationRecord* ar, CodeList **codelist_p) {
+    char* temp = get_register();
+    int offset =  ar->arguments_offset + get_type_size(ar->return_type);
+    CodeList* codelist = *codelist_p;
+
+    Operation *op = init_op_rrc("loadAI", "rsp", temp, offset);
+    add_op(codelist, op);  
+
+    return temp;
+}
+
+char* load_static_link(ActivationRecord* ar, CodeList **codelist_p) {
+    char* temp = get_register();
+    int offset =  ar->arguments_offset + get_type_size(ar->return_type) + 4;
+    CodeList* codelist = *codelist_p;
+
+    Operation *op = init_op_rrc("loadAI", "rsp", temp, offset);
+    add_op(codelist, op);  
+
+    return temp;
+}
+
+char* load_return_addr(ActivationRecord* ar, CodeList **codelist_p) {
+    char* temp = get_register();
+    int offset =  ar->arguments_offset + get_type_size(ar->return_type) + 8;
+    CodeList* codelist = *codelist_p;
+
+    Operation *op = init_op_rrc("loadAI", "rsp", temp, offset);
+    add_op(codelist, op);  
+
+    return temp;
+}
 
 void setup_code_start(Node* tree, Stack* scope) {
     CodeList *codelist = init_codelist();
