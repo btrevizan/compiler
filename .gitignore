@@ -9,3 +9,4 @@ etapa*
 parser.tab.*
 report.out
 *.csv
+*.iloc

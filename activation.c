@@ -161,10 +161,8 @@ void setup_function(Stack* scope, Node* function, Node* body, Param* params) {
     // Add label for function's first instruction
     add_op(codelist, init_op_label(s->base));
 
-    // Save caller rfp
-    write_dynamic_link(s->ar, &codelist);
-
     if(strcmp(function->value->token_value.string, "main") != 0) {
+        write_dynamic_link(s->ar, &codelist);  // save caller rfp
         add_op(codelist, init_op_rr("i2i", "rsp", "rfp"));  // update rfp
     }
 
@@ -178,6 +176,10 @@ void setup_function(Stack* scope, Node* function, Node* body, Param* params) {
         function->codelist = codelist;
 
     // Return sequence is added on return command at parser.y
+    if(strcmp(function->value->token_value.string, "main") == 0) {
+        // It's the main function, there's no return
+        add_op(function->codelist, init_halt());
+    }
 }
 
 void setup_call(Stack* scope, Node* function, Node* args) {
@@ -229,7 +231,7 @@ int get_return_value_offset(Param* params) {
     Param* aux = params;
     while(aux != NULL) {
         offset += get_type_size(aux->symbol->type);
-        aux = params->next;
+        aux = aux->next;
     }
 
     return offset;

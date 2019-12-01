@@ -27,9 +27,10 @@ int get_local_offset(int type, int array_len){
     if(array_len <= 0)
         array_len = 1;
 
+    int prev_offset = offset_rsp;
     offset_rsp -= get_type_size(type)*array_len;
 
-    return offset_rsp;
+    return prev_offset;
 }
 
 void set_param_offset(int offset){
@@ -40,7 +41,8 @@ int get_param_offset(int type, int array_len){
     if(array_len <= 0)
         array_len = 1;
 
+    int prev_offset = offset_rfp;
     offset_rfp += get_type_size(type)*array_len;
 
-    return offset_rfp;
+    return prev_offset;
 }

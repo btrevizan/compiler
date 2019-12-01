@@ -490,31 +490,28 @@ void link_code(Node* function, Node* prog) {
 void return_code(Table* scope, const char* function_name, Node* return_op) {
     return_op->codelist = init_codelist();
 
-    if(strcmp(function_name, "main") == 0) {
-        // It's the main function, there's no return
-        add_op(return_op->codelist, init_halt());
-    } else {
-        Node *expr = return_op->children[0];
-        Symbol *function = get_entry(scope, function_name);
+    Node *expr = return_op->children[0];
+    return_op->codelist = concat_code(expr->codelist, return_op->codelist);
 
-        char *return_value_register = expr->temp;
-        char *return_addr_register = get_register();
-        char *saved_rfp = get_register();
+    Symbol *function = get_entry(scope, function_name);
 
-        Operation *str_return_value = init_op_stc("storeAI", return_value_register, "rfp", function->ar->return_value_offset);
-        Operation *ld_return_addr = init_op_rrc("loadAI", "rfp", return_addr_register, function->ar->return_addr_offset);
-        Operation *ld_saved_rfp = init_op_rrc("loadAI", "rfp", saved_rfp, function->ar->dynamic_link_offset);
-        Operation *set_rsp = init_op_rr("i2i", "rfp", "rsp");
-        Operation *str_saved_rfp = init_op_rr("store", saved_rfp, "rfp");
-        Operation *jump_op = jump("jump", return_addr_register);
+    char *return_value_register = expr->temp;
+    char *return_addr_register = get_register();
+    char *saved_rfp = get_register();
 
-        add_op(return_op->codelist, str_return_value);
-        add_op(return_op->codelist, ld_return_addr);
-        add_op(return_op->codelist, ld_saved_rfp);
-        add_op(return_op->codelist, set_rsp);
-        add_op(return_op->codelist, str_saved_rfp);
-        add_op(return_op->codelist, jump_op);
-    }
+    Operation *str_return_value = init_op_stc("storeAI", return_value_register, "rfp", function->ar->return_value_offset);
+    Operation *ld_return_addr = init_op_rrc("loadAI", "rfp", return_addr_register, function->ar->return_addr_offset);
+    Operation *ld_saved_rfp = init_op_rrc("loadAI", "rfp", saved_rfp, function->ar->dynamic_link_offset);
+    Operation *set_rsp = init_op_rr("i2i", "rfp", "rsp");
+    Operation *str_saved_rfp = init_op_rr("store", saved_rfp, "rfp");
+    Operation *jump_op = jump("jump", return_addr_register);
+
+    add_op(return_op->codelist, str_return_value);
+    add_op(return_op->codelist, ld_return_addr);
+    add_op(return_op->codelist, ld_saved_rfp);
+    add_op(return_op->codelist, set_rsp);
+    add_op(return_op->codelist, str_saved_rfp);
+    add_op(return_op->codelist, jump_op);
 }
 
 void destroy_code(Code* code) {
