@@ -1,5 +1,5 @@
 /* recursion: 720 in the bss address */
-int c;
+int x;
 
 int fatorial (int n)
 {
