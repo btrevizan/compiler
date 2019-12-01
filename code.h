@@ -48,6 +48,7 @@ void not(Node* expr, Node* op);
 void if_then_else(Node* if_then, Node* else_block);
 void while_do(Node* expr, Node* block, Node* parent);
 Operation* jump(char* op, char* r1);
+void return_code(Table* scope, const char* function_name, Node* return_op);
 
 void destroy_code(Code* code);
 void destroy_code_list(CodeList* codelist);

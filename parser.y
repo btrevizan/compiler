@@ -17,6 +17,7 @@
 	void yyerror (char const *s);
 
 	extern Stack *scope;
+	char* scope_function;
 %}
 
 %union {
@@ -141,7 +142,7 @@ https://pt.wikipedia.org/wiki/Operadores_em_C_e_C%2B%2B#Precedência_de_operador
 %start end_prog
 %%
 
-end_prog: prog { $$ = $1; arvore = $$; setup_code_start($$, scope); destroy_stack(scope); }
+end_prog: prog { $$ = $1; arvore = $$; setup_code_start($$, scope); destroy_stack(scope); scope_function = NULL; }
 
 prog: init_env function prog 		{ $$ = $2; arvore = $$; add_node($$, $3); link_code($$, $3); }
 |     init_env global_var prog 		{ $$ = $3; }
@@ -167,19 +168,19 @@ lit_indexer: '[' literal ']'	{ implicit_conversion(TYPE_INT, $2); $$ = $2;}
 | '[' literal ']' lit_indexer	{ implicit_conversion(TYPE_INT, $2); $$ = $2; add_node($$, $4); };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); } ')' enter_scope body { set_ra_size(scope, $3); } leave_scope {
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); scope_function = $3->token_value.string; } ')' enter_scope body { set_ra_size(scope, $3); } leave_scope {
 	$$ = unary_node($3, $8);
 	setup_function(scope, $$, $8, NULL);
 }
-| 	  type TK_IDENTIFICADOR '(' { add_function(peek(scope), $1, $2, NULL); } ')' enter_scope body leave_scope {
+| 	  type TK_IDENTIFICADOR '(' { add_function(peek(scope), $1, $2, NULL); scope_function = $2->token_value.string; } ')' enter_scope body leave_scope {
 	$$ = unary_node($2, $7);
 	setup_function(scope, $$, $7, NULL);
 }
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $2, $3, $6); } ')' body leave_scope {
+| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $2, $3, $6); scope_function = $3->token_value.string; } ')' body leave_scope {
 	$$ = unary_node($3, $9);
 	setup_function(scope, $$, $9, $6);
 }
-| 	  type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $1, $2, $5); } ')' body leave_scope {
+| 	  type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $1, $2, $5); scope_function = $2->token_value.string; } ')' body leave_scope {
 	$$ = unary_node($2, $8); 
 	setup_function(scope, $$, $8, $5);
 };
@@ -261,7 +262,7 @@ shift: id TK_OC_SL expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($
 |      id TK_OC_SR expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($2, $1, $3); };
 
 /** Flow change commands **/
-return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); /*return_code(scope, $$);*/ };
+return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); return_code(scope->top->next->value, scope_function, $$); };
 
 /** If-then-else statement **/
 if: TK_PR_IF '(' expr ')' block		{ implicit_conversion(TYPE_BOOL, $3); $$ = binary_node($1, $3, $5); };

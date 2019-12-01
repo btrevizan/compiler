@@ -35,6 +35,8 @@ Operation* init_op_crr(char* op, char* arg1, char* arg2, int argI);
 Operation* init_op_rr(char* op, char* arg1, char* arg2);
 Operation* init_op_r(char* op, char* arg1);
 Operation* init_op_ldc(char* op, char* arg1, int argI);
+Operation* init_op_stc(char* op, char* arg1, char* arg2, int argI);
+Operation* init_op_str2(char* op, char* arg1, char* arg2, char* arg3);
 Operation* init_op_label(char* label);
 Operation* init_dummy();
 Operation* init_nop();
