@@ -12,4 +12,5 @@ int main()
 {
   int y;
   y = f();
+  x = y;
 }
