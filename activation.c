@@ -198,7 +198,6 @@ void setup_call(Stack* scope, Node* function, Node* args) {
 
     if(s->type != TYPE_NAN){
         // The function is non-void
-        // PS: if this can just use RSP, we need to restore it inside the function call return sequence
         function->temp = load_return_value(s->ar, &codelist);
     }
 

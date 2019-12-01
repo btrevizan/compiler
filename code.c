@@ -503,7 +503,7 @@ void return_code(Table* scope, const char* function_name, Node* return_op) {
     Operation *ld_return_addr = init_op_rrc("loadAI", "rfp", return_addr_register, function->ar->return_addr_offset);
     Operation *ld_saved_rfp = init_op_rrc("loadAI", "rfp", saved_rfp, function->ar->dynamic_link_offset);
     Operation *set_rsp = init_op_rr("i2i", "rfp", "rsp");
-    Operation *str_saved_rfp = init_op_rr("store", saved_rfp, "rfp");
+    Operation *str_saved_rfp = init_op_rr("i2i", saved_rfp, "rfp");
     Operation *jump_op = jump("jump", return_addr_register);
 
     add_op(return_op->codelist, str_return_value);
