@@ -487,13 +487,13 @@ void link_code(Node* function, Node* prog) {
     function->codelist = concat_code(function->codelist, codelist);
 }
 
-void return_code(Table* scope, const char* function_name, Node* return_op) {
+void return_code(Stack* scope, const char* function_name, Node* return_op) {
     return_op->codelist = init_codelist();
 
     Node *expr = return_op->children[0];
     return_op->codelist = concat_code(expr->codelist, return_op->codelist);
 
-    Symbol *function = get_entry(scope, function_name);
+    Symbol *function = search(scope, function_name);
 
     char *return_value_register = expr->temp;
     char *return_addr_register = get_register();

@@ -262,7 +262,7 @@ shift: id TK_OC_SL expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($
 |      id TK_OC_SR expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($2, $1, $3); };
 
 /** Flow change commands **/
-return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); return_code(scope->top->next->value, scope_function, $$); };
+return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); return_code(scope, scope_function, $$); };
 
 /** If-then-else statement **/
 if: TK_PR_IF '(' expr ')' block		{ implicit_conversion(TYPE_BOOL, $3); $$ = binary_node($1, $3, $5); };
