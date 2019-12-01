@@ -46,7 +46,7 @@ void write_dynamic_link(ActivationRecord* ar, CodeList **codelist_p) {
     Operation *op;
     CodeList *codelist = *codelist_p;
     int offset = ar->dynamic_link_offset;
-    
+
     // Save dynamic link
     op = init_op_stc("storeAI", "rfp", "rsp", offset);
     add_op(codelist, op);
