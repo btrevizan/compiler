@@ -3,6 +3,7 @@
 #include "errors.h"
 #include "code.h"
 #include "address.h"
+#include "activation.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -282,6 +283,16 @@ void add_function(Table* table, int type, Lexeme* function, Param* params) {
     set_local_offset(0);
     // Resets the address relative to rfp
     set_param_offset(0);
+
+    // Set activation record
+    symbol->ar = init_ar(type);
+    symbol->ar->arguments_offset = get_arguments_offset(params);
+    symbol->ar->dynamic_link_offset = get_dynamic_link_offset(params);
+    symbol->ar->static_link_offset = get_static_link_offset(params);
+    symbol->ar->local_var_offset = get_local_var_offset(params);
+    symbol->ar->pc_addr_offset = get_pc_addr_offset(params);
+    symbol->ar->return_addr_offset = get_return_addr_offset(params);
+    symbol->ar->return_value_offset = get_return_value_offset(params);
 }
 
 void add_param(Table* table, int type, Lexeme* identifier, int scope) {

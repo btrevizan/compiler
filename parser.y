@@ -167,7 +167,7 @@ lit_indexer: '[' literal ']'	{ implicit_conversion(TYPE_INT, $2); $$ = $2;}
 | '[' literal ']' lit_indexer	{ implicit_conversion(TYPE_INT, $2); $$ = $2; add_node($$, $4); };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); } ')' enter_scope body leave_scope {
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); } ')' enter_scope body { set_ra_size(scope, $3); } leave_scope {
 	$$ = unary_node($3, $8);
 	setup_function(scope, $$, $8, NULL);
 }
@@ -261,7 +261,7 @@ shift: id TK_OC_SL expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($
 |      id TK_OC_SR expr		{ implicit_conversion(TYPE_INT, $3); $$ = binary_node($2, $1, $3); };
 
 /** Flow change commands **/
-return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); };
+return: TK_PR_RETURN expr		{ $$ = unary_node($1, $2); check_return_type(scope, $2); /*return_code(scope, $$);*/ };
 
 /** If-then-else statement **/
 if: TK_PR_IF '(' expr ')' block		{ implicit_conversion(TYPE_BOOL, $3); $$ = binary_node($1, $3, $5); };

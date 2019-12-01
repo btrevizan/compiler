@@ -30,7 +30,7 @@ void write_arguments(ActivationRecord* ar, CodeList **codelist_p, Node *args) {
     *codelist_p = concat_code(*codelist_p, codelist);
 
     // Save the space occupied by the arguments
-    ar->arguments_offset = offset;
+//    ar->arguments_offset = offset;
 }
 
 void write_return_value(ActivationRecord* ar, CodeList **codelist_p, char* return_temp) {
@@ -47,7 +47,7 @@ void write_return_value(ActivationRecord* ar, CodeList **codelist_p, char* retur
 void write_dynamic_link(ActivationRecord* ar, CodeList **codelist_p) {
     Operation *op;
     CodeList *codelist = *codelist_p;
-    int offset = ar->arguments_offset + get_type_size(ar->return_type);
+    int offset = ar->dynamic_link_offset;
 
     // TODO: maybe can be done in the calee part, so not to be repeated constantly
     // Save dynamic link
@@ -59,7 +59,7 @@ void write_dynamic_link(ActivationRecord* ar, CodeList **codelist_p) {
 void write_static_link(ActivationRecord* ar, CodeList **codelist_p){
     Operation *op;
     CodeList *codelist = *codelist_p;
-    int offset = ar->arguments_offset + get_type_size(ar->return_type) + 4;
+    int offset = ar->static_link_offset;
 
     // Static link is always zero, because we can't have nested functions
     int static_link = 0;
@@ -74,7 +74,7 @@ void write_static_link(ActivationRecord* ar, CodeList **codelist_p){
 void write_return_addr(ActivationRecord* ar, CodeList **codelist_p) {
     Operation *op;
     CodeList *codelist = *codelist_p;
-    int offset = ar->arguments_offset + get_type_size(ar->return_type) + 8;
+    int offset = ar->return_addr_offset;
 
     // Save return address
     char* pc_return = get_register();
@@ -85,7 +85,7 @@ void write_return_addr(ActivationRecord* ar, CodeList **codelist_p) {
     add_op(codelist, op);
 }
 
-char* load_arguments(ActivationRecord* ar, CodeList **codelist_p, Param* param_list) {
+void load_arguments(ActivationRecord* ar, CodeList **codelist_p, Param* param_list) {
     Param *current = param_list;
     int offset = 0;
 
@@ -93,7 +93,7 @@ char* load_arguments(ActivationRecord* ar, CodeList **codelist_p, Param* param_l
         offset += get_type_size(current->symbol->type);
     }
 
-    ar->arguments_offset = offset;
+//    ar->arguments_offset = offset;
 }
 
 char* load_return_value(ActivationRecord* ar, CodeList **codelist_p) {
@@ -109,7 +109,7 @@ char* load_return_value(ActivationRecord* ar, CodeList **codelist_p) {
 
 char* load_dynamic_link(ActivationRecord* ar, CodeList **codelist_p) {
     char* temp = get_register();
-    int offset =  ar->arguments_offset + get_type_size(ar->return_type);
+    int offset =  ar->dynamic_link_offset;
     CodeList* codelist = *codelist_p;
 
     Operation *op = init_op_rrc("loadAI", "rsp", temp, offset);
@@ -120,7 +120,7 @@ char* load_dynamic_link(ActivationRecord* ar, CodeList **codelist_p) {
 
 char* load_static_link(ActivationRecord* ar, CodeList **codelist_p) {
     char* temp = get_register();
-    int offset =  ar->arguments_offset + get_type_size(ar->return_type) + 4;
+    int offset =  ar->static_link_offset;
     CodeList* codelist = *codelist_p;
 
     Operation *op = init_op_rrc("loadAI", "rsp", temp, offset);
@@ -131,7 +131,7 @@ char* load_static_link(ActivationRecord* ar, CodeList **codelist_p) {
 
 char* load_return_addr(ActivationRecord* ar, CodeList **codelist_p) {
     char* temp = get_register();
-    int offset =  ar->arguments_offset + get_type_size(ar->return_type) + 8;
+    int offset =  ar->return_addr_offset;
     CodeList* codelist = *codelist_p;
 
     Operation *op = init_op_rrc("loadAI", "rsp", temp, offset);
@@ -167,7 +167,12 @@ void setup_function(Stack* scope, Node* function, Node* body, Param* params) {
     // Add label for function's first instruction
     add_op(codelist, init_op_label(s->base));
 
-    // TODO: add the rest of the call sequence here?
+    if(strcmp(function->value->token_value.string, "main") != 0) {
+        add_op(codelist, init_op_rr("i2i", "rsp", "rfp"));  // update rfp
+    }
+
+    // TODO: find out the AR's size
+    add_op(codelist, init_op_crr("addI", "rsp", "rsp", 16));  // update rsp
 
     // Put body code into function node's code
     if(body != NULL)
@@ -176,8 +181,16 @@ void setup_function(Stack* scope, Node* function, Node* body, Param* params) {
         // Empty program
         function->codelist = codelist;
 
-    if(strcmp(function->value->token_value.string, "main") != 0){
+    if(strcmp(function->value->token_value.string, "main") != 0) {
         // TODO: add return sequence here?
+        // put value in some register (R)
+        // storeAI R => rfp, N (N = activation register offset for return value)
+        // loadAI rfp, N => R0  (get return address according to activation register)
+        // loadAI rfp, N => R1  (get saved rsp)
+        // loadAI rfp, N => R2  (get saved rfp)
+        // store R1 => rsp
+        // store R2 => rfp
+        // jump => R0
     } else {
         // It's the main function, there's no return
         add_op(function->codelist, init_halt());
@@ -190,12 +203,11 @@ void setup_call(Stack* scope, Node* function, Node* args) {
     CodeList* codelist = init_codelist();
     int offset = 0, return_offset;
     Symbol* s = search(scope, function->value->token_value.string);
-    ActivationRecord *ar = init_ar(function->type);
 
-    write_arguments(ar, &codelist, args);
-    write_dynamic_link(ar, &codelist);
-    write_static_link(ar, &codelist);
-    write_return_addr(ar, &codelist);
+    write_arguments(s->ar, &codelist, args);
+    write_dynamic_link(s->ar, &codelist);
+    write_static_link(s->ar, &codelist);
+    write_return_addr(s->ar, &codelist);
 
     // Jump to function
     add_op(codelist, jump("jumpI", s->base));
@@ -203,8 +215,64 @@ void setup_call(Stack* scope, Node* function, Node* args) {
     if(s->type != TYPE_NAN){
         // The function is non-void
         // PS: if this can just use RSP, we need to restore it inside the function call return sequence
-        function->temp = load_return_value(ar, &codelist);    
+        function->temp = load_return_value(s->ar, &codelist);
     }
 
     function->codelist = codelist;
+}
+
+int get_local_var_offset(Param* params) {
+    return get_return_addr_offset(params) + 4;
+}
+
+int get_return_addr_offset(Param* params) {
+    return get_pc_addr_offset(params) + 4;
+}
+
+int get_pc_addr_offset(Param* params) {
+    return get_static_link_offset(params) + 4;
+}
+
+int get_static_link_offset(Param* params) {
+    return get_dynamic_link_offset(params) + 4;
+}
+
+int get_dynamic_link_offset(Param* params) {
+    return get_return_value_offset(params) + 4;
+}
+
+int get_return_value_offset(Param* params) {
+    int offset = get_arguments_offset();
+
+    Param* aux = params;
+    while(aux != NULL) {
+        offset += get_type_size(aux->symbol->type);
+        aux = params->next;
+    }
+
+    return offset;
+}
+
+int get_arguments_offset() {
+    return 0;
+}
+
+int local_var_size(Table* body) {
+    int offset = 0;
+
+    for(int i = 0; i < body->size; i++) {
+        if(body->entries[i] != NULL && body->entries[i] != &DELETED_ENTRY)
+            offset += get_type_size(body->entries[i]->value->type);
+    }
+
+    return offset;
+}
+
+int get_ra_size(Table* body, Param* params) {
+    return get_local_var_offset(params) + local_var_size(body);
+}
+
+void set_ra_size(Stack* stack, Lexeme* function) {
+    Symbol* symbol = get_entry(stack->top->next->value, function->token_value.string);
+    symbol->ar->size = get_ra_size(peek(stack), symbol->args);
 }

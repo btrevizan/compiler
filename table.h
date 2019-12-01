@@ -46,14 +46,15 @@
 
 typedef struct symbol {
     // line number is in lexeme->line_number
-    int nature;
+    Lexeme* lexeme;
     int type;
-    struct dimension* dimension;  // dimensions of array type
+    int nature;
     char* base; // base register for addressing (either rbss or rfp)
     long long int address;
+    struct dimension* dimension;  // dimensions of array type
+    struct activation_record* ar;
     int args_number;
     struct param* args;
-    Lexeme* lexeme;
 } Symbol;
 
 typedef struct entry {
