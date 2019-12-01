@@ -80,6 +80,6 @@
 /*
  * No caso especíco da geração de código, se a função main não estiver definida
  */
-#define MAIN_NOT_FIND_ERROR 53
+#define MAIN_NOT_FOUND_ERROR 53
 
 #endif //COMPILER_ERROR_H

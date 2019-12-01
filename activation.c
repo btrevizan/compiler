@@ -127,8 +127,8 @@ void setup_code_start(Node* tree, Stack* scope) {
     Symbol* s = search(scope, "main");
 
     if(s == NULL){
-        fprintf(stderr, "MAIN_NOT_FIND_ERROR. A main function must be defined.\n");
-        exit(MAIN_NOT_FIND_ERROR);
+        fprintf(stderr, "MAIN_NOT_FOUND_ERROR. A main function must be defined.\n");
+        exit(MAIN_NOT_FOUND_ERROR);
     }
 
     // Setup of base registers
