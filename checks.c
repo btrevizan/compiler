@@ -189,8 +189,13 @@ void check_args(Stack *scope, Node *id, Node *args) {
 
         // Go to next argument and to next parameter
         params_list = params_list->next;
-        if(args_list->n_children != 0)
+        if(args_list->n_children != 0){
+            if ((args_list->value->token_type == TK_SC  || args_list->value->token_type == TK_OC ) && args_list->n_children < 3){
+                args_list = NULL;
+                break;
+            }
             args_list = args_list->children[args_list->n_children - 1];
+        }
         else args_list = NULL;
         seen_count++;
     }
