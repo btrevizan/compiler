@@ -10,5 +10,6 @@ int f()
 
 int main()
 {
+  int y;
   y = f();
 }
