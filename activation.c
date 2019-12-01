@@ -29,7 +29,7 @@ void write_arguments(ActivationRecord* ar, CodeList **codelist_p, Node *args) {
     *codelist_p = concat_code(*codelist_p, codelist);
 
     // Save the space occupied by the arguments
-//    ar->arguments_offset = offset;
+    ar->arguments_offset = offset;
 }
 
 void write_return_value(ActivationRecord* ar, CodeList **codelist_p, char* return_temp) {
@@ -79,19 +79,7 @@ void write_return_addr(ActivationRecord* ar, CodeList **codelist_p) {
     add_op(codelist, op);
 }
 
-void load_arguments(ActivationRecord* ar, CodeList **codelist_p, Param* param_list) {
-    Param *current = param_list;
-    int offset = 0;
-
-    while(current != NULL){
-        offset += get_type_size(current->symbol->type);
-    }
-
-//    ar->arguments_offset = offset;
-}
-
 char* load_return_value(ActivationRecord* ar, CodeList **codelist_p) {
-    // PS: if this can just use RSP, we need to restore it inside the function call return sequence
     char* temp = get_register();
     CodeList* codelist = *codelist_p;
 
