@@ -46,8 +46,7 @@ void write_dynamic_link(ActivationRecord* ar, CodeList **codelist_p) {
     Operation *op;
     CodeList *codelist = *codelist_p;
     int offset = ar->dynamic_link_offset;
-
-    // TODO: maybe can be done in the calee part, so not to be repeated constantly
+    
     // Save dynamic link
     op = init_op_stc("storeAI", "rfp", "rsp", offset);
     add_op(codelist, op);
@@ -162,6 +161,9 @@ void setup_function(Stack* scope, Node* function, Node* body, Param* params) {
     // Add label for function's first instruction
     add_op(codelist, init_op_label(s->base));
 
+    // Save caller rfp
+    write_dynamic_link(s->ar, &codelist);
+
     if(strcmp(function->value->token_value.string, "main") != 0) {
         add_op(codelist, init_op_rr("i2i", "rsp", "rfp"));  // update rfp
     }
@@ -186,7 +188,6 @@ void setup_call(Stack* scope, Node* function, Node* args) {
     Symbol* s = search(scope, function->value->token_value.string);
 
     write_arguments(s->ar, &codelist, args);
-    write_dynamic_link(s->ar, &codelist);
     write_static_link(s->ar, &codelist);
     write_return_addr(s->ar, &codelist);
 
