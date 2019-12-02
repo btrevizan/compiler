@@ -1,9 +1,6 @@
 #include "activation.h"
 #include "errors.h"
-#include "state.h"
 #include "code.h"
-
-extern State state;
 
 ActivationRecord* init_ar(int return_type){
     ActivationRecord *ar = malloc(sizeof(ActivationRecord));
@@ -190,23 +187,16 @@ void setup_call(Stack* scope, Node* function, Node* args) {
     write_arguments(s->ar, &codelist, args);
     write_static_link(s->ar, &codelist);
     write_return_addr(s->ar, &codelist);
-//    save_state(codelist, s->ar->machine_state_offset);
 
     // Jump to function
     add_op(codelist, jump("jumpI", s->base));
-//    resume_state(codelist, s->ar->machine_state_offset);
 
     if(s->type != TYPE_NAN){
         // The function is non-void
         function->temp = load_return_value(s->ar, &codelist);
     }
 
-    clear_state();
     function->codelist = codelist;
-}
-
-int get_machine_state_offset(Table* body, Param* params) {
-    return get_local_var_offset(params) + local_var_size(body);
 }
 
 int get_local_var_offset(Param* params) {
@@ -214,6 +204,10 @@ int get_local_var_offset(Param* params) {
 }
 
 int get_return_addr_offset(Param* params) {
+    return get_pc_addr_offset(params) + 4;
+}
+
+int get_pc_addr_offset(Param* params) {
     return get_static_link_offset(params) + 4;
 }
 
@@ -253,11 +247,10 @@ int local_var_size(Table* body) {
 }
 
 int get_ra_size(Table* body, Param* params) {
-    return get_machine_state_offset(body, params) + state.size * 4;
+    return get_local_var_offset(params) + local_var_size(body);
 }
 
 void set_ra_size(Stack* stack, Lexeme* function) {
     Symbol* symbol = get_entry(stack->top->next->value, function->token_value.string);
-    symbol->ar->machine_state_offset = get_machine_state_offset(peek(stack), symbol->args);
     symbol->ar->size = get_ra_size(peek(stack), symbol->args);
 }

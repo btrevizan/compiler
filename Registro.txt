@@ -2,9 +2,9 @@ Escolhemos não utilizar o campo "Temporários" do RA.
 A ordem dos outros registros é como segue:
 
 sp-->
-	Estado da máquina
 	Variáveis locais
 	Endereço de retorno
+	Estado da máquina
 	Vínculo estático
 	Vínculo dinâmico
 	Valor retornado

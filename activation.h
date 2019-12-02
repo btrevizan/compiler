@@ -16,7 +16,7 @@ typedef struct activation_record
 	int size;
     int local_var_offset;	// space taken by local variables
     int return_addr_offset;
-    int machine_state_offset;
+    int pc_addr_offset;
     int static_link_offset;
     int dynamic_link_offset;
     int return_value_offset;
@@ -31,7 +31,7 @@ void setup_call(Stack* scope, Node* function, Node* args);
 
 int get_local_var_offset(Param* params);
 int get_return_addr_offset(Param* params);
-int get_machine_state_offset(Table* body, Param* params);
+int get_pc_addr_offset(Param* params);
 int get_static_link_offset(Param* params);
 int get_dynamic_link_offset(Param* params);
 int get_return_value_offset(Param* params);
