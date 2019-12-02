@@ -23,7 +23,14 @@ void write_arguments(ActivationRecord* ar, CodeList **codelist_p, Node *args) {
         add_op(codelist, op);
         offset += get_type_size(current->type);
 
-        current = current->n_children ? current->children[current->n_children-1] : NULL;
+        if(current->n_children != 0){
+            if ((current->value->token_type == TK_SC  || current->value->token_type == TK_OC ) && current->n_children < 3){
+                current = NULL;
+                continue;
+            }
+            current = current->children[current->n_children - 1];
+        }
+        else current = NULL;
     }
 
     *codelist_p = concat_code(*codelist_p, codelist);
