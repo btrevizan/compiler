@@ -1,11 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "lexical.h"
 #include "checks.h"
 #include "stack.h"
 #include "errors.h"
 #include "tree.h"
 #include "table.h"
+#include "state.h"
+
+extern State state;
 
 void check_declaration(Stack* stack, Node* id) {
     Symbol* symbol = search(stack, id->value->token_value.string);
@@ -213,4 +217,9 @@ void check_args(Stack *scope, Node *id, Node *args) {
         fprintf(stderr, "ERR_EXCESS_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, seen_count);
         exit(ERR_EXCESS_ARGS);
     }
+}
+
+void check_recursion(Node* function, char* scope_function) {
+    if(strcmp(function->value->token_value.string, scope_function) != 0)
+        clear_state();
 }

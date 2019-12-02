@@ -25,5 +25,6 @@ int implicit_conversion_check(int expected, Node* given);
 void implicit_conversion(int expected, Node* given);
 void check_type(int operation, Node* node);
 void check_return_type(Stack* scope, Node* node);
+void check_recursion(Node* function, char* scope_function);
 
 #endif //COMPILER_CHECKS_H

@@ -5,9 +5,12 @@
 #include "errors.h"
 #include "address.h"
 #include "activation.h"
+#include "state.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+extern State state;
 
 char* get_register(){
 	static int register_label = 0;	// register allocation, register names are 'r'+register_label
@@ -16,6 +19,7 @@ char* get_register(){
 	snprintf(s, MAX_LENGTH_LABEL, "r%d", register_label);
 	register_label++;
 
+	add_register(s);  // save register on state
 	return s;
 }
 

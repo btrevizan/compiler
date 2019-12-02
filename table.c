@@ -290,7 +290,6 @@ void add_function(Table* table, int type, Lexeme* function, Param* params) {
     symbol->ar->dynamic_link_offset = get_dynamic_link_offset(params);
     symbol->ar->static_link_offset = get_static_link_offset(params);
     symbol->ar->local_var_offset = get_local_var_offset(params);
-    symbol->ar->pc_addr_offset = get_pc_addr_offset(params);
     symbol->ar->return_addr_offset = get_return_addr_offset(params);
     symbol->ar->return_value_offset = get_return_value_offset(params);
 }
