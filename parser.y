@@ -247,8 +247,8 @@ id: declared_id indexer			{ $$ = binary_node(NULL, $1, $2); $1->value->token_typ
 assignment: id '=' expr			{ implicit_conversion($1->type, $3); $$ = binary_node($2, $1, $3); $$->type = $1->type; store(scope, $1, $3, $$); };
 
 /** Input and output **/
-args: expr 				{ $$ = $1; }
-|     expr ',' args			{ $$ = $1; add_node($$, $3); };
+args: expr 				{ $$ = $1; $$->count = 1; }
+|     expr ',' args			{ $$ = $1; add_node($$, $3); $$->count = $3->count + 1; };
 
 input: TK_PR_INPUT expr			{ check_type(INPUT_OP, $2); libera($2); $$ = NULL; };
 output: TK_PR_OUTPUT args		{ check_type(OUTPUT_OP, $2); libera($2); $$ = NULL; };

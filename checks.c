@@ -189,28 +189,15 @@ void check_args(Stack *scope, Node *id, Node *args) {
 
         // Go to next argument and to next parameter
         params_list = params_list->next;
-        if(args_list->n_children != 0){
-            if ((args_list->value->token_type == TK_SC  || args_list->value->token_type == TK_OC ) && args_list->n_children < 3){
-                args_list = NULL;
-                continue;
-            }
+        if(args_list->n_children != 0 && args_list->count != 1)
             args_list = args_list->children[args_list->n_children - 1];
-        }
-        else args_list = NULL;
+        else
+            args_list = NULL;
         seen_count++;
     }
 
-    // There are no more parameters, but there are still arguments
-    if( args_list != NULL ) {
-        // Count how many arguments were passed in excess
-        while(args_list != NULL) {
-            if(args_list->n_children != 0)
-                args_list = args_list->children[args_list->n_children - 1];
-            else args_list = NULL;
-            seen_count++;
-        }
-        
-        fprintf(stderr, "ERR_EXCESS_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, seen_count);
-        exit(ERR_EXCESS_ARGS);
+    if(args_list != NULL){
+        fprintf(stderr, "ERR_EXCESS_ARGS. Expecting %d arguments, but %d were given.\n", function->args_number, function->args_number+args_list->count);
+        exit(ERR_EXCESS_ARGS);        
     }
 }

@@ -11,6 +11,7 @@ typedef struct node {
     int coercion;
     struct code_list* codelist;
     char* temp;	// Temporary value or register associated with this node (for code generation)
+    int count;  // argument count
     struct patch* truelist;
     struct patch* falselist;
     struct node* parent;

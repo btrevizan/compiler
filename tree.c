@@ -36,6 +36,7 @@ Node* create_node(Lexeme* value) {
     node->coercion = NO_CONVERSION;
     node->codelist = NULL;
     node->temp = NULL;
+    node->count = 0;
     node->truelist = NULL;
     node->falselist = NULL;
     node->parent = NULL;
