@@ -3,8 +3,8 @@ A ordem dos outros registros é como segue:
 
 sp-->
 	Variáveis locais
-	Endereço de retorno
 	Estado da máquina
+	Endereço de retorno
 	Vínculo estático
 	Vínculo dinâmico
 	Valor retornado
