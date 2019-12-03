@@ -168,22 +168,26 @@ lit_indexer: '[' literal ']'	{ implicit_conversion(TYPE_INT, $2); $$ = $2;}
 | '[' literal ']' lit_indexer	{ implicit_conversion(TYPE_INT, $2); $$ = $2; add_node($$, $4); };
 
 /** FUNCTION **/
-function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); scope_function = $3->token_value.string; } ')' enter_scope body { set_ra_size(scope, $3); } leave_scope {
+function: TK_PR_STATIC type TK_IDENTIFICADOR '(' { add_function(peek(scope), $2, $3, NULL); scope_function = $3->token_value.string; } ')' enter_scope body {
 	$$ = unary_node($3, $8);
 	setup_function(scope, $$, $8, NULL);
-}
-| 	  type TK_IDENTIFICADOR '(' { add_function(peek(scope), $1, $2, NULL); scope_function = $2->token_value.string; } ')' enter_scope body { set_ra_size(scope, $3); } leave_scope {
+	delete_table(pop(scope));  // leave scope
+	}
+| type TK_IDENTIFICADOR '(' { add_function(peek(scope), $1, $2, NULL); scope_function = $2->token_value.string; } ')' enter_scope body {
 	$$ = unary_node($2, $7);
 	setup_function(scope, $$, $7, NULL);
-}
-| 	  TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $2, $3, $6); scope_function = $3->token_value.string; } ')' body { set_ra_size(scope, $3); } leave_scope {
+	delete_table(pop(scope));  // leave scope
+	}
+| TK_PR_STATIC type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $2, $3, $6); scope_function = $3->token_value.string; } ')' body {
 	$$ = unary_node($3, $9);
 	setup_function(scope, $$, $9, $6);
-}
-| 	  type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $1, $2, $5); scope_function = $2->token_value.string; } ')' body { set_ra_size(scope, $3); } leave_scope {
-	$$ = unary_node($2, $8); 
+	delete_table(pop(scope));  // leave scope
+	}
+| type TK_IDENTIFICADOR '(' enter_scope list_of_params { add_function(scope->top->next->value, $1, $2, $5); scope_function = $2->token_value.string; } ')' body {
+	$$ = unary_node($2, $8);
 	setup_function(scope, $$, $8, $5);
-};
+	delete_table(pop(scope));  // leave scope
+	};
 
 body: '{' command_list '}' 	{ $$ = $2; }
 |     '{' '}'			{ $$ = NULL; };
