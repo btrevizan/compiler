@@ -140,6 +140,8 @@ RegList* create_reg_list(char* reg) {
     RegList *r = malloc(sizeof(RegList));
     r->reg = reg;
     r->next = NULL;
+
+    return r;
 }
 
 Dim* convert_dim(Node *node) {
