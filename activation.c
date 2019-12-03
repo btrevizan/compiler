@@ -69,6 +69,21 @@ void write_static_link(ActivationRecord* ar, CodeList **codelist_p){
     add_op(codelist, op);
 }
 
+void write_machine_state(Symbol *s, CodeList **codelist_p) {
+    ActivationRecord* ar = s->ar;
+    Operation *op;
+    CodeList *codelist = *codelist_p;
+    int offset = ar->machine_state_offset;
+    RegList *current = s->registers;
+
+    while(current != NULL) {
+        op = init_op_stc("storeAI", current->reg, "rsp", offset);
+        add_op(codelist, op);
+        offset += 4;
+        current = current->next;
+    }
+}
+
 void write_return_addr(ActivationRecord* ar, CodeList **codelist_p) {
     Operation *op;
     CodeList *codelist = *codelist_p;
@@ -125,6 +140,22 @@ char* load_return_addr(ActivationRecord* ar, CodeList **codelist_p) {
     return temp;
 }
 
+
+void restore_machine_state(Symbol *s, CodeList **codelist_p) {
+    ActivationRecord* ar = s->ar;
+    Operation *op;
+    CodeList *codelist = *codelist_p;
+    int offset = ar->machine_state_offset;
+    RegList *current = s->registers;
+
+    while(current != NULL) {
+        op = init_op_rrc("loadAI", "rsp", current->reg, offset);
+        add_op(codelist, op);
+        offset += 4;
+        current = current->next;
+    }
+}
+
 void setup_code_start(Node* tree, Stack* scope) {
     CodeList *codelist = init_codelist();
     Symbol* s = search(scope, "main");
@@ -179,13 +210,17 @@ void setup_call(Stack* scope, Node* function, Node* args) {
     CodeList* codelist = init_codelist();
     int offset = 0, return_offset;
     Symbol* s = search(scope, function->value->token_value.string);
+    set_ra_size(scope, function->value->token_value.string, s->registers);
 
     write_arguments(s->ar, &codelist, args);
     write_static_link(s->ar, &codelist);
+    write_machine_state(s, &codelist);
     write_return_addr(s->ar, &codelist);
 
     // Jump to function
     add_op(codelist, jump("jumpI", s->base));
+
+    restore_machine_state(s, &codelist);
 
     if(s->type != TYPE_NAN){
         // The function is non-void
@@ -195,15 +230,27 @@ void setup_call(Stack* scope, Node* function, Node* args) {
     function->codelist = codelist;
 }
 
-int get_local_var_offset(Param* params) {
+int get_local_var_offset(Param* params, RegList *r) {
+    int offset =  get_return_addr_offset(params);
+
+    RegList* aux = r;
+    while(aux != NULL) {
+        offset += 4;
+        aux = aux->next;
+    }
+
+    return offset;
+}
+
+int get_machine_state_offset(Param* params) {
+    return get_return_addr_offset(params) + 4;
+}
+
+int get_pc_addr_offset(Param* params) {
     return get_return_addr_offset(params) + 4;
 }
 
 int get_return_addr_offset(Param* params) {
-    return get_pc_addr_offset(params) + 4;
-}
-
-int get_pc_addr_offset(Param* params) {
     return get_static_link_offset(params) + 4;
 }
 
@@ -242,11 +289,14 @@ int local_var_size(Table* body) {
     return offset;
 }
 
-int get_ra_size(Table* body, Param* params) {
-    return get_local_var_offset(params) + local_var_size(body);
+int get_ra_size(Table* body, Param* params, RegList* r) {
+    return get_local_var_offset(params, r) + local_var_size(body);
 }
 
-void set_ra_size(Stack* stack, Lexeme* function) {
-    Symbol* symbol = get_entry(stack->top->next->value, function->token_value.string);
-    symbol->ar->size = get_ra_size(peek(stack), symbol->args);
+void set_ra_size(Stack* stack, char* function, RegList* r) {
+    Symbol* symbol = search(stack, function);
+    symbol->ar->local_var_offset = get_local_var_offset(symbol->args, symbol->registers);
+    symbol->ar->pc_addr_offset = get_pc_addr_offset(symbol->args);
+    symbol->ar->return_addr_offset = get_return_addr_offset(symbol->args);
+    symbol->ar->size = get_ra_size(peek(stack), symbol->args, symbol->registers);
 }

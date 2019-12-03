@@ -11,10 +11,20 @@
 
 char* get_register(){
 	static int register_label = 0;	// register allocation, register names are 'r'+register_label
-	
+	RegList* r;
+
 	char *s = malloc(sizeof(MAX_LENGTH_LABEL));
 	snprintf(s, MAX_LENGTH_LABEL, "r%d", register_label);
 	register_label++;
+
+    if(cur_function != NULL && cur_function->registers == NULL) {
+        cur_function->registers = create_reg_list(s);
+        cur_function->registers->last = cur_function->registers;
+    } else if(cur_function != NULL) {
+        r = create_reg_list(s);
+        cur_function->registers->last->next = r;
+        cur_function->registers->last = r;
+    }
 
 	return s;
 }
@@ -487,7 +497,7 @@ void link_code(Node* function, Node* prog) {
     function->codelist = concat_code(function->codelist, codelist);
 }
 
-void return_code(Stack* scope, const char* function_name, Node* return_op) {
+void return_code(Stack* scope, char* function_name, Node* return_op) {
     return_op->codelist = init_codelist();
 
     Node *expr = return_op->children[0];
@@ -498,6 +508,8 @@ void return_code(Stack* scope, const char* function_name, Node* return_op) {
     char *return_value_register = expr->temp;
     char *return_addr_register = get_register();
     char *saved_rfp = get_register();
+
+    set_ra_size(scope, function_name, function->registers);
 
     Operation *str_return_value = init_op_stc("storeAI", return_value_register, "rfp", function->ar->return_value_offset);
     Operation *ld_return_addr = init_op_rrc("loadAI", "rfp", return_addr_register, function->ar->return_addr_offset);

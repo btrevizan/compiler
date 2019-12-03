@@ -53,6 +53,7 @@ typedef struct symbol {
     long long int address;
     struct dimension* dimension;  // dimensions of array type
     struct activation_record* ar;
+    struct reg_list* registers;   // registers used in function body
     int args_number;
     struct param* args;
 } Symbol;
@@ -81,6 +82,12 @@ typedef struct dimension {
     struct dimension* next;
 } Dim;
 
+typedef struct reg_list {
+    char* reg;
+    struct reg_list* last;
+    struct reg_list* next;
+} RegList;
+
 static Entry DELETED_ENTRY = {NULL, NULL};
 
 Table* create_table();
@@ -89,6 +96,7 @@ Entry* create_entry(const char* key, Symbol* value);
 Symbol* create_symbol(int nature, int type, Lexeme* lexeme);
 Param* create_param(int type, Lexeme* identifier);
 Dim* create_dim(int type);
+RegList* create_reg_list(char* reg);
 
 int get_type_size(int type);
 void set_scope(Symbol* symbol, int scope, int type, int dimension);

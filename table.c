@@ -110,6 +110,7 @@ Symbol* create_symbol(int nature, int type, Lexeme* lexeme) {
     symbol->nature = nature;
     symbol->type = type;
     symbol->args = NULL;
+    symbol->registers = NULL;
     symbol->lexeme = malloc(sizeof(Lexeme));
     memmove(symbol->lexeme, lexeme, sizeof(Lexeme));
     if(lexeme->literal_type == LT_NAL || lexeme->literal_type == LT_STRING)
@@ -133,6 +134,12 @@ Dim* create_dim(int type) {
     d->count = 1;
     d->next = NULL;
     return d;
+}
+
+RegList* create_reg_list(char* reg) {
+    RegList *r = malloc(sizeof(RegList));
+    r->reg = reg;
+    r->next = NULL;
 }
 
 Dim* convert_dim(Node *node) {
@@ -289,7 +296,8 @@ void add_function(Table* table, int type, Lexeme* function, Param* params) {
     symbol->ar->arguments_offset = get_arguments_offset(params);
     symbol->ar->dynamic_link_offset = get_dynamic_link_offset(params);
     symbol->ar->static_link_offset = get_static_link_offset(params);
-    symbol->ar->local_var_offset = get_local_var_offset(params);
+    symbol->ar->machine_state_offset = get_machine_state_offset(params);
+    symbol->ar->local_var_offset = get_local_var_offset(params, symbol->registers);
     symbol->ar->pc_addr_offset = get_pc_addr_offset(params);
     symbol->ar->return_addr_offset = get_return_addr_offset(params);
     symbol->ar->return_value_offset = get_return_value_offset(params);
