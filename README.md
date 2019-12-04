@@ -6,12 +6,17 @@ We use `flex` and `bison`, so you must install them before running anything.
 After installation, there is a `makefile` that you can use to build the project, just:
 
 ```
-$ make all
+$ make
 ```
 
-To test the application, you should execute:
+To run the coompiler over a source code, just type:
 ```
-$ make test
+$ ./etapa6 < source_code > out.iloc
+```
+
+And to run the `out.iloc` file:
+```
+$ python3 ilocsim.py -x -t -s --data 500 --stack 1024 out.iloc
 ```
 
 ### Part \#1
@@ -25,6 +30,12 @@ This part implements an Abstract Syntax Tree (AST) using `bison`.
 
 ### Part \#4
 This part uses the AST created to check for semantic errors.
+
+### Part \#5
+Code generation in ILOC.
+
+### Part \#6
+Code generation with function support.
 
 # Warning!!!
 If you're using **Mac OS**, the `flex` library flag is **-ll**.
